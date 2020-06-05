@@ -23,17 +23,32 @@ class Engine{
     SDL_Texture* gTexture = NULL;
 
     SDL_Texture* building =NULL;
-    const int SCREEN_WIDTH = 600;
-    const int SCREEN_HEIGHT = 600;
-
+    int SCREEN_WIDTH = 600;
+    int SCREEN_HEIGHT = 600;
+    int camerax = 0;
+    int cameray = 0;
+    struct EventTriggered{
+        bool k_a;
+        bool k_w;
+        bool k_s;
+        bool k_d;
+        bool k_space;
+        bool k_shift;
+        bool k_up;
+        bool k_down;
+        bool k_left;
+        bool k_right;
+    }events_triggered;
 
 
     void getPosition(int i,int j,int &x,int &y,int tile_size);
     public:
+    Engine(int screenwidth,int screenheight);
+    Engine();
     bool init();
     bool loadMedia();
     void close();
-    void draw(int n,vector<vector<int> > mm);
+    void isoworlddraw(int n,vector<vector<int> > map);
     void run();
     void event_handler();
 };

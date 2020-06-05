@@ -5,12 +5,12 @@
 using namespace std;
 
 
-void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
-{
-    int originx = 300;
-    int originy = 100;
-    x = originx + (i-j)*tile_size;
-    y = originy + (i+j)*tile_size/2.0;
+
+Engine::Engine(int screenwidth,int screenheight){
+    this->SCREEN_WIDTH = screenwidth;
+    this->SCREEN_HEIGHT = screenheight;
+}
+Engine::Engine(){
 }
 
 bool Engine::init()
@@ -90,7 +90,15 @@ void Engine::close()
     IMG_Quit();
     SDL_Quit();
 }
-void Engine::draw(int n,vector<vector<int> > mm){
+void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
+{
+    // int originx = 300;
+    // int originy = 100;
+    x = camerax + (i-j)*tile_size;
+    y = cameray + (i+j)*tile_size/2.0;
+}
+
+void Engine::isoworlddraw(int n,vector<vector<int> > mm){
     //cout<<"Drawing"<<endl;
     
     SDL_RenderClear(gRender);
@@ -122,8 +130,8 @@ void Engine::draw(int n,vector<vector<int> > mm){
                 rect.y = y;
                 SDL_RenderCopy(gRender,building,NULL,&rect);
                 }
-                }
             }
+        }
     SDL_RenderPresent(gRender);
 }
 void Engine::event_handler(){
@@ -135,30 +143,38 @@ void Engine::event_handler(){
         else if(e.type == SDL_KEYDOWN){
             switch(e.key.keysym.sym){
                 case SDLK_a:
+                    this->events_triggered.k_a = true;
                     break;
                 
                 case SDLK_s:
+                    this->events_triggered.k_s = true;
                     break;
                 
                 case SDLK_d:
+                    this->events_triggered.k_d = true;
                     break;
                 
                 case SDLK_w:
+                    this->events_triggered.k_w = true;
                     break;
             }
         }
         else if(e.type == SDL_KEYUP){
             switch(e.key.keysym.sym){
                 case SDLK_a:
+                    this->events_triggered.k_a = false;
                     break;
                 
                 case SDLK_s:
+                    this->events_triggered.k_s = false;
                     break;
                 
                 case SDLK_d:
+                    this->events_triggered.k_d = false;
                     break;
                 
                 case SDLK_w:
+                    this->events_triggered.k_w = false;
                     break;
             }
         }
@@ -179,6 +195,6 @@ void Engine::run(){
     //gCurrentSurface = gKeyPressSurface[surface_total];
     while(!quit){
         event_handler();
-        draw(n,mm);
+        isoworlddraw(n,mm);
     }
 }

@@ -3,16 +3,16 @@
 using namespace std;
 
 int main(){
-    Engine iso;
+    Engine ox;
 
-    if( !iso.init() )
+    if( !ox.init() )
     {
         printf( "Failed to initialize!\n" );
     }
     else
     {
         //Load media
-        if( !iso.loadMedia() )
+        if( !ox.loadMedia() )
         {
             printf( "Failed to load media!\n" );
         }
@@ -21,9 +21,9 @@ int main(){
             //Apply the image
 
             cout<<"Noe Problem"<<endl;
-            iso.run();
+            ox.run();
         }
     }
-    iso.close();
+    ox.close();
     return 0;
 }
