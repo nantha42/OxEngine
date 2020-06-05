@@ -54,7 +54,6 @@ bool Engine::loadMedia()
     //Load splash image
     
     gHelloWorld = IMG_Load("../Assets/Images/isometric_tile.png");
-
     if( gHelloWorld == NULL )
     {
         printf( "Unable to load image %s! SDL Error: %s\n", "images/hello_world.bmp", SDL_GetError() );
@@ -62,16 +61,26 @@ bool Engine::loadMedia()
     }else{
         SDL_SetRenderDrawColor(gRender,0x00,0x00,0x00,0x00);
         gTexture = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
+        this->textures.push_back(gTexture);
         if(gTexture == NULL)
             cout<<"Texture is Null"<<endl;
         SDL_FreeSurface(gHelloWorld);
+
         gHelloWorld = NULL;
         gHelloWorld = IMG_Load("../Assets/Images/building.png");
         building = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
-
+        this->textures.push_back(building);
         if(building == NULL)
             cout<<"Texture is Null"<<endl;
         SDL_FreeSurface(gHelloWorld);
+        gHelloWorld = NULL;
+
+        gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
+        // building = 
+        this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
+        // if(building == NULL)
+        //     cout<<"Texture is Null"<<endl;
+
     }   
 
     return success;
@@ -103,6 +112,7 @@ void Engine::isoworlddraw(int n,vector<vector<int> > mm){
     
     SDL_RenderClear(gRender);
     int tilesize = 128;
+
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
             if(mm[i][j]!=0){
@@ -113,8 +123,18 @@ void Engine::isoworlddraw(int n,vector<vector<int> > mm){
                 getPosition(i,j,x,y,tilesize/2);
                 rect.x = x;
                 rect.y = y;
-                SDL_RenderCopy(gRender,gTexture,NULL,&rect);
+                SDL_RenderCopy(gRender,textures[0],NULL,&rect);
                 }
+            else if(mm[i][j]==0){
+                SDL_Rect rect;
+                    rect.w = 128;
+                    rect.h = 128;
+                int x,y;
+                getPosition(i,j,x,y,tilesize/2);
+                rect.x = x;
+                rect.y = y;
+                SDL_RenderCopy(gRender,textures[2],NULL,&rect);
+            }
             }
         }
     
@@ -128,7 +148,7 @@ void Engine::isoworlddraw(int n,vector<vector<int> > mm){
                 getPosition(i,j,x,y,tilesize/2);
                 rect.x = x;
                 rect.y = y;
-                SDL_RenderCopy(gRender,building,NULL,&rect);
+                SDL_RenderCopy(gRender,textures[1],NULL,&rect);
                 }
             }
         }
@@ -180,6 +200,16 @@ void Engine::event_handler(){
         }
     }
 }
+void Engine::update(){
+    if(events_triggered.k_a)
+        camerax-=5;
+    if(events_triggered.k_d)
+        camerax+=5;
+    if(events_triggered.k_w)
+        cameray+=5;
+    if(events_triggered.k_s)
+        cameray-=5;
+}
 void Engine::run(){
     
     int n;
@@ -188,13 +218,13 @@ void Engine::run(){
     int c;
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
-            cin>>c;
-            mm[i].push_back(c);
+            mm[i].push_back(rand()%3);
         }
     }
     //gCurrentSurface = gKeyPressSurface[surface_total];
     while(!quit){
         event_handler();
         isoworlddraw(n,mm);
+        update();
     }
 }

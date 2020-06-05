@@ -21,7 +21,8 @@ class Engine{
     SDL_Surface* gHelloWorld = NULL;
     SDL_Renderer* gRender = NULL;
     SDL_Texture* gTexture = NULL;
-
+    vector<SDL_Texture*> textures;
+    
     SDL_Texture* building =NULL;
     int SCREEN_WIDTH = 600;
     int SCREEN_HEIGHT = 600;
@@ -50,6 +51,7 @@ class Engine{
     void close();
     void isoworlddraw(int n,vector<vector<int> > map);
     void run();
+    void update();
     void event_handler();
 };
 struct Camera{
