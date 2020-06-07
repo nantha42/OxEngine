@@ -2,12 +2,21 @@
 #include "classes.h"
 using namespace std;
 
+
+class MyGame: public Game{
+    
+    void update(){
+
+    }
+}
+
 int main(){
     Engine ox;
-
+    MyGame game;
     if( !ox.init() )
     {
         printf( "Failed to initialize!\n" );
+        ox.game = game;
     }
     else
     {

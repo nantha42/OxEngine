@@ -13,11 +13,13 @@ Engine::Engine(int screenwidth,int screenheight){
 Engine::Engine(){
 }
 
-bool Engine::init()
+bool Engine::init(Game &game)
 {
     //Initialization flag
     bool success = true;
-
+    this->game = game;
+    
+    sort(game.sprites)
     //Initialize SDL
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
     {
@@ -67,7 +69,7 @@ bool Engine::loadMedia()
         SDL_FreeSurface(gHelloWorld);
 
         gHelloWorld = NULL;
-        gHelloWorld = IMG_Load("../Assets/Images/building.png");
+        gHelloWorld = IMG_Load("../Assets/Images/building1.png");
         building = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
         this->textures.push_back(building);
         if(building == NULL)
@@ -82,7 +84,6 @@ bool Engine::loadMedia()
         //     cout<<"Texture is Null"<<endl;
 
     }   
-
     return success;
 }
 void Engine::close()
@@ -107,7 +108,19 @@ void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
     y = cameray + (i+j)*tile_size/2.0;
 }
 
+struct isometric_position_comparator
+{
+    inline bool operator() (const Sprite& sprite1, const Sprite& sprite2)
+    {
+        if(sprite1.x < sprite2.x){
+            return (sprite1.y < sprite2.y);
+        }
+        return false;
+    }
+};
 void Engine::isoworlddraw(int n,vector<vector<int> > mm){
+
+    
     //cout<<"Drawing"<<endl;
     
     SDL_RenderClear(gRender);
@@ -138,22 +151,29 @@ void Engine::isoworlddraw(int n,vector<vector<int> > mm){
             }
         }
     
-    for(int i=0;i<n;i++){
-        for(int j=0;j<n;j++){
-                if(mm[i][j]==2){
-                    SDL_Rect rect;
-                    rect.w  = 128;
-                    rect.h = 128;
-                    int x,y;
-                getPosition(i,j,x,y,tilesize/2);
-                rect.x = x;
-                rect.y = y;
-                SDL_RenderCopy(gRender,textures[1],NULL,&rect);
-                }
-            }
-        }
+    // for(int i=0;i<n;i++){
+    //     for(int j=0;j<n;j++){
+    //             if(mm[i][j]==2){
+    //                 SDL_Rect rect;
+    //                 rect.w  = 128;
+    //                 rect.h = 128;
+    //                 int x,y;
+    //             getPosition(i,j,x,y,tilesize/2);
+    //             rect.x = x;
+    //             rect.y = y;
+    //             SDL_RenderCopy(gRender,textures[1],NULL,&rect);
+    //             }
+    //         }
+    //     }
     SDL_RenderPresent(gRender);
 }
+
+void Engine::drawIsoSprites(){
+    SDL_RenderClear(gRender);
+    int tilesize = 128;
+    for()
+}
+
 void Engine::event_handler(){
     
     while (SDL_PollEvent(&e)){
@@ -202,13 +222,13 @@ void Engine::event_handler(){
 }
 void Engine::update(){
     if(events_triggered.k_a)
-        camerax-=5;
+        camerax+=2;
     if(events_triggered.k_d)
-        camerax+=5;
+        camerax-=2;
     if(events_triggered.k_w)
-        cameray+=5;
+        cameray+=2;
     if(events_triggered.k_s)
-        cameray-=5;
+        cameray-=2;
 }
 void Engine::run(){
     
