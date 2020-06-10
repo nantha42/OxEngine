@@ -5,6 +5,16 @@
 using namespace std;
 
 
+struct isometric_position_comparator
+{
+    inline bool operator() (const Sprite& sprite1, const Sprite& sprite2)
+    {
+        if(sprite1.isox < sprite2.isox){
+            return (sprite1.isoy < sprite2.isoy);
+        }
+        return false;
+    }
+};
 
 Engine::Engine(int screenwidth,int screenheight){
     this->SCREEN_WIDTH = screenwidth;
@@ -13,13 +23,15 @@ Engine::Engine(int screenwidth,int screenheight){
 Engine::Engine(){
 }
 
-bool Engine::init(Game &game)
+bool Engine::init(Game &ggame)
 {
     //Initialization flag
     bool success = true;
-    this->game = game;
+    this->game = &ggame;
     
-    sort(game.sprites)
+    // sort(this->game->sprites.begin(),this->game->sprites.end(),isometric_position_comparator);
+    
+    sort(game->sprites.begin(),game->sprites.end(),isometric_position_comparator());
     //Initialize SDL
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
     {
@@ -108,16 +120,7 @@ void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
     y = cameray + (i+j)*tile_size/2.0;
 }
 
-struct isometric_position_comparator
-{
-    inline bool operator() (const Sprite& sprite1, const Sprite& sprite2)
-    {
-        if(sprite1.x < sprite2.x){
-            return (sprite1.y < sprite2.y);
-        }
-        return false;
-    }
-};
+
 void Engine::isoworlddraw(int n,vector<vector<int> > mm){
 
     
@@ -171,7 +174,7 @@ void Engine::isoworlddraw(int n,vector<vector<int> > mm){
 void Engine::drawIsoSprites(){
     SDL_RenderClear(gRender);
     int tilesize = 128;
-    for()
+    
 }
 
 void Engine::event_handler(){

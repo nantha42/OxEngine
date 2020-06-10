@@ -4,19 +4,22 @@ using namespace std;
 
 
 class MyGame: public Game{
-    
+    public:
+    MyGame(bool isometric):Game(isometric){
+
+    }
     void update(){
 
     }
-}
+};
 
 int main(){
     Engine ox;
-    MyGame game;
-    if( !ox.init() )
+    MyGame game(true);
+    if( !ox.init(game) )
     {
         printf( "Failed to initialize!\n" );
-        ox.game = game;
+        
     }
     else
     {
@@ -28,7 +31,6 @@ int main(){
         else
         {
             //Apply the image
-
             cout<<"Noe Problem"<<endl;
             ox.run();
         }

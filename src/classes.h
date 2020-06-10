@@ -22,50 +22,6 @@ class Vector{
     static vector<int> sub(vector<int> a,vector<int> b);
     
 };
-class Engine{
-    private:
-    SDL_Event e;
-    bool quit = false;
-    SDL_Window* gWindow = NULL;
-    SDL_Surface* gHelloWorld = NULL;
-    SDL_Renderer* gRender = NULL;
-    SDL_Texture* gTexture = NULL;
-    vector<SDL_Texture*> textures;
-    Game game = NULL:
-    SDL_Texture* building =NULL;
-    int SCREEN_WIDTH = 600;
-    int SCREEN_HEIGHT = 600;
-    int camerax = 0;
-    int cameray = 0;
-    struct EventTriggered{
-        bool k_a;
-        bool k_w;
-        bool k_s;
-        bool k_d;
-        bool k_space;
-        bool k_shift;
-        bool k_up;
-        bool k_down;
-        bool k_left;
-        bool k_right;
-    }events_triggered;
-
-
-    void getPosition(int i,int j,int &x,int &y,int tile_size);
-    public:
-    vector<Sprite> sprites;
-
-    Engine(int screenwidth,int screenheight);
-    Engine();
-    bool init();
-    bool loadMedia();
-    void close();
-    void isoworlddraw(int n,vector<vector<int> > map);
-    void run();
-    void update();
-    void event_handler();
-};
-
 class Sprite{
     private:
     bool animated_sprite = false;
@@ -126,10 +82,11 @@ class Sprite{
 
 };
 class Game{
-    vector<Sprite> sprites;
+  
     bool isometric_game = false;
 
     public:
+      vector<Sprite> sprites;
     Game(bool isometric_game){
         this->isometric_game = isometric_game;
     }
@@ -140,5 +97,52 @@ class Game{
     }
     void update();
     
-}
+};
+
+class Engine{
+    private:
+    SDL_Event e;
+    bool quit = false;
+    SDL_Window* gWindow = NULL;
+    SDL_Surface* gHelloWorld = NULL;
+    SDL_Renderer* gRender = NULL;
+    SDL_Texture* gTexture = NULL;
+    vector<SDL_Texture*> textures;
+    Game *game = NULL;
+    SDL_Texture* building =NULL;
+    int SCREEN_WIDTH = 600;
+    int SCREEN_HEIGHT = 600;
+    int camerax = 0;
+    int cameray = 0;
+    struct EventTriggered{
+        bool k_a;
+        bool k_w;
+        bool k_s;
+        bool k_d;
+        bool k_space;
+        bool k_shift;
+        bool k_up;
+        bool k_down;
+        bool k_left;
+        bool k_right;
+    }events_triggered;
+
+
+    void getPosition(int i,int j,int &x,int &y,int tile_size);
+    public:
+    vector<Sprite> sprites;
+
+    Engine(int screenwidth,int screenheight);
+    Engine();
+    bool init(Game &game);
+    bool loadMedia();
+    void close();
+    void isoworlddraw(int n,vector<vector<int> > map);
+    void drawIsoSprites();
+    void run();
+    void update();
+    void event_handler();
+};
+
+
 #endif
