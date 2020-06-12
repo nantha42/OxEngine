@@ -18,13 +18,18 @@ class MyGame: public Game{
             string path;
             int n_images;
             bool animated;
+            int animation_fps;
             cin>>path;
             cin>>animated;
             cin>>n_images;
+            if(animated)
+                cin>>animation_fps;
             Sprite tile(animated,true,NULL);
             simpletile = &tile;
-            if(animated)
+            if(animated){
                 simpletile->animation_images_path = path;
+                simpletile->animation_fps = animation_fps;
+            }
             else
                 simpletile->image_path = path;
             simpletile->n_images = n_images;
@@ -86,17 +91,11 @@ class MyGame: public Game{
     }   
     void update(){
         Uint32 curtime = SDL_GetTicks();
-        if(curtime-unit_time >= 100){
-                unit_time = curtime;
             
-            for(int i=0;i<sprites.size();i++){
-                
-                    cout<<sprites[i].animated_sprite<<endl;
-                    if(sprites[i].animated_sprite){    
-                        sprites[i].curframe = (sprites[i].curframe+1)%sprites[i].n_images;
-                    }       
-                }
+        for(int i=0;i<sprites.size();i++){
+            sprites[i].update();                
         }
+        
     }
 };
 

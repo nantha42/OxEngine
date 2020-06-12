@@ -1,6 +1,10 @@
 n_sprites
-path to image
-is_animated
-n_images
+n_sprites times:
+    path to image
+    is_animated
+    n_images
+    if is_animated:
+        fps
+
 
 grid [grid_size x grid_size] array
