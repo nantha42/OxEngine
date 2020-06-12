@@ -1,0 +1,6 @@
+n_sprites
+path to image
+is_animated
+n_images
+
+grid [grid_size x grid_size] array

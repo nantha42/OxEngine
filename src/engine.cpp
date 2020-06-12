@@ -31,7 +31,7 @@ bool Engine::init(Game &ggame)
     
     // sort(this->game->sprites.begin(),this->game->sprites.end(),isometric_position_comparator);
     
-    sort(game->sprites.begin(),game->sprites.end(),isometric_position_comparator());
+    // sort(game->sprites.begin(),game->sprites.end(),isometric_position_comparator());
     //Initialize SDL
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
     {
@@ -90,11 +90,17 @@ bool Engine::loadMedia()
         gHelloWorld = NULL;
 
         gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
-        // building = 
+        
         this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
-        // if(building == NULL)
-        //     cout<<"Texture is Null"<<endl;
-
+        
+        for(int i=0;i<game->sprites.size();i++){
+            game->sprites[i].gRender = gRender;
+            game->sprites[i].load_images();
+            // cout<<"Size "<<game->sprites[i].images.size()<<endl;
+        }
+        // for(auto sprite:game->sprites){ 
+        //     cout<<"Size "<<sprite.images.size()<<endl;
+        // }
     }   
     return success;
 }
@@ -116,58 +122,40 @@ void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
 {
     // int originx = 300;
     // int originy = 100;
-    x = camerax + (i-j)*tile_size;
-    y = cameray + (i+j)*tile_size/2.0;
+    x = (camerax-cameray)*2 + (i-j)*tile_size;
+    y = (camerax+cameray)*1 + (i+j)*tile_size/2.0;
+    
 }
 
 
-void Engine::isoworlddraw(int n,vector<vector<int> > mm){
+void Engine::isoworlddraw(){
 
     
     //cout<<"Drawing"<<endl;
     
     SDL_RenderClear(gRender);
-    int tilesize = 128;
+    int tilesize = tile_size;
 
-    for(int i=0;i<n;i++){
-        for(int j=0;j<n;j++){
-            if(mm[i][j]!=0){
-                SDL_Rect rect;
-                    rect.w = 128;
-                    rect.h = 128;
-                int x,y;
-                getPosition(i,j,x,y,tilesize/2);
-                rect.x = x;
-                rect.y = y;
-                SDL_RenderCopy(gRender,textures[0],NULL,&rect);
-                }
-            else if(mm[i][j]==0){
-                SDL_Rect rect;
-                    rect.w = 128;
-                    rect.h = 128;
-                int x,y;
-                getPosition(i,j,x,y,tilesize/2);
-                rect.x = x;
-                rect.y = y;
-                SDL_RenderCopy(gRender,textures[2],NULL,&rect);
+    for(int i=0;i<grid_size;i++){
+        for(int j=0;j<grid_size;j++){
+            int x,y;
+            int frame;
+            SDL_Rect rect;
+            int id = game->world_map[i][j];
+            // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
+            getPosition(i,j,x,y,tilesize/2);
+            game->sprites[id].rect.x = x;
+            game->sprites[id].rect.y = y;
+            rect = game->sprites[id].rect;
+            frame = game->sprites[id].curframe;
+            //cout<<game->sprites[0].images.size()<<"  "<<game->sprites[0].n_images<<endl;
+            // cout<<game->sprites[0].images[frame]<<endl;
+            if(id==2)
+                cout<<game->sprites[id].curframe<<endl;
+            SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
             }
-            }
+            
         }
-    
-    // for(int i=0;i<n;i++){
-    //     for(int j=0;j<n;j++){
-    //             if(mm[i][j]==2){
-    //                 SDL_Rect rect;
-    //                 rect.w  = 128;
-    //                 rect.h = 128;
-    //                 int x,y;
-    //             getPosition(i,j,x,y,tilesize/2);
-    //             rect.x = x;
-    //             rect.y = y;
-    //             SDL_RenderCopy(gRender,textures[1],NULL,&rect);
-    //             }
-    //         }
-    //     }
     SDL_RenderPresent(gRender);
 }
 
@@ -224,6 +212,7 @@ void Engine::event_handler(){
     }
 }
 void Engine::update(){
+    cout<<camerax<<"  "<<cameray<<endl;
     if(events_triggered.k_a)
         camerax+=2;
     if(events_triggered.k_d)
@@ -234,20 +223,11 @@ void Engine::update(){
         cameray-=2;
 }
 void Engine::run(){
-    
-    int n;
-    cin>>n;
-    vector<vector<int> > mm(n);
-    int c;
-    for(int i=0;i<n;i++){
-        for(int j=0;j<n;j++){
-            mm[i].push_back(rand()%3);
-        }
-    }
-    //gCurrentSurface = gKeyPressSurface[surface_total];
     while(!quit){
         event_handler();
-        isoworlddraw(n,mm);
+        isoworlddraw();
+        game->update();
         update();
+        
     }
 }
