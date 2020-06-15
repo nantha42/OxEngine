@@ -3,10 +3,24 @@
 #include<bits/stdc++.h>
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_image.h>
-const int grid_size = 7;
-const int tile_size = 128;
+const int grid_size = 10;
+const int tile_size = 64;
 
 using namespace std;
+
+struct EventTriggered{
+        bool k_a;
+        bool k_w;
+        bool k_s;
+        bool k_d;
+        bool k_space;
+        bool k_shift;
+        bool k_up;
+        bool k_down;
+        bool k_left;
+        bool k_right;
+};
+
 class Object{
     public:
     int x;
@@ -65,7 +79,7 @@ class Game{
     Uint32 unit_time=0;
     
     public:
-    int world_map[grid_size][grid_size];
+    int local_map[grid_size][grid_size];
       vector<Sprite> sprites;
 
     Game(bool isometric_game){
@@ -74,7 +88,8 @@ class Game{
     void loadSprites(vector<string> sprite_files){
         
     }
-    virtual void update()=0;    
+    virtual void update()=0;
+    virtual void eventhandler(EventTriggered et)=0;
     
 };
 
@@ -93,18 +108,7 @@ class Engine{
     int SCREEN_HEIGHT = 600;
     int camerax = 102;
     int cameray = -80;
-    struct EventTriggered{
-        bool k_a;
-        bool k_w;
-        bool k_s;
-        bool k_d;
-        bool k_space;
-        bool k_shift;
-        bool k_up;
-        bool k_down;
-        bool k_left;
-        bool k_right;
-    }events_triggered;
+    EventTriggered events_triggered;
 
 
     void getPosition(int i,int j,int &x,int &y,int tile_size);

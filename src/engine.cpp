@@ -122,6 +122,7 @@ void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
 {
     // int originx = 300;
     // int originy = 100;
+    
     x = (camerax-cameray)*2 + (i-j)*tile_size;
     y = (camerax+cameray)*1 + (i+j)*tile_size/2.0;
     
@@ -141,7 +142,7 @@ void Engine::isoworlddraw(){
             int x,y;
             int frame;
             SDL_Rect rect;
-            int id = game->world_map[i][j];
+            int id = game->local_map[i][j];
             // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
             getPosition(i,j,x,y,tilesize/2);
             game->sprites[id].rect.x = x;
@@ -188,6 +189,20 @@ void Engine::event_handler(){
                 case SDLK_w:
                     this->events_triggered.k_w = true;
                     break;
+                
+                case SDLK_UP:
+                    events_triggered.k_up = true;
+                    break;
+                case SDLK_DOWN:
+                    events_triggered.k_down = true;
+                    break;
+
+                case SDLK_LEFT:
+                    events_triggered.k_left = true;
+                    break;
+                case SDLK_RIGHT:
+                    events_triggered.k_right = true;
+                    break;
             }
         }
         else if(e.type == SDL_KEYUP){
@@ -207,6 +222,22 @@ void Engine::event_handler(){
                 case SDLK_w:
                     this->events_triggered.k_w = false;
                     break;
+                
+                case SDLK_UP:
+                    events_triggered.k_up =false;
+                    break;
+
+                case SDLK_DOWN:
+                    events_triggered.k_down = false;
+                    break;
+
+                case SDLK_LEFT:
+                    events_triggered.k_left = false;
+                    break;
+
+                case SDLK_RIGHT:
+                    events_triggered.k_right = false;
+                    break;
             }
         }
     }
@@ -221,12 +252,15 @@ void Engine::update(){
         cameray+=2;
     if(events_triggered.k_s)
         cameray-=2;
+    
+    game->eventhandler(events_triggered);
+
 }
 void Engine::run(){
     while(!quit){
         event_handler();
-        isoworlddraw();
         game->update();
+        isoworlddraw();
         update();
         
     }
