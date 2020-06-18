@@ -49,7 +49,7 @@ class Sprite{
     int curframe = 0;
     SDL_Rect rect;
     bool alive = true;
-
+    int size = 128;
     bool visible = true;
     string animation_images_path;
     int n_images = 0;
@@ -104,19 +104,20 @@ class Engine{
     vector<SDL_Texture*> textures;
     Game *game = NULL;
     SDL_Texture* building =NULL;
-    int SCREEN_WIDTH = 830;
-    int SCREEN_HEIGHT = 600;
+    int SCREEN_WIDTH = 1030;
+    int SCREEN_HEIGHT = 800;
     int camerax = 102;
     int cameray = -80;
     EventTriggered events_triggered;
+    
 
-
-    void getPosition(int i,int j,int &x,int &y,int tile_size);
+    void getPosition(int i,int j,int &x,int &y,int tile_size,int size);
     public:
     vector<Sprite> sprites;
 
     Engine(int screenwidth,int screenheight);
     Engine();
+    void renderit(vector<vector<bool>> &rendered,int a,int b,int size);
     bool init(Game &game);
     bool loadMedia();
     void close();

@@ -8,8 +8,8 @@ private:
 public:
     int mapsize = 50;
     int localsize = grid_size;
-    float curx = 10;
-    float cury = 10;
+    float curx = 0;
+    float cury = 0;
 
     vector<vector<int>> world;
     Structures()
@@ -49,7 +49,24 @@ public:
                 y++;
             world[x][y] = 0;
         }
+        int c = 3;
+        world[1+c][3+c]=5;
+        world[c][3+c] = 3;
+        world[c][3+c+1]=3;
+        world[1+1+c][3+1+c] = -1;
+        world[1+c][3+1+c] = -1;
+        world[1+1+c][3+c] = -1;
+
+        world[1][7] = 5;
+        world[1+1][7] = -1;
+        world[1][7+1] = -1;
+        world[1+1][7+1] = -1;
+        world[0][8] = 2;
+
+        world[1][4]= 4;
+        world[1][5] = 4;
     }
+    
 };
 class MyGame : public Game
 {
@@ -76,29 +93,35 @@ public:
             int n_images;
             bool animated;
             int animation_fps;
+            int size;
             cin >> path;
             cin >> animated;
             cin >> n_images;
             if (animated)
                 cin >> animation_fps;
+            cin>>size;
             Sprite tile(animated, true, NULL);
             simpletile = &tile;
+            
             if (animated)
             {
+                cout<<path<<endl;
                 simpletile->animation_images_path = path;
                 simpletile->animation_fps = animation_fps;
             }
             else
                 simpletile->image_path = path;
+            simpletile->size = size;
             simpletile->n_images = n_images;
-            simpletile->rect.w = tile_size;
-            simpletile->rect.h = tile_size;
+            simpletile->rect.w = tile_size*size;
+            simpletile->rect.h = tile_size*size;
+            // cout<<tile_size*size<<endl;
             simpletile->rect.x = 0;
             simpletile->rect.y = 0;
             sprites.push_back(*simpletile);
             n--;
         }
-        cout << "Size of sprites" << sprites.size() << endl;
+        // cout << "Size of sprites" << sprites.size() << endl;
     }
     void update()
     {

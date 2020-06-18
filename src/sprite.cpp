@@ -17,6 +17,7 @@ void Sprite::make_visible(){visible = true;}
 void Sprite::make_invisible(){visible = false;}
 
 void Sprite::load_images(){
+    // cout<<"In nsprite:  "<<animation_images_path<<endl;
     if(animation_images_path == "" && image_path==""){
         cout<<"Animation Path not defined";
         return;

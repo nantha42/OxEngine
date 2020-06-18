@@ -88,11 +88,8 @@ bool Engine::loadMedia()
             cout<<"Texture is Null"<<endl;
         SDL_FreeSurface(gHelloWorld);
         gHelloWorld = NULL;
-
         gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
-        
         this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
-        
         for(int i=0;i<game->sprites.size();i++){
             game->sprites[i].gRender = gRender;
             game->sprites[i].load_images();
@@ -118,45 +115,111 @@ void Engine::close()
     IMG_Quit();
     SDL_Quit();
 }
-void Engine::getPosition(int i,int j,int &x,int &y,int tile_size)
+void Engine::getPosition(int i,int j,int &x,int &y,int tile_size,int size)
 {
     // int originx = 300;
     // int originy = 100;
     
-    x = (camerax-cameray)*2 + (i-j)*tile_size;
-    y = (camerax+cameray)*1 + (i+j)*tile_size/2.0;
+    x = (camerax-cameray)*2 + (i-j-(size-1) )*tile_size;
+    y = (camerax+cameray)*1 + (i+j-(size-1) )*tile_size/2.0;
+    if(size-1)
+       y-= (size-1)*15;
     
 }
 
 
+
+void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
+    bool atleastonenotrendered = false;
+    for(int j=b;j<b+size;j++){
+        for(int i=0;i<a;i++){
+            cout<<i<<"   "<<j<<endl;
+            if(!atleastonenotrendered && game->local_map[i][j]==-1){
+                continue;
+            }
+            if(!rendered[i][j] && game->local_map[i][j]!=-1){
+                atleastonenotrendered = true;
+                int x,y;
+                int frame;
+                SDL_Rect rect;
+                int id = game->local_map[i][j];
+                if(id==-1)
+                    continue;
+                int size = game->sprites[id].size;
+                if(size==2){
+                    rendered[i][j] = true;
+                    renderit(rendered,i,b+1,size-1);
+                    getPosition(i,j,x,y,tile_size/2,size);
+                    game->sprites[id].rect.x = x;
+                    game->sprites[id].rect.y = y;
+                    rect = game->sprites[id].rect;
+                    frame = game->sprites[id].curframe;
+                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                }
+                if(size==1){
+                    rendered[i][j] = true;
+                    getPosition(i,j,x,y,tile_size/2,size);
+                    game->sprites[id].rect.x = x;
+                    game->sprites[id].rect.y = y;
+                    rect = game->sprites[id].rect;
+                    frame = game->sprites[id].curframe;
+                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                }
+            }
+        }
+    }
+}
+
 void Engine::isoworlddraw(){
 
-    
-    //cout<<"Drawing"<<endl;
-    
     SDL_RenderClear(gRender);
     int tilesize = tile_size;
+    vector<vector<bool>> rendered;
+    for(int i=0;i<grid_size;i++)
+        rendered.push_back(vector<bool>(grid_size,false));
 
-    for(int i=0;i<grid_size;i++){
-        for(int j=0;j<grid_size;j++){
-            int x,y;
-            int frame;
-            SDL_Rect rect;
-            int id = game->local_map[i][j];
-            // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
-            getPosition(i,j,x,y,tilesize/2);
-            game->sprites[id].rect.x = x;
-            game->sprites[id].rect.y = y;
-            rect = game->sprites[id].rect;
-            frame = game->sprites[id].curframe;
-            //cout<<game->sprites[0].images.size()<<"  "<<game->sprites[0].n_images<<endl;
-            // cout<<game->sprites[0].images[frame]<<endl;
-            if(id==2)
-                cout<<game->sprites[id].curframe<<endl;
-            SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+    for(int j=0;j<grid_size;j++){
+        for(int i=0;i<grid_size;i++){
+    
+            if(!rendered[i][j]){
+                
+                int x,y;
+                int frame;
+                SDL_Rect rect;
+                int id = game->local_map[i][j];
+                if(id==-1){
+                    rendered[i][j]= true;//doublt
+                    continue;
+                }
+                // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
+                int size = game->sprites[id].size;
+                if(size>1){
+                    renderit(rendered,i,j+1,size-1);
+                    rendered[i][j] = true;
+                    getPosition(i,j,x,y,tilesize/2,size);
+                    game->sprites[id].rect.x = x;
+                    game->sprites[id].rect.y = y;
+                    rect = game->sprites[id].rect;
+                    frame = game->sprites[id].curframe;
+                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                }
+                else{
+                    rendered[i][j] = true;
+                    getPosition(i,j,x,y,tilesize/2,size);
+                    game->sprites[id].rect.x = x;
+                    game->sprites[id].rect.y = y;
+                    rect = game->sprites[id].rect;
+                    // if(id==5)
+                        // cout<<rect.w<<" ::"<<rect.h<<endl;
+                    frame = game->sprites[id].curframe;
+                    // cout<<id<<"  "<<game->sprites[id].images[frame]<<endl;
+                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                }   
             }
             
         }
+    }
+
     SDL_RenderPresent(gRender);
 }
 
@@ -243,7 +306,7 @@ void Engine::event_handler(){
     }
 }
 void Engine::update(){
-    cout<<camerax<<"  "<<cameray<<endl;
+    
     if(events_triggered.k_a)
         camerax+=2;
     if(events_triggered.k_d)
