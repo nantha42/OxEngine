@@ -19,8 +19,20 @@ struct isometric_position_comparator
 Engine::Engine(int screenwidth,int screenheight){
     this->SCREEN_WIDTH = screenwidth;
     this->SCREEN_HEIGHT = screenheight;
+    for(int i=0;i<grid_size;i++){
+        tiles_positionx.push_back(vector<int>(grid_size,0));
+        tiles_positiony.push_back(vector<int>(grid_size,0));
+        
+    }
+    
 }
 Engine::Engine(){
+    for(int i=0;i<grid_size;i++){
+        tiles_positionx.push_back(vector<int>(grid_size,0));
+        tiles_positiony.push_back(vector<int>(grid_size,0));
+        
+    }
+    
 }
 
 bool Engine::init(Game &ggame)
@@ -93,11 +105,9 @@ bool Engine::loadMedia()
         for(int i=0;i<game->sprites.size();i++){
             game->sprites[i].gRender = gRender;
             game->sprites[i].load_images();
-            // cout<<"Size "<<game->sprites[i].images.size()<<endl;
+            
         }
-        // for(auto sprite:game->sprites){ 
-        //     cout<<"Size "<<sprite.images.size()<<endl;
-        // }
+        
     }   
     return success;
 }
@@ -117,24 +127,26 @@ void Engine::close()
 }
 void Engine::getPosition(int i,int j,int &x,int &y,int tile_size,int size)
 {
-    // int originx = 300;
-    // int originy = 100;
     
     x = (camerax-cameray)*2 + (i-j-(size-1) )*tile_size;
     y = (camerax+cameray)*1 + (i+j-(size-1) )*tile_size/2.0;
     if(size-1)
        y-= (size-1)*15;
-    
+    //problem might be here
+    //tiles_positionx[i][j] = x+(64.0*tile_size/2/128.0);
+    //tiles_positiony[i][j] = y+(52.0*tile_size/2/128.0);
+    tiles_positionx[i][j] = x;
+    tiles_positiony[i][j] = y+((52.0/128.0)*tile_size*2);
+
 }
-
-
-
 void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
     bool atleastonenotrendered = false;
     for(int j=b;j<b+size;j++){
         for(int i=0;i<a;i++){
-            cout<<i<<"   "<<j<<endl;
+            
             if(!atleastonenotrendered && game->local_map[i][j]==-1){
+                int x,y;
+                getPosition(i,j,x,y,tile_size/2,tile_size);
                 continue;
             }
             if(!rendered[i][j] && game->local_map[i][j]!=-1){
@@ -143,8 +155,10 @@ void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
                 int frame;
                 SDL_Rect rect;
                 int id = game->local_map[i][j];
-                if(id==-1)
+                if(id==-1){
+                    getPosition(i,j,x,y,tile_size/2,tile_size);
                     continue;
+                }
                 int size = game->sprites[id].size;
                 if(size==2){
                     rendered[i][j] = true;
@@ -169,9 +183,37 @@ void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
         }
     }
 }
-
+void Engine::draw_selected_tiles(){
+    int tilesize = tile_size;
+    for(int j=0;j<grid_size;j++){
+        for(int i=0;i<grid_size;i++){
+    
+                
+                int x,y;
+                int frame;
+                SDL_Rect rect;
+                int id = game->local_map[i][j];
+                if(!game->selected_tile[i][j]){
+                    continue;
+                }
+                // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
+                int size = game->sprites[id].size;
+                
+                getPosition(i,j,x,y,tilesize/2,size);
+                cout<<x<<"   "<<y<<endl;
+                rect.x = x;
+                rect.y = y;
+                rect.w = game->sprites[id].rect.w;
+                rect.h = game->sprites[id].rect.h;
+                frame = game->sprites[6].curframe;
+                SDL_RenderCopy(gRender, game->sprites[6].images[frame],NULL,&rect);
+                          
+        }
+    }
+}
 void Engine::isoworlddraw(){
 
+    SDL_SetRenderDrawColor(gRender,0,0,0,0);
     SDL_RenderClear(gRender);
     int tilesize = tile_size;
     vector<vector<bool>> rendered;
@@ -189,6 +231,7 @@ void Engine::isoworlddraw(){
                 int id = game->local_map[i][j];
                 if(id==-1){
                     rendered[i][j]= true;//doublt
+                    getPosition(i,j,x,y,tilesize/2,1);
                     continue;
                 }
                 // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
@@ -219,7 +262,12 @@ void Engine::isoworlddraw(){
             
         }
     }
-
+    draw_selected_tiles();
+     //x = (x+y)*2;
+    //SDL_Rect boxrect = {x*tile_size+ ((camerax-cameray)*2)%tile_size-tile_size/2, y*tile_size+ ((camerax+cameray)%tile_size)-tile_size/2,tile_size,tile_size};
+    //SDL_SetRenderDrawColor(gRender,255,255,255,255);
+//    SDL_RenderDrawRect(gRender,&boxrect);
+    
     SDL_RenderPresent(gRender);
 }
 
@@ -303,18 +351,147 @@ void Engine::event_handler(){
                     break;
             }
         }
+        else if(e.type == SDL_MOUSEBUTTONDOWN){
+            events_triggered.mouse_clicked = true;
+            SDL_GetMouseState(&events_triggered.mosx,&events_triggered.mosy);
+            // cout<<"Mouse :"<<events_triggered.mosx<<"   "<<events_triggered.mosy<<endl;
+        }
+        else if(e.type == SDL_MOUSEMOTION){
+            events_triggered.mouse_moved = true;
+            SDL_GetMouseState(&events_triggered.movx,&events_triggered.movy);
+            
+        }
+    
     }
+}
+
+float area(int x1,int y1,int x2, int y2,int x3,int y3){
+    return abs((x1*(y2-y3) + x2*(y3-y1)+ x3*(y1-y2))/2.0);
+}
+bool IsOutside(int x1,int y1,int x2, int y2,int x3,int y3,int x,int y){
+    float a = area(x1,y1,x2,y2,x3,y3);
+    float a1 = area(x,y,x2,y2,x3,y3);
+    float a2 = area(x1,y1,x,y,x3,y3);
+    float a3 = area(x1,y1,x2,y2,x,y);
+    return a!=(a1+a2+a3);
 }
 void Engine::update(){
     
     if(events_triggered.k_a)
-        camerax+=2;
+        camerax+=1;
     if(events_triggered.k_d)
-        camerax-=2;
+        camerax-=1;
     if(events_triggered.k_w)
-        cameray+=2;
+        cameray+=1;
     if(events_triggered.k_s)
-        cameray-=2;
+        cameray-=1;
+    
+    /*
+    if(events_triggered.mouse_clicked){
+        events_triggered.mouse_clicked = false;
+        double mx = events_triggered.mosx;
+        double my = events_triggered.mosy;
+        double x = (mx - (camerax-cameray)*2.0)/(tile_size/2);
+        double y = (my - (camerax+cameray)*1.0)*2.0/(tile_size/2);
+        double i = (x+y)/2.0;
+        double j = (y-i);
+        // x = (camerax-cameray)*2 + (i-j-(size-1) )*tile_size;
+        // y = (camerax+cameray)*1 + (i+j-(size-1) )*tile_size/2.0;
+        // if(size-1)
+        // y-= (size-1)*15;
+    
+        // cout<<"Cell: "<<i<<"  "<<j<<endl;
+        
+    }*/
+    int x,y;
+    x = events_triggered.mosx;
+    y = events_triggered.mosy;
+    // cout<<events_triggered.mouse_clicked<<endl;
+    if(events_triggered.mouse_clicked){
+        events_triggered.mouse_clicked = false;
+        //cout<<x<<"   "<<y<<"  "<<events_triggered.movx<<"  "<<events_triggered.movy<<endl;
+        int i=0;
+         cout<<x<<" "<<y<<"  "<<tiles_positionx[grid_size-1][0]<<"  "<<tiles_positionx[0][grid_size-1+tile_size]<<"  "<<tiles_positiony[0][0]<<"  "<<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2<<endl;
+    
+        if(x>tiles_positionx[0][grid_size-1]&& x<tiles_positionx[grid_size-1][0]+tile_size && y>tiles_positiony[0][0] && y<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2){
+        
+            /*for(i=0;i<grid_size;i++){
+                
+                int p = tiles_positionx[grid_size-1-i][i];
+                cout<<p<<"  "<<grid_size-i-1<<"  "<<i<<endl;
+                
+                if(x>p && p<x+tile_size){
+                    int j=i;
+                    while(i<grid_size-1 && y>tiles_positiony[grid_size-1-i][i]){
+                        i++;
+                        cout<<i<<"  "<<y<<tiles_positiony[grid_size-1-i][i]<<endl;
+                    }
+                    while(i>0  && y<tiles_positiony[grid_size-1-i][i]){
+                        i--;
+                        cout<<i<<"  "<<y<<tiles_positiony[grid_size-1-i][i]<<endl;
+                    }
+                    cout<<"Grid id = "<<grid_size-1-i<<"  "<<i<<endl;
+                    break;
+                }
+            }*/
+            
+            bool found = false;
+            int j=0;
+            for(i=0;i<grid_size ;i++){
+                for(j=0;j<grid_size;j++){
+                    //cout<<"Traversing :"<<i<<"  "<<j<<endl;
+                    if(x>tiles_positionx[i][j] && x < tiles_positionx[i][j]+tile_size){
+                        if(y>tiles_positiony[i][j] && y< tiles_positiony[i][j]+tile_size/2){
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if(found)
+                    break;
+            }
+            if(found){
+                int ax = tiles_positionx[i][j];
+                int ay = tiles_positiony[i][j];
+                int xp = x-ax;
+                int yp = y-ay;
+
+                if(xp<tile_size/2 && yp<tile_size/4){
+                    int x1 = 32,x2 =0 ,x3 =32 ;
+                    int y1 = 0,y2 =16 ,y3 =16 ;
+                    cout<<"1"<<endl;
+                    if(IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                        i--;}
+                        
+                }else if(xp>tile_size/2 && yp<tile_size/4){
+                    int x1 = 0+32,x2 =32+32 ,x3 = 32+32;
+                    int y1 = 16-16,y2 = 32-16,y3 =16-16 ;
+                    cout<<"2"<<endl;
+                    if(!IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                    j--;}
+                }else if(xp<tile_size/2 && yp>tile_size/4){
+                    int x1 = 0,x2 =32 ,x3 = 32;
+                    int y1 = 16,y2 = 32,y3 =16 ;
+                    cout<<"3"<<endl;
+                    if(IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                    j++;
+                    }
+                }else{
+                    int x1 = 32+32,x2 =0+32 ,x3 =32+32 ;
+                    int y1 = 0+16,y2 =16+16 ,y3 =16+16 ;
+                    cout<<"4"<<endl;
+                    if(!IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                        i++;
+                    }
+                }
+            }
+            cout<<i<<"  "<<j<<endl;
+            if(i>=0 && i<grid_size && j>=0 && j<grid_size){
+                cout<<"Modified selected tile"<<endl;
+                game->selected_tile[i][j] = !game->selected_tile[i][j];
+            }
+        }
+     }
     
     game->eventhandler(events_triggered);
 

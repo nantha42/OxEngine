@@ -86,7 +86,13 @@ public:
     MyGame(bool isometric) : Game(isometric)
     {
         int n;
+        for(int i=0;i<grid_size;i++){
+            for(int j=0;j<grid_size;j++){
+                selected_tile[i][j] = false;
+            }
+        }
         cin >> n;
+
         while (n > 0)
         {
             string path;
@@ -131,6 +137,7 @@ public:
             for (int j = 0; j < structures.localsize; j++)
             {
                 local_map[i][j] = structures.world[(int)structures.curx + i][(int)structures.cury + j];
+                
             }
         }
         for (int i = 0; i < sprites.size(); i++)
@@ -140,6 +147,7 @@ public:
     }
     void eventhandler(EventTriggered et)
     {
+        
         if (!et.k_up)
             oup = false;
 

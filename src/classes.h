@@ -19,6 +19,13 @@ struct EventTriggered{
         bool k_down;
         bool k_left;
         bool k_right;
+        bool mouse_clicked = false;
+        bool mouse_moved = false;
+        int mosx;
+        int mosy;
+        int movx;
+        int movy;
+
 };
 
 class Object{
@@ -79,8 +86,9 @@ class Game{
     Uint32 unit_time=0;
     
     public:
+    bool selected_tile[grid_size][grid_size];
     int local_map[grid_size][grid_size];
-      vector<Sprite> sprites;
+    vector<Sprite> sprites;
 
     Game(bool isometric_game){
         this->isometric_game = isometric_game;
@@ -109,17 +117,20 @@ class Engine{
     int camerax = 102;
     int cameray = -80;
     EventTriggered events_triggered;
+    vector<vector<int>> tiles_positionx;
+    vector<vector<int>> tiles_positiony;
     
 
     void getPosition(int i,int j,int &x,int &y,int tile_size,int size);
     public:
     vector<Sprite> sprites;
-
+    
     Engine(int screenwidth,int screenheight);
     Engine();
     void renderit(vector<vector<bool>> &rendered,int a,int b,int size);
     bool init(Game &game);
     bool loadMedia();
+    void draw_selected_tiles();
     void close();
     void isoworlddraw();
     void drawIsoSprites();
