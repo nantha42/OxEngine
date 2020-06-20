@@ -130,7 +130,6 @@ public:
         create_buttons();
         cout<<"Size of buttons  :"<<buttons.size()<<endl;
     }
-
     void create_buttons(){
         Button button(10,100,"../Assets/Images/buttons/build");
         buttons.push_back(button);

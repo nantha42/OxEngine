@@ -273,7 +273,7 @@ void Engine::drawisoworld(){
             
         }
     }
-    if(events_triggered.k_p){
+    if(game->buttons[0].isPressed()){
         draw_selected_tiles();
     }
      //x = (x+y)*2;
@@ -402,11 +402,11 @@ void Engine::event_handler(){
         }
     
     }
-    if(events_triggered.k_p)
+    if(game->buttons[0].isPressed())
         placing_buildings = true;
 
     
-    if(placing_buildings && !events_triggered.k_p){
+    if(placing_buildings && !game->buttons[0].isPressed()){
         placing_buildings = false;    
         events_triggered.k1 = false;
         events_triggered.k2 = false;
@@ -451,13 +451,7 @@ void Engine::event_handler(){
                         for(int k=j;k<j+size;k++){
                             for(int q=i;q<i+size;q++){
                                 game->selected_tile[q][k] = false;
-                            }
-                        }
-                        
-                    }
-                    
-                }
-                
+                            }}}}
                 game->selected_tile[i][j]= false;
             }
     }
@@ -487,13 +481,9 @@ void Engine::update(){
     int x,y;
     x = events_triggered.mosx;
     y = events_triggered.mosy;
-    // cout<<events_triggered.mouse_clicked<<endl;
     if(events_triggered.mouse_clicked){
         events_triggered.mouse_clicked = false;
-        //cout<<x<<"   "<<y<<"  "<<events_triggered.movx<<"  "<<events_triggered.movy<<endl;
         int i=0;
-        //  cout<<x<<" "<<y<<"  "<<tiles_positionx[grid_size-1][0]<<"  "<<tiles_positionx[0][grid_size-1+tile_size]<<"  "<<tiles_positiony[0][0]<<"  "<<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2<<endl;
-    
         if(x>tiles_positionx[0][grid_size-1]&& x<tiles_positionx[grid_size-1][0]+tile_size && y>tiles_positiony[0][0] && y<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2){
             bool found = false;
             int j=0;
@@ -548,10 +538,14 @@ void Engine::update(){
             // cout<<i<<"  "<<j<<endl;
             if(i>=0 && i<grid_size && j>=0 && j<grid_size){
                 // cout<<"Modified selected tile"<<endl;
-                if(events_triggered.k_p){
+                if(game->buttons[0].isPressed()){
                     select_tilesOrder(i,j);
                 }
             }
+        }
+     
+        for(int i=0;i<game->buttons.size();i++){
+            game->buttons[i].handleClicks(x,y);
         }
      }
     
