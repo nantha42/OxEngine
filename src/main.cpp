@@ -81,7 +81,7 @@ class MyGame : public Game
     bool odown = false;
     bool oleft = false;
     bool oright = false;
-
+    
 public:
     MyGame(bool isometric) : Game(isometric)
     {
@@ -92,7 +92,6 @@ public:
             }
         }
         cin >> n;
-
         while (n > 0)
         {
             string path;
@@ -128,6 +127,13 @@ public:
             n--;
         }
         // cout << "Size of sprites" << sprites.size() << endl;
+        create_buttons();
+        cout<<"Size of buttons  :"<<buttons.size()<<endl;
+    }
+
+    void create_buttons(){
+        Button button(10,100,"../Assets/Images/buttons/build");
+        buttons.push_back(button);
     }
     void update()
     {
@@ -207,6 +213,7 @@ int main()
     // cin>>tile_size;
     Engine ox;
     MyGame game(true);
+    cout<<"Main "<<game.buttons.size()<<endl;
 
     if (!ox.init(game))
     {

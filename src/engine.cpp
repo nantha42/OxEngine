@@ -4,7 +4,6 @@
 #include "classes.h"
 using namespace std;
 
-
 struct isometric_position_comparator
 {
     inline bool operator() (const Sprite& sprite1, const Sprite& sprite2)
@@ -105,6 +104,12 @@ bool Engine::loadMedia()
         for(int i=0;i<game->sprites.size();i++){
             game->sprites[i].gRender = gRender;
             game->sprites[i].load_images();
+        }
+        cout<<"Button size in engine:  "<<game->buttons.size()<<endl;
+        for(int i=0;i<game->buttons.size();i++){
+            game->buttons[i].renderer = gRender;
+            cout<<"Loading button images"<<endl;
+            game->buttons[i].load_images();
             
         }
         
@@ -211,7 +216,13 @@ void Engine::draw_selected_tiles(){
         }
     }
 }
-void Engine::isoworlddraw(){
+void Engine::drawcontrols(){
+    for(int i=0;i<game->buttons.size();i++){
+        game->buttons[i].drawButton();
+    }
+    
+}
+void Engine::drawisoworld(){
 
     SDL_SetRenderDrawColor(gRender,0,0,0,0);
     SDL_RenderClear(gRender);
@@ -270,14 +281,9 @@ void Engine::isoworlddraw(){
     //SDL_SetRenderDrawColor(gRender,255,255,255,255);
 //    SDL_RenderDrawRect(gRender,&boxrect);
     
-    SDL_RenderPresent(gRender);
-}
-
-void Engine::drawIsoSprites(){
-    SDL_RenderClear(gRender);
-    int tilesize = 128;
     
 }
+
 
 void Engine::event_handler(){
     
@@ -469,7 +475,7 @@ bool IsOutside(int x1,int y1,int x2, int y2,int x3,int y3,int x,int y){
     return a!=(a1+a2+a3);
 }
 void Engine::update(){
-    
+    SDL_RenderPresent(gRender);
     if(events_triggered.k_a)
         camerax+=1;
     if(events_triggered.k_d)
@@ -578,7 +584,8 @@ void Engine::run(){
     while(!quit){
         event_handler();
         game->update();
-        isoworlddraw();
+        drawisoworld();
+        drawcontrols();
         update();
         
     }

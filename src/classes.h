@@ -48,6 +48,69 @@ class Vector{
     
 };
 
+    
+class Button{
+    int posx,posy;
+    bool state;
+    SDL_Texture *button_on;
+    SDL_Texture *button_off;
+    string imgpath;
+    public:
+    SDL_Renderer* renderer;
+    
+    Button(int x,int y,string img_path){
+        posx = x;
+        posy = y;
+        state = false;
+        imgpath = img_path;
+    }
+    void load_images(){
+        cout<<"Button Imag path "<<imgpath<<endl;
+        if(imgpath != ""){
+            
+            SDL_Surface* surf=NULL;
+                string temp_off = imgpath+"0.png";
+                string temp_on = imgpath+"1.png";
+                surf = IMG_Load(temp_off.c_str());
+                if(surf!=NULL){
+                    button_off =  SDL_CreateTextureFromSurface(renderer,surf);
+                    if(button_off==NULL)
+                        cout<<"Is NULL"<<endl;
+                    SDL_FreeSurface(surf);
+                }
+                surf = IMG_Load(temp_on.c_str());
+                if(surf!=NULL){
+                    button_on =  SDL_CreateTextureFromSurface(renderer,surf);
+                    if(button_on==NULL)
+                        cout<<"Is NULL"<<endl;
+                    SDL_FreeSurface(surf);
+                }
+                cout<<"Button images Loaded"<<endl;    
+        }
+    }
+    bool isPressed(){
+        return state;
+    }
+    void drawButton(){
+        SDL_Rect rect;
+        rect.x = posx;
+        rect.y = posy;
+        rect.w = 40;
+        rect.h = 40;
+        if(state == true){
+            SDL_RenderCopy(renderer,button_on,NULL,&rect);
+        }else{
+            SDL_RenderCopy(renderer,button_off,NULL,&rect);
+        }
+        
+    }
+    void handleClicks(int mosx,int mosy){
+        if(mosx>posx && mosx<posx+60 && mosy > posy && mosy<posy+60){
+            state = !state;
+        }
+    }
+};
+
 class Sprite{
     
     
@@ -88,11 +151,12 @@ class Game{
     Uint32 unit_time=0;
     
     public:
+    
     bool selected_tile[grid_size][grid_size];
     int local_map[grid_size][grid_size];
     bool local_map_changed = false;
     vector<Sprite> sprites;
-
+    vector<Button> buttons;
     Game(bool isometric_game){
         this->isometric_game = isometric_game;
     }
@@ -137,12 +201,11 @@ class Engine{
     void draw_selected_tiles();
     void close();
     void select_tilesOrder(int i,int j);
-    void isoworlddraw();
-    void drawIsoSprites();
+    void drawisoworld();
+    void drawcontrols();
     void run();
     void update();
     void event_handler();
 };
-
 
 #endif

@@ -24,7 +24,6 @@ void Sprite::load_images(){
     }
     if(animated_sprite){
         SDL_Surface* surf=NULL;
-        
         bool loaded = true;
         for(int i=1;i<=n_images;i++){
             stringstream ss;
