@@ -262,7 +262,9 @@ void Engine::isoworlddraw(){
             
         }
     }
-    draw_selected_tiles();
+    if(events_triggered.k_p){
+        draw_selected_tiles();
+    }
      //x = (x+y)*2;
     //SDL_Rect boxrect = {x*tile_size+ ((camerax-cameray)*2)%tile_size-tile_size/2, y*tile_size+ ((camerax+cameray)%tile_size)-tile_size/2,tile_size,tile_size};
     //SDL_SetRenderDrawColor(gRender,255,255,255,255);
@@ -301,6 +303,10 @@ void Engine::event_handler(){
                     this->events_triggered.k_w = true;
                     break;
                 
+                case SDLK_p:
+                    this->events_triggered.k_p = !events_triggered.k_p;
+                    break;
+                
                 case SDLK_UP:
                     events_triggered.k_up = true;
                     break;
@@ -313,6 +319,33 @@ void Engine::event_handler(){
                     break;
                 case SDLK_RIGHT:
                     events_triggered.k_right = true;
+                    break;
+                case SDLK_1:
+                    events_triggered.k1 = true;
+                    break;
+                case SDLK_2:
+                    events_triggered.k2 = true;
+                    break;
+                case SDLK_3:
+                    events_triggered.k3 = true;
+                    break;
+                case SDLK_4:
+                    events_triggered.k4 = true;
+                    break;
+                case SDLK_5:
+                    events_triggered.k5 = true;
+                    break;
+                case SDLK_6:
+                    events_triggered.k6 = true;
+                    break;
+                case SDLK_7:
+                    events_triggered.k7 = true;
+                    break;
+                case SDLK_8:
+                    events_triggered.k8 = true;
+                    break;
+                case SDLK_9:
+                    events_triggered.k9 = true;
                     break;
             }
         }
@@ -363,6 +396,66 @@ void Engine::event_handler(){
         }
     
     }
+    if(events_triggered.k_p)
+        placing_buildings = true;
+
+    
+    if(placing_buildings && !events_triggered.k_p){
+        placing_buildings = false;    
+        events_triggered.k1 = false;
+        events_triggered.k2 = false;
+        events_triggered.k3 = false;
+        events_triggered.k4 = false;
+        events_triggered.k5 = false;
+        events_triggered.k6 = false;
+        events_triggered.k1 = false;
+        for(int j=0;j<grid_size;j++)
+            for(int i=0;i<grid_size;i++){
+                if(game->selected_tile[i][j]){
+                    
+                    game->local_map[i][j] = tile_selected;
+                    if(game->sprites[tile_selected].size==1){
+                        game->local_map_changed = true;
+                        game->local_map[i][j]= tile_selected;
+                    }
+                    
+                    else if(game->sprites[tile_selected].size==2){
+                        //assigning the other indices of the structure area with -1
+                        game->local_map_changed = true;
+                        game->local_map[i][j] = tile_selected;
+                        
+                        int size = game->sprites[tile_selected].size;
+                        
+                        for(int k=j;k<j+size;k++){
+                            for(int q=i;q<i+size;q++){
+                                game->local_map[q][k] = -1;
+                            }
+                        }
+                        //assigning the left corner indice with the structure index
+                        game->local_map[i][j] = tile_selected;
+                        cout<<"Placed at "<<i<<" "<<j<<endl;
+                        cout<<"SSize:  "<<size<<"   "<<endl;
+                        for(int p=0;p<grid_size;p++){
+                            for(int q=0;q<grid_size;q++)
+                                cout<<game->local_map[p][q]<<" ";
+                            cout<<endl;
+                        }
+                        //setting false for the -1 index in the selected_tile 
+                        //so we won't place the structure multiple times 
+                        for(int k=j;k<j+size;k++){
+                            for(int q=i;q<i+size;q++){
+                                game->selected_tile[q][k] = false;
+                            }
+                        }
+                        
+                    }
+                    
+                }
+                
+                game->selected_tile[i][j]= false;
+            }
+    }
+    
 }
 
 float area(int x1,int y1,int x2, int y2,int x3,int y3){
@@ -385,24 +478,6 @@ void Engine::update(){
         cameray+=1;
     if(events_triggered.k_s)
         cameray-=1;
-    
-    /*
-    if(events_triggered.mouse_clicked){
-        events_triggered.mouse_clicked = false;
-        double mx = events_triggered.mosx;
-        double my = events_triggered.mosy;
-        double x = (mx - (camerax-cameray)*2.0)/(tile_size/2);
-        double y = (my - (camerax+cameray)*1.0)*2.0/(tile_size/2);
-        double i = (x+y)/2.0;
-        double j = (y-i);
-        // x = (camerax-cameray)*2 + (i-j-(size-1) )*tile_size;
-        // y = (camerax+cameray)*1 + (i+j-(size-1) )*tile_size/2.0;
-        // if(size-1)
-        // y-= (size-1)*15;
-    
-        // cout<<"Cell: "<<i<<"  "<<j<<endl;
-        
-    }*/
     int x,y;
     x = events_triggered.mosx;
     y = events_triggered.mosy;
@@ -411,30 +486,9 @@ void Engine::update(){
         events_triggered.mouse_clicked = false;
         //cout<<x<<"   "<<y<<"  "<<events_triggered.movx<<"  "<<events_triggered.movy<<endl;
         int i=0;
-         cout<<x<<" "<<y<<"  "<<tiles_positionx[grid_size-1][0]<<"  "<<tiles_positionx[0][grid_size-1+tile_size]<<"  "<<tiles_positiony[0][0]<<"  "<<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2<<endl;
+        //  cout<<x<<" "<<y<<"  "<<tiles_positionx[grid_size-1][0]<<"  "<<tiles_positionx[0][grid_size-1+tile_size]<<"  "<<tiles_positiony[0][0]<<"  "<<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2<<endl;
     
         if(x>tiles_positionx[0][grid_size-1]&& x<tiles_positionx[grid_size-1][0]+tile_size && y>tiles_positiony[0][0] && y<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2){
-        
-            /*for(i=0;i<grid_size;i++){
-                
-                int p = tiles_positionx[grid_size-1-i][i];
-                cout<<p<<"  "<<grid_size-i-1<<"  "<<i<<endl;
-                
-                if(x>p && p<x+tile_size){
-                    int j=i;
-                    while(i<grid_size-1 && y>tiles_positiony[grid_size-1-i][i]){
-                        i++;
-                        cout<<i<<"  "<<y<<tiles_positiony[grid_size-1-i][i]<<endl;
-                    }
-                    while(i>0  && y<tiles_positiony[grid_size-1-i][i]){
-                        i--;
-                        cout<<i<<"  "<<y<<tiles_positiony[grid_size-1-i][i]<<endl;
-                    }
-                    cout<<"Grid id = "<<grid_size-1-i<<"  "<<i<<endl;
-                    break;
-                }
-            }*/
-            
             bool found = false;
             int j=0;
             for(i=0;i<grid_size ;i++){
@@ -457,44 +511,68 @@ void Engine::update(){
                 int yp = y-ay;
 
                 if(xp<tile_size/2 && yp<tile_size/4){
-                    int x1 = 32,x2 =0 ,x3 =32 ;
-                    int y1 = 0,y2 =16 ,y3 =16 ;
-                    cout<<"1"<<endl;
+                    int x1 = tile_size/2,x2 =0 ,x3 =tile_size/2 ;
+                    int y1 = 0,y2 =tile_size/4 ,y3 =tile_size/4 ;
+                    // cout<<"1"<<endl;
                     if(IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
                         i--;}
                         
                 }else if(xp>tile_size/2 && yp<tile_size/4){
-                    int x1 = 0+32,x2 =32+32 ,x3 = 32+32;
-                    int y1 = 16-16,y2 = 32-16,y3 =16-16 ;
-                    cout<<"2"<<endl;
+                    int x1 = 0+tile_size/2,x2 =tile_size/2+tile_size/2 ,x3 = tile_size/2+tile_size/2;
+                    int y1 = 0,y2 = tile_size/2-tile_size/4,y3 =tile_size/4-tile_size/4 ;
+                    // cout<<"2"<<endl;
                     if(!IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
                     j--;}
                 }else if(xp<tile_size/2 && yp>tile_size/4){
-                    int x1 = 0,x2 =32 ,x3 = 32;
-                    int y1 = 16,y2 = 32,y3 =16 ;
-                    cout<<"3"<<endl;
+                    int x1 = 0,x2 =tile_size/2 ,x3 = tile_size/2;
+                    int y1 = tile_size/4,y2 = tile_size/2,y3 =tile_size/4 ;
+                    // cout<<"3"<<endl;
                     if(IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
                     j++;
                     }
                 }else{
-                    int x1 = 32+32,x2 =0+32 ,x3 =32+32 ;
-                    int y1 = 0+16,y2 =16+16 ,y3 =16+16 ;
-                    cout<<"4"<<endl;
+                    int x1 = tile_size/2+tile_size/2,x2 =0+tile_size/2 ,x3 =tile_size/2+tile_size/2 ;
+                    int y1 = 0+tile_size/4,y2 =tile_size/4+tile_size/4 ,y3 =tile_size/4+tile_size/4 ;
+                    // cout<<"4"<<endl;
                     if(!IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
                         i++;
                     }
                 }
             }
-            cout<<i<<"  "<<j<<endl;
+            // cout<<i<<"  "<<j<<endl;
             if(i>=0 && i<grid_size && j>=0 && j<grid_size){
-                cout<<"Modified selected tile"<<endl;
-                game->selected_tile[i][j] = !game->selected_tile[i][j];
+                // cout<<"Modified selected tile"<<endl;
+                if(events_triggered.k_p){
+                    select_tilesOrder(i,j);
+                }
             }
         }
      }
     
     game->eventhandler(events_triggered);
 
+}
+void Engine::select_tilesOrder(int i,int j){
+    tile_selected=0;
+    if(events_triggered.k1)tile_selected = 1;
+    else if(events_triggered.k2)tile_selected = 2;
+    else if(events_triggered.k3)tile_selected = 3;
+    else if(events_triggered.k4)tile_selected = 4;
+    else if(events_triggered.k5)tile_selected = 5;
+    else if(events_triggered.k6)tile_selected = 6;
+    if(tile_selected==0)return;
+    int size = game->sprites[tile_selected].size;
+    cout<<"Size:  "<<size<<endl;
+    if(size==1)
+        game->selected_tile[i][j] = !game->selected_tile[i][j];
+    else{
+        if(i+size<=grid_size && j+size<=grid_size)
+        for(int a=i;a<i+size;a++)
+            for(int b=j;b<j+size;b++){
+                cout<<a<<"  "<<b<<endl;
+                game->selected_tile[a][b] = !game->selected_tile[a][b];
+            }
+    }    
 }
 void Engine::run(){
     while(!quit){

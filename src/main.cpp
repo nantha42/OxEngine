@@ -132,6 +132,16 @@ public:
     void update()
     {
         Uint32 curtime = SDL_GetTicks();
+        //updating the local map changes into world map
+        if(local_map_changed){
+            local_map_changed= false;
+            for(int i=0;i<grid_size;i++){
+                for(int j=0;j<grid_size;j++){
+                    structures.world[(int)structures.curx+i][(int)structures.cury+j] = local_map[i][j];
+                }
+            }
+        }
+        
         for (int i = 0; i < structures.localsize; i++)
         {
             for (int j = 0; j < structures.localsize; j++)

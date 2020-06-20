@@ -9,10 +9,11 @@ const int tile_size = 64;
 using namespace std;
 
 struct EventTriggered{
-        bool k_a;
-        bool k_w;
-        bool k_s;
-        bool k_d;
+        bool k_a=false;
+        bool k_w=false;
+        bool k_s=false;
+        bool k_d=false;
+        bool k_p=false;
         bool k_space;
         bool k_shift;
         bool k_up;
@@ -21,6 +22,7 @@ struct EventTriggered{
         bool k_right;
         bool mouse_clicked = false;
         bool mouse_moved = false;
+        bool k1=false,k2=false,k3=false,k4=false,k5=false,k6=false,k7=false,k8=false,k9=false;
         int mosx;
         int mosy;
         int movx;
@@ -88,6 +90,7 @@ class Game{
     public:
     bool selected_tile[grid_size][grid_size];
     int local_map[grid_size][grid_size];
+    bool local_map_changed = false;
     vector<Sprite> sprites;
 
     Game(bool isometric_game){
@@ -119,7 +122,8 @@ class Engine{
     EventTriggered events_triggered;
     vector<vector<int>> tiles_positionx;
     vector<vector<int>> tiles_positiony;
-    
+    int tile_selected = 0;
+    bool placing_buildings = false;
 
     void getPosition(int i,int j,int &x,int &y,int tile_size,int size);
     public:
@@ -132,6 +136,7 @@ class Engine{
     bool loadMedia();
     void draw_selected_tiles();
     void close();
+    void select_tilesOrder(int i,int j);
     void isoworlddraw();
     void drawIsoSprites();
     void run();
