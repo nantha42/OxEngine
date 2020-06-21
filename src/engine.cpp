@@ -1,6 +1,3 @@
-#include<bits/stdc++.h>
-#include <SDL2/SDL.h>
-#include<SDL2/SDL_image.h>
 #include "classes.h"
 using namespace std;
 
@@ -112,6 +109,9 @@ bool Engine::loadMedia()
             game->buttons[i].load_images();
             
         }
+        cout<<"Inventory Loading"<<endl;
+        game->build_inventory->renderer = gRender;
+        // game->build_inventory->load_images();
         
     }   
     return success;
@@ -263,14 +263,14 @@ void Engine::drawisoworld(){
                     game->sprites[id].rect.x = x;
                     game->sprites[id].rect.y = y;
                     rect = game->sprites[id].rect;
-                    // if(id==5)
+                       // if(id==5)
                         // cout<<rect.w<<" ::"<<rect.h<<endl;
                     frame = game->sprites[id].curframe;
                     // cout<<id<<"  "<<game->sprites[id].images[frame]<<endl;
                     SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
                 }   
             }
-            
+             
         }
     }
     if(game->buttons[0].isPressed()){

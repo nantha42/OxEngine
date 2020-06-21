@@ -1,6 +1,3 @@
-#include<bits/stdc++.h>
-#include <SDL2/SDL.h>
-#include<SDL2/SDL_image.h>
 #include "classes.h"
 
 Sprite::Sprite(bool animated_sprite,bool isometric_sprite,SDL_Renderer* renderer){

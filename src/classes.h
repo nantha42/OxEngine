@@ -113,8 +113,6 @@ class Button{
 
 class Sprite{
     
-    
-    
     public:
     bool animated_sprite = false;
     bool isometric_sprite = false;
@@ -145,6 +143,98 @@ class Sprite{
     virtual void update();
 
 };
+
+
+class Inventory{
+    bool shown = false;
+    vector<string> categories_names;
+    vector<vector<string>>items_names;
+    vector<SDL_Texture*> texture_categories;
+    vector<vector<SDL_Texture*>> texture_items;
+    public:
+
+    SDL_Renderer * renderer;
+    Inventory(string categoryfile){
+        ifstream file(categoryfile);
+        freopen(categoryfile.c_str(),"r",stdin);
+        // return;
+        int ncategories;
+        file>>ncategories;
+        cout<<ncategories<<endl;
+        while(ncategories--){
+            string categoryname;
+            file>>categoryname;
+            cout<<categoryname<<endl;
+            categories_names.push_back(categoryname);
+            int nitems;
+            file>>nitems;
+            cout<<nitems<<endl;
+            vector<string>items_group;
+            while(nitems--){
+                string itemname;
+                file>>itemname;
+                cout<<itemname<<endl;
+                items_group.push_back(itemname);
+            }
+            items_names.push_back(items_group);
+        }        
+    }
+    void load_images(){
+        for(int i=0;i<categories_names.size();i++){
+            SDL_Surface*temp;
+            string name = categories_names[i] +".png";
+            cout<<name<<endl;
+            temp =  IMG_Load(name.c_str());
+            cout<<"Herer"<<temp<<endl;
+            if(temp!=NULL){
+                SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,temp);
+                if(texture !=NULL){
+                    cout<<"Loaded "<<name<<endl;
+                    texture_categories.push_back(texture);
+                    SDL_FreeSurface(temp);
+                }else{
+                    cout<<"Error in Loading Category  :"<<name<<endl;
+                    continue;
+                }
+                cout<<"Camer here 1"<<endl;
+                vector<SDL_Texture*> texture_category_items;
+                for(int j=0;j<items_names[i].size();j++){
+                    cout<<"Camer here 2"<<endl;
+                    string s = items_names[i][j]+".png";
+                    temp = IMG_Load(s.c_str());
+                    if(temp!=NULL){
+                        SDL_Texture* temp_texture = SDL_CreateTextureFromSurface(renderer,temp);
+                        if(temp_texture!=NULL){
+                            cout<<"Loaded "<<s<<endl;
+                            cout<<"Camer here 3"<<endl;
+                            texture_category_items.push_back(temp_texture);
+                            SDL_FreeSurface(temp);
+                        }
+                        else{
+                            cout<<"Error Loading item for Invetory:  "<<s<<endl;
+                        }
+                    }
+                    
+                }
+                texture_items.push_back(texture_category_items);
+            }
+        }
+    }
+    void showInventory(){
+        shown = true;
+    }
+    bool hideInventory(){
+      return true;  
+    }
+    bool checkAnyItemClicked(){
+        return true;
+    }
+    
+    void draw(){
+        
+    }
+};
+
 class Game{
     protected:
     bool isometric_game = false;
@@ -157,6 +247,7 @@ class Game{
     bool local_map_changed = false;
     vector<Sprite> sprites;
     vector<Button> buttons;
+    Inventory* build_inventory;
     Game(bool isometric_game){
         this->isometric_game = isometric_game;
     }

@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include "classes.h"
 using namespace std;
 
@@ -76,7 +75,7 @@ class MyGame : public Game
     Sprite *treeTile1;
     Sprite *simpletile;
     Structures structures;
-
+    
     bool oup = false;
     bool odown = false;
     bool oleft = false;
@@ -126,9 +125,10 @@ public:
             sprites.push_back(*simpletile);
             n--;
         }
-        // cout << "Size of sprites" << sprites.size() << endl;
         create_buttons();
         cout<<"Size of buttons  :"<<buttons.size()<<endl;
+        Inventory build("build_inventory.txt");
+        build_inventory = &build; 
     }
     void create_buttons(){
         Button button(10,100,"../Assets/Images/buttons/build");
