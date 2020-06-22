@@ -3,11 +3,9 @@
 2
 ../Assets/Images/isometric_tree4
 ../Assets/Images/isometric_tree5
-
 ../Assets/Images/buttons/research
 1
 ../Assets/Images/laboratory/lab_tile1
-
 ../Assets/Images/buttons/power
 1
 ../Assets/Images/reactor_tile/reactor_tile1

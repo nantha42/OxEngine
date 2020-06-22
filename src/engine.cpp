@@ -111,7 +111,7 @@ bool Engine::loadMedia()
         }
         cout<<"Inventory Loading"<<endl;
         game->build_inventory->renderer = gRender;
-        // game->build_inventory->load_images();
+        game->build_inventory->load_images();
         
     }   
     return success;
@@ -543,7 +543,6 @@ void Engine::update(){
                 }
             }
         }
-     
         for(int i=0;i<game->buttons.size();i++){
             game->buttons[i].handleClicks(x,y);
         }

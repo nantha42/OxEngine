@@ -147,37 +147,46 @@ class Sprite{
 
 class Inventory{
     bool shown = false;
+    public:
     vector<string> categories_names;
     vector<vector<string>>items_names;
     vector<SDL_Texture*> texture_categories;
     vector<vector<SDL_Texture*>> texture_items;
-    public:
-
+    
     SDL_Renderer * renderer;
     Inventory(string categoryfile){
         ifstream file(categoryfile);
-        freopen(categoryfile.c_str(),"r",stdin);
+        // freopen(categoryfile.c_str(),"r",stdin);
         // return;
         int ncategories;
         file>>ncategories;
-        cout<<ncategories<<endl;
+        // cout<<ncategories<<endl;
         while(ncategories--){
             string categoryname;
             file>>categoryname;
-            cout<<categoryname<<endl;
+            // cout<<categoryname<<endl;
             categories_names.push_back(categoryname);
             int nitems;
             file>>nitems;
-            cout<<nitems<<endl;
+            // cout<<nitems<<endl;
             vector<string>items_group;
             while(nitems--){
                 string itemname;
                 file>>itemname;
-                cout<<itemname<<endl;
+                // cout<<itemname<<endl;
                 items_group.push_back(itemname);
             }
             items_names.push_back(items_group);
-        }        
+        }/*
+        cout<<"In Inventory constructor"<<endl;        
+        for(int i=0;i<categories_names.size();i++){
+            cout<<categories_names[i]<<endl;
+            for(int j=0;j<items_names[i].size();j++){
+                cout<<items_names[i][j]<<endl;
+            }
+        }
+        cout<<"Out of constructor"<<endl;*/
+
     }
     void load_images(){
         for(int i=0;i<categories_names.size();i++){
