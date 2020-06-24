@@ -62,7 +62,7 @@ bool Engine::init(Game &ggame)
             if(!(IMG_Init(IMG_INIT_PNG)&IMG_INIT_PNG)){
                 cout<<"Error Img INit"<<endl;
             }
-            gRender = SDL_CreateRenderer(gWindow,-1,SDL_RENDERER_ACCELERATED);
+            gRender = SDL_CreateRenderer(gWindow,-1,SDL_RENDERER_ACCELERATED| SDL_RENDERER_TARGETTEXTURE);
         }
     }
 
@@ -111,6 +111,7 @@ bool Engine::loadMedia()
         }
         cout<<"Inventory Loading"<<endl;
         game->build_inventory->renderer = gRender;
+        game->build_inventory->assignRenderer(gRender);
         game->build_inventory->load_images();
         
     }   
@@ -276,6 +277,8 @@ void Engine::drawisoworld(){
     if(game->buttons[0].isPressed()){
         draw_selected_tiles();
     }
+
+    game->build_inventory->draw();
      //x = (x+y)*2;
     //SDL_Rect boxrect = {x*tile_size+ ((camerax-cameray)*2)%tile_size-tile_size/2, y*tile_size+ ((camerax+cameray)%tile_size)-tile_size/2,tile_size,tile_size};
     //SDL_SetRenderDrawColor(gRender,255,255,255,255);

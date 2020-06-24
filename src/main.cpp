@@ -213,7 +213,6 @@ int main()
     Engine ox;
     MyGame game(true);
     cout<<"Main "<<game.buttons.size()<<endl;
-
     if (!ox.init(game))
     {
         printf("Failed to initialize!\n");
