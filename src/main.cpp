@@ -202,6 +202,7 @@ public:
             if (structures.cury > 0)
                 structures.cury -= 1;
         }
+        build_inventory->handle_clicks(et.movx,et.movy,et.mouse_holded);
     }
 };
 

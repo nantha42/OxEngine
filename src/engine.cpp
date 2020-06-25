@@ -393,9 +393,12 @@ void Engine::event_handler(){
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN){
             events_triggered.mouse_clicked = true;
+            events_triggered.mouse_holded = true;
             SDL_GetMouseState(&events_triggered.mosx,&events_triggered.mosy);
             // cout<<"Mouse :"<<events_triggered.mosx<<"   "<<events_triggered.mosy<<endl;
         }
+        else if(e.type == SDL_MOUSEBUTTONUP)
+            events_triggered.mouse_holded = false;
         else if(e.type == SDL_MOUSEMOTION){
             events_triggered.mouse_moved = true;
             SDL_GetMouseState(&events_triggered.movx,&events_triggered.movy);
