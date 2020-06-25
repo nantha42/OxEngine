@@ -221,7 +221,6 @@ void Engine::drawcontrols(){
     for(int i=0;i<game->buttons.size();i++){
         game->buttons[i].drawButton();
     }
-    
 }
 void Engine::drawisoworld(){
 
@@ -236,7 +235,6 @@ void Engine::drawisoworld(){
         for(int i=0;i<grid_size;i++){
     
             if(!rendered[i][j]){
-                
                 int x,y;
                 int frame;
                 SDL_Rect rect;
@@ -473,13 +471,13 @@ bool IsOutside(int x1,int y1,int x2, int y2,int x3,int y3,int x,int y){
 }
 void Engine::update(){
     SDL_RenderPresent(gRender);
-    if(events_triggered.k_a)
+    if(events_triggered.k_right && camerax < 400)//a
         camerax+=1;
-    if(events_triggered.k_d)
+    if(events_triggered.k_left && camerax > -100)//d
         camerax-=1;
-    if(events_triggered.k_w)
+    if(events_triggered.k_down && cameray<200)//w
         cameray+=1;
-    if(events_triggered.k_s)
+    if(events_triggered.k_up && cameray > -100)//s
         cameray-=1;
     int x,y;
     x = events_triggered.mosx;

@@ -163,31 +163,31 @@ public:
     void eventhandler(EventTriggered et)
     {
         
-        if (!et.k_up)
+        if (!et.k_w)
             oup = false;
 
-        if (!et.k_down)
+        if (!et.k_s)
             odown = false;
-        if (!et.k_left)
+        if (!et.k_a)
             oleft = false;
 
-        if (!et.k_right)
+        if (!et.k_d)
             oright = false;
 
-        if (et.k_up && !oup)
+        if (et.k_w && !oup)
         {
             oup = true;
             if (structures.curx > 0)
                 structures.curx -= 1;
         }
-        if (et.k_down && !odown)
+        if (et.k_s && !odown)
         {
             odown = true;
             if(structures.curx<structures.mapsize-structures.localsize-1)
                 structures.curx+=1;
             
         }
-        if (et.k_left && !oleft)
+        if (et.k_a && !oleft)
         {
             oleft = true;
             if (structures.cury < structures.mapsize - structures.localsize - 1)
@@ -196,7 +196,7 @@ public:
             }
             
         }
-        if (et.k_right && !oright)
+        if (et.k_d && !oright)
         {
             oright = true;
             if (structures.cury > 0)

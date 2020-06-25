@@ -5,7 +5,8 @@
 #include<SDL2/SDL_image.h>
 const int grid_size = 10;
 const int tile_size = 64;
-
+const int screen_width = 1030;
+const int screen_height = 800;
 using namespace std;
 
 struct EventTriggered{
@@ -30,15 +31,6 @@ struct EventTriggered{
 
 };
 
-class Object{
-    public:
-    int x;
-    int y;
-    vector<vector<int> > shape;
-    string file;
-    Object(int a,int b,vector<vector<int> > structure);
-    
-};
 class Vector{
     public:
     static vector<double> add(vector<double> a,vector<double> b);
@@ -144,6 +136,80 @@ class Sprite{
 
 };
 
+class InventoryButton{
+    string icon_path;
+    bool show_state = false;
+    public:
+    int posx,posy;
+    int id;
+    bool state=false;
+    string name;
+    SDL_Texture* icon_on;
+    SDL_Texture* icon_off;
+
+    SDL_Rect rect;
+    SDL_Renderer *renderer;
+    InventoryButton(int id,string icon_path,bool show_state){
+        this->id = 0;
+        this->icon_path = icon_path;
+        this->show_state = show_state;
+    }
+    bool load_icon(){
+        string s = icon_path+"0.png";
+        cout<<"Loading "<<s<<endl;
+        SDL_Surface* img = IMG_Load(s.c_str());
+        if(img != NULL){
+            icon_on = SDL_CreateTextureFromSurface(renderer,img);
+            if(icon_on==NULL){
+                cout<<"Error in loading inventory button"<<endl;
+                SDL_FreeSurface(img);
+                return false;
+            }
+            rect.w = 50;
+            rect.h = 50;
+        }else{
+            cout<<"Loading Failed"<<endl;
+        }
+        if(!show_state)
+            return true;
+        s = icon_path+"1.png";
+        img = IMG_Load(s.c_str());
+        if(img != NULL){
+            icon_off = SDL_CreateTextureFromSurface(renderer,img);
+            if(icon_off==NULL){
+                cout<<"Error in loading inventory button"<<endl;
+                SDL_FreeSurface(img);
+                return false;
+            }
+        }
+        return true;
+    }
+    void draw(){
+        if(!show_state){
+            rect.x = posx;
+            rect.y = posy;
+            
+            SDL_RenderCopy(renderer,icon_on,NULL,&rect);
+        }else{
+            if(state){
+                rect.x = posx;
+                rect.y = posy;
+                cout<<icon_on<<endl;
+                SDL_RenderCopy(renderer,icon_on,NULL,&rect);
+            }else{
+                rect.x = posx;
+                rect.y = posy;
+                SDL_RenderCopy(renderer,icon_off,NULL,&rect);
+            }
+        }
+    }
+    void handleClicks(int mx,int my){
+        if(mx >posx && mx<posx+rect.w && my > posy && my < posy+rect.h){
+            state = !state;
+        }
+    }
+    
+};
 
 class Inventory{
     bool shown = false;
@@ -152,12 +218,16 @@ class Inventory{
     vector<vector<string>>items_names;
     vector<SDL_Texture*> texture_categories;
     vector<vector<SDL_Texture*>> texture_items;
-    
+    vector<InventoryButton> buttons;
+    vector<vector<InventoryButton>> sub_buttons;
+    int posx,posy;
     SDL_Renderer * renderer;
     Inventory(string categoryfile);
+    void place_inventory(int x,int y);
     void load_images();
+    void assignRenderer(SDL_Renderer*gRender);
     void showInventory();
-    bool hideInventory();
+    void hideInventory();
     bool checkAnyItemClicked();
     void draw();
     
