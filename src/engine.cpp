@@ -11,16 +11,13 @@ struct isometric_position_comparator
         return false;
     }
 };
-
 Engine::Engine(int screenwidth,int screenheight){
     this->SCREEN_WIDTH = screenwidth;
     this->SCREEN_HEIGHT = screenheight;
     for(int i=0;i<grid_size;i++){
         tiles_positionx.push_back(vector<int>(grid_size,0));
-        tiles_positiony.push_back(vector<int>(grid_size,0));
-        
+        tiles_positiony.push_back(vector<int>(grid_size,0));   
     }
-    
 }
 Engine::Engine(){
     for(int i=0;i<grid_size;i++){
@@ -277,7 +274,6 @@ void Engine::drawisoworld(){
         game->buttons[0].stablize();
         game->build_inventory->shown = !game->build_inventory->shown;
     }
-
     game->build_inventory->draw();
      //x = (x+y)*2;
     //SDL_Rect boxrect = {x*tile_size+ ((camerax-cameray)*2)%tile_size-tile_size/2, y*tile_size+ ((camerax+cameray)%tile_size)-tile_size/2,tile_size,tile_size};
@@ -393,13 +389,23 @@ void Engine::event_handler(){
             }
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN){
-            events_triggered.mouse_clicked = true;
+            if(events_triggered.mouse_clicked)
+                events_triggered.mouse_clicked = false;
+            
+            if(!events_triggered.mouse_holded)
+                events_triggered.mouse_clicked = true;
+                
+            
             events_triggered.mouse_holded = true;
             SDL_GetMouseState(&events_triggered.mosx,&events_triggered.mosy);
             // cout<<"Mouse :"<<events_triggered.mosx<<"   "<<events_triggered.mosy<<endl;
         }
-        else if(e.type == SDL_MOUSEBUTTONUP)
+        else if(e.type == SDL_MOUSEBUTTONUP){
+
             events_triggered.mouse_holded = false;
+            if(events_triggered.mouse_clicked)
+                events_triggered.mouse_clicked = false;
+        }
         else if(e.type == SDL_MOUSEMOTION){
             events_triggered.mouse_moved = true;
             SDL_GetMouseState(&events_triggered.movx,&events_triggered.movy);
@@ -443,8 +449,8 @@ void Engine::event_handler(){
                         }
                         //assigning the left corner indice with the structure index
                         game->local_map[i][j] = tile_selected;
-                        cout<<"Placed at "<<i<<" "<<j<<endl;
-                        cout<<"SSize:  "<<size<<"   "<<endl;
+                        // cout<<"Placed at "<<i<<" "<<j<<endl;
+                        // cout<<"SSize:  "<<size<<"   "<<endl;
                         for(int p=0;p<grid_size;p++){
                             for(int q=0;q<grid_size;q++)
                                 cout<<game->local_map[p][q]<<" ";
@@ -486,7 +492,7 @@ void Engine::update(){
     x = events_triggered.mosx;
     y = events_triggered.mosy;
     if(events_triggered.mouse_clicked){
-        events_triggered.mouse_clicked = false;
+        
         int i=0;
         if(x>tiles_positionx[0][grid_size-1]&& x<tiles_positionx[grid_size-1][0]+tile_size && y>tiles_positiony[0][0] && y<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2){
             bool found = false;
@@ -496,6 +502,7 @@ void Engine::update(){
                     //cout<<"Traversing :"<<i<<"  "<<j<<endl;
                     if(x>tiles_positionx[i][j] && x < tiles_positionx[i][j]+tile_size){
                         if(y>tiles_positiony[i][j] && y< tiles_positiony[i][j]+tile_size/2){
+                            events_triggered.mouse_clicked = false;
                             found = true;
                             break;
                         }
@@ -547,8 +554,10 @@ void Engine::update(){
                 }
             }
         }
+   
         for(int i=0;i<game->buttons.size();i++){
-            game->buttons[i].handleClicks(x,y);
+            if(game->buttons[i].handleClicks(x,y))
+                events_triggered.mouse_clicked = false;
         }
      }
     

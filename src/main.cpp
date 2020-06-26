@@ -160,9 +160,8 @@ public:
             sprites[i].update();
         }
     }
-    void eventhandler(EventTriggered et)
+    void eventhandler(EventTriggered &et)
     {
-        
         if (!et.k_w)
             oup = false;
 
@@ -194,7 +193,6 @@ public:
             {
                 structures.cury += 1;
             }
-            
         }
         if (et.k_d && !oright)
         {
@@ -202,7 +200,7 @@ public:
             if (structures.cury > 0)
                 structures.cury -= 1;
         }
-        build_inventory->handle_clicks(et.movx,et.movy,et.mouse_holded);
+        build_inventory->handle_clicks(et);
     }
 };
 

@@ -39,47 +39,9 @@ void Inventory::load_images(){
                 continue;
             }
             else{
-            /*
-            //SDL_Surface*temp;
-            //string name = categories_names[i] +".png";
-            //cout<<name<<endl;
-            temp =  IMG_Load(name.c_str());
-            cout<<"Herer"<<temp<<endl;
-            if(temp!=NULL){
-                SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,temp);
-                if(texture !=NULL){
-                    cout<<"Loaded "<<name<<endl;
-                    texture_categories.push_back(texture);
-                    SDL_FreeSurface(temp);
-                }else{
-                    cout<<"Error in Loading Category  :"<<name<<endl;
-                    continue;
-                }*/
-                cout<<"Camer here 1"<<endl;
-                // vector<SDL_Texture*> texture_category_items;
                 for(int j=0;j<sub_buttons[i].size();j++){
                     sub_buttons[i][j].load_icon();
                 }
-                /*
-                for(int j=0;j<items_names[i].size();j++){
-                    cout<<"Camer here 2"<<endl;
-                    string s = items_names[i][j]+".png";
-                    temp = IMG_Load(s.c_str());
-                    if(temp!=NULL){
-                        SDL_Texture* temp_texture = SDL_CreateTextureFromSurface(renderer,temp);
-                        if(temp_texture!=NULL){
-                            cout<<"Loaded "<<s<<endl;
-                            cout<<"Camer here 3"<<endl;
-                            texture_category_items.push_back(temp_texture);
-                            SDL_FreeSurface(temp);
-                        }
-                        else{
-                            cout<<"Error Loading item for Invetory:  "<<s<<endl;
-                        }
-                    }
-                }
-                */
-                //texture_items.push_back(texture_category_items);
         }
     }
 }
@@ -99,7 +61,9 @@ void Inventory::hideInventory(){
     shown = false;
 }
 void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
-    cout<<x<<" "<<y<<" "<<mouse_holded<<endl;
+    // cout<<x<<" "<<y<<" "<<mouse_holded<<endl;
+    x-= posx+5;
+    y-= posy;
     if(mouse_holded){
         cout<<category_slider_x<<" "<<9<<category_slider_y<<" "<<category_slider_size<<endl;
         cout<<(x>= category_slider_x && x <category_slider_x+9)<<" "<<(y>=category_slider_y && y< category_slider_y + category_slider_size)<<endl;
@@ -128,19 +92,78 @@ void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
 void Inventory::item_slider_clicked(int x,int y,bool mouse_holded){
     
 }
-void Inventory::handle_clicks(int x,int y,bool mouse_holded){
+void Inventory::handle_clicks(EventTriggered &et){
     if(!shown)
         return;
-
-    x -= posx+5;y-=posy;
+    int x = et.movx;
+    int y = et.movy;
+    bool mouse_holded = et.mouse_holded;
+    //x -= posx+5;y-=posy;
+    cout<<"Mouse Clicked "<<et.mouse_clicked<<endl;
     category_slider_clicked(x,y,mouse_holded);
     item_slider_clicked(x,y,mouse_holded);
+    if(et.mouse_clicked){
+        int selected = -1;
+        for(int i=0;i<buttons.size();i++){
+            if(buttons[i].handleClicks(et.mosx,et.mosy,et)){
+                cout<<"MOuse clicked:  "<<et.mouse_clicked<<endl;
+                selected = i;
+                break;
+            }
+        }
+        if(selected!=-1)
+            for(int i=0;i<buttons.size();i++){
+                if(i != selected)
+                    buttons[i].state = false;
+            }
+    }
 }
 bool Inventory::checkAnyItemClicked(){
     return true;
 }
 /*void Inventory::handleClicks(int x,int y,bool holded){
 }*/
+SDL_Texture* Inventory::render_itemButtons(){
+    int item_h = 130;
+    int item_w = 130;
+    SDL_Texture* item_button_bg = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,item_w,item_h);
+    if(item_button_bg==NULL){
+        cout<<"Item button bg is NULL"<<SDL_GetError()<<endl;
+        return NULL;
+    }else{
+        int icon_size = 50;
+        int icon_gap = 10;
+        SDL_SetRenderTarget(renderer,item_button_bg);
+        SDL_SetRenderDrawColor(renderer,0xDC,0xDC,0xDC,0xFF);
+        SDL_Rect bg_rect = {0,0,item_w,item_h};
+        SDL_RenderFillRect(renderer,&bg_rect);
+        // SDL_RenderCopy(renderer,item_button_bg,NULL,&bg_rect);
+        int content_size = (icon_size+icon_gap)*(sub_buttons.size()/2);
+        item_slider_size = ((float)item_h/(float)content_size)*130;
+        int selected = 0;
+        for(int j=0;j<buttons.size();j++)
+            if(buttons[j].state){
+                selected = j;break;}
+        // cout<<"Sub buttons:  "<<sub_buttons[selected].size()<<endl;
+        for(int i=0;i<sub_buttons[selected].size();i+=2){
+            sub_buttons[selected][i].posx = 5;
+            sub_buttons[selected][i].posy = (50+10)*(i/2) - item_slider_y;
+            // cout<<sub_buttons[selected][i].posx<<"  "<<sub_buttons[selected][i].posy<<endl;
+            sub_buttons[selected][i].draw();
+            if(i+1<sub_buttons[selected].size()){
+                sub_buttons[selected][i+1].posx = 50+5+10;
+                sub_buttons[selected][i+1].posy = (50+10)*(i/2) - item_slider_y;
+                // cout<<sub_buttons[selected][i+1].posx<<"  "<<sub_buttons[selected][i+1].posy<<endl;
+                sub_buttons[selected][i+1].draw();
+            }
+        }
+        SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
+        SDL_Rect rect = {item_slider_x,item_slider_y,9,item_slider_size};
+        SDL_RenderFillRect(renderer,&rect);
+        SDL_SetRenderTarget(renderer,NULL);
+        return item_button_bg;
+    }
+}
 SDL_Texture* Inventory::render_categoryButtons(){
     int cat_h = 130;
     int cat_w = 70;
@@ -160,16 +183,17 @@ SDL_Texture* Inventory::render_categoryButtons(){
         int content_size = (icon_size+icon_gap)*buttons.size();
         int scrollbar_height = ((float)cat_h/(float)content_size)*130;
         category_slider_size = scrollbar_height;
-        cout<<buttons[2].icon_on<<endl;
+        
         for(int i=0;i<buttons.size();i++){
-            cout<<i<<endl;
+
+            buttons[i].offset_x = posx+5;
+            buttons[i].offset_y = posy+5;
             buttons[i].posx = 5;
             buttons[i].posy = (50+10)*i - category_slider_y;
             buttons[i].draw();
         }
         SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
         SDL_Rect rect = {category_slider_x,category_slider_y,9,scrollbar_height};
-        // cout<<"Height: "<<scrollbar_height<<endl;
         SDL_RenderFillRect(renderer,&rect);
         SDL_SetRenderTarget(renderer,NULL);
         return categorbutton_bg;
@@ -192,17 +216,24 @@ void Inventory::draw(){
 
         SDL_SetRenderTarget(renderer,NULL);
         SDL_Texture* category_buttons = this->render_categoryButtons();
+        SDL_Texture* item_buttons = this->render_itemButtons();
+        
         SDL_SetRenderTarget(renderer,inventory_background);
-        int w,h;
-        SDL_QueryTexture(category_buttons,NULL,NULL,&w,&h);
-        cout<<"WH: "<<w<<"  "<<h<<endl;
-        SDL_Rect category_buttons_rect = {5,5,w,h};
+        int cw,ch,iw,ih;
+        SDL_QueryTexture(category_buttons,NULL,NULL,&cw,&ch);
+        SDL_QueryTexture(item_buttons,NULL,NULL,&iw,&ih);
+        
+        SDL_Rect category_buttons_rect = {5,5,cw,ch};
+        SDL_Rect item_buttons_rect = {70,5,iw,ih};
         SDL_RenderCopy(renderer,category_buttons, NULL,&category_buttons_rect);
+        SDL_RenderCopy(renderer,item_buttons, NULL,&item_buttons_rect);
+        
         SDL_SetRenderTarget(renderer,NULL);
 
         SDL_Rect tar_rect = {posx,posy,inv_w,inv_h};
         SDL_RenderCopy(renderer,inventory_background,NULL,&tar_rect);
         SDL_DestroyTexture(category_buttons);
         SDL_DestroyTexture(inventory_background);
+        SDL_DestroyTexture(item_buttons);
     }
 }

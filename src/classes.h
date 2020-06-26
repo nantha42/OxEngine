@@ -106,10 +106,13 @@ class Button{
         }
         
     }
-    void handleClicks(int mosx,int mosy){
-        if(mosx>posx && mosx<posx+60 && mosy > posy && mosy<posy+60){
+    bool handleClicks(int mosx,int mosy){
+        if(mosx>posx && mosx<posx+50 && mosy > posy && mosy<posy+50){
             state = !state;
+            return true;
+            
         }
+        return false;
     }
 };
 
@@ -150,6 +153,8 @@ class InventoryButton{
     string icon_path;
     bool show_state = false;
     public:
+    int offset_x = 0;
+    int offset_y = 0;
     int posx,posy;
     int id;
     bool state=false;
@@ -165,7 +170,11 @@ class InventoryButton{
         this->show_state = show_state;
     }
     bool load_icon(){
-        string s = icon_path+"0.png";
+        string s;
+        if(show_state)
+            s = icon_path+"0.png";
+        else
+            s = icon_path+".png";
         cout<<"Loading "<<s<<endl;
         SDL_Surface* img = IMG_Load(s.c_str());
         if(img != NULL){
@@ -204,7 +213,7 @@ class InventoryButton{
             if(state){
                 rect.x = posx;
                 rect.y = posy;
-                cout<<icon_on<<endl;
+                // cout<<icon_on<<endl;
                 SDL_RenderCopy(renderer,icon_on,NULL,&rect);
             }else{
                 rect.x = posx;
@@ -213,10 +222,15 @@ class InventoryButton{
             }
         }
     }
-    void handleClicks(int mx,int my){
-        if(mx >posx && mx<posx+rect.w && my > posy && my < posy+rect.h){
+    bool handleClicks(int mx,int my,EventTriggered &et){
+        
+        if(mx >posx+offset_x && mx<posx+offset_x+rect.w && my > posy+offset_y && my < posy+offset_y+rect.h && et.mouse_clicked){
+            et.mouse_clicked = false;
+            cout<<"Set mouseclicked"<<et.mouse_clicked<<endl;
             state = !state;
+            return true;
         }
+        return false;
     }
     
 };
@@ -230,11 +244,20 @@ class Inventory{
     
     int category_slider_x = 60;
     int category_slider_y = 0;
+
+    int item_slider_x = 50+50+5+10+5;
+    int item_slider_y = 0;
+
     int category_slider_size = 0;
+    int item_slider_size = 0;
+
     bool category_dragging = false;
     bool item_dragging = false;
+    
     int category_drag_startpoint;
     int items_drag_startpoint;
+    
+    
     void category_slider_clicked(int x,int y,bool mouse_holded);
     void item_slider_clicked(int x,int y,bool mouse_holded);
     public:
@@ -249,9 +272,10 @@ class Inventory{
     SDL_Renderer * renderer;
     Inventory(string categoryfile);
     void place_inventory(int x,int y);
-    void handle_clicks(int x,int y,bool mouse_holded);
+    void handle_clicks(EventTriggered &et);
     void load_images();
     SDL_Texture* render_categoryButtons();
+    SDL_Texture* render_itemButtons();
     void assignRenderer(SDL_Renderer*gRender);
     void showInventory();
     void hideInventory();
@@ -280,7 +304,7 @@ class Game{
         
     }
     virtual void update()=0;
-    virtual void eventhandler(EventTriggered et)=0;
+    virtual void eventhandler(EventTriggered &et)=0;
     
 };
 
