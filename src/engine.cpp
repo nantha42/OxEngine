@@ -562,7 +562,7 @@ void Engine::update(){
      }
     
     game->eventhandler(events_triggered);
-
+    SDL_Delay(50);
 }
 void Engine::select_tilesOrder(int i,int j){
     tile_selected=0;
