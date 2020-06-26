@@ -168,6 +168,7 @@ public:
 
         if (!et.k_s)
             odown = false;
+
         if (!et.k_a)
             oleft = false;
 
@@ -185,7 +186,6 @@ public:
             odown = true;
             if(structures.curx<structures.mapsize-structures.localsize-1)
                 structures.curx+=1;
-            
         }
         if (et.k_a && !oleft)
         {

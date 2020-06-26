@@ -1,6 +1,12 @@
 #ifndef CLASSES_H
 #define CLASSES_H
-#include<bits/stdc++.h>
+//#include<bits/stdc++.h>
+
+#include<iostream>
+#include<fstream>
+#include<vector>
+#include<sstream>
+#include<string>
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_image.h>
 const int grid_size = 10;
@@ -23,6 +29,7 @@ struct EventTriggered{
         bool k_right;
         bool mouse_clicked = false;
         bool mouse_moved = false;
+        bool mouse_holded = false;
         bool k1=false,k2=false,k3=false,k4=false,k5=false,k6=false,k7=false,k8=false,k9=false;
         int mosx;
         int mosy;
@@ -82,6 +89,9 @@ class Button{
     }
     bool isPressed(){
         return state;
+    }
+    void stablize(){
+        state = false;
     }
     void drawButton(){
         SDL_Rect rect;
@@ -211,20 +221,37 @@ class InventoryButton{
     
 };
 
+struct point{
+    int x,y;
+
+};
+
 class Inventory{
-    bool shown = false;
+    
+    int category_slider_x = 60;
+    int category_slider_y = 0;
+    int category_slider_size = 0;
+    bool category_dragging = false;
+    bool item_dragging = false;
+    int category_drag_startpoint;
+    int items_drag_startpoint;
+    void category_slider_clicked(int x,int y,bool mouse_holded);
+    void item_slider_clicked(int x,int y,bool mouse_holded);
     public:
+    bool shown = false;
     vector<string> categories_names;
     vector<vector<string>>items_names;
     vector<SDL_Texture*> texture_categories;
     vector<vector<SDL_Texture*>> texture_items;
     vector<InventoryButton> buttons;
     vector<vector<InventoryButton>> sub_buttons;
-    int posx,posy;
+    int posx=500,posy=500;
     SDL_Renderer * renderer;
     Inventory(string categoryfile);
     void place_inventory(int x,int y);
+    void handle_clicks(int x,int y,bool mouse_holded);
     void load_images();
+    SDL_Texture* render_categoryButtons();
     void assignRenderer(SDL_Renderer*gRender);
     void showInventory();
     void hideInventory();

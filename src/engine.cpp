@@ -273,7 +273,9 @@ void Engine::drawisoworld(){
         }
     }
     if(game->buttons[0].isPressed()){
-        draw_selected_tiles();
+        // draw_selected_tiles();
+        game->buttons[0].stablize();
+        game->build_inventory->shown = !game->build_inventory->shown;
     }
 
     game->build_inventory->draw();
@@ -385,7 +387,6 @@ void Engine::event_handler(){
                 case SDLK_LEFT:
                     events_triggered.k_left = false;
                     break;
-
                 case SDLK_RIGHT:
                     events_triggered.k_right = false;
                     break;
@@ -402,7 +403,6 @@ void Engine::event_handler(){
         else if(e.type == SDL_MOUSEMOTION){
             events_triggered.mouse_moved = true;
             SDL_GetMouseState(&events_triggered.movx,&events_triggered.movy);
-            
         }
     
     }

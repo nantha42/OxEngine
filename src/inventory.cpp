@@ -101,12 +101,24 @@ void Inventory::hideInventory(){
 void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
     cout<<x<<" "<<y<<" "<<mouse_holded<<endl;
     if(mouse_holded){
+        cout<<category_slider_x<<" "<<9<<category_slider_y<<" "<<category_slider_size<<endl;
+        cout<<(x>= category_slider_x && x <category_slider_x+9)<<" "<<(y>=category_slider_y && y< category_slider_y + category_slider_size)<<endl;
         if(x>= category_slider_x && x <category_slider_x+9 && y>=category_slider_y && y< category_slider_y + category_slider_size){
             if(!category_dragging){
                 category_dragging = true;
                 category_drag_startpoint = y;
             }
             
+        }
+        if(category_dragging){
+            int t = y-category_drag_startpoint;
+            if(t<0)
+                category_slider_y = 0;
+            if (t>(135-category_slider_size))
+                category_slider_y = (135-category_slider_size);
+            if(t>0 && t< (135-category_slider_size))
+                category_slider_y = t;
+                
         }
     }else{
         if(category_dragging)
@@ -117,7 +129,10 @@ void Inventory::item_slider_clicked(int x,int y,bool mouse_holded){
     
 }
 void Inventory::handle_clicks(int x,int y,bool mouse_holded){
-    x -= posx;y-=posy;
+    if(!shown)
+        return;
+
+    x -= posx+5;y-=posy;
     category_slider_clicked(x,y,mouse_holded);
     item_slider_clicked(x,y,mouse_holded);
 }
@@ -138,7 +153,6 @@ SDL_Texture* Inventory::render_categoryButtons(){
         int icon_size = 50;
         int icon_gap = 10;
         SDL_SetRenderTarget(renderer,categorbutton_bg);
-        
         SDL_SetRenderDrawColor(renderer,0xDC,0xDC,0xDc,0xff);
         SDL_Rect bg_rect = {0,0,cat_w,cat_h};
         SDL_RenderFillRect(renderer,&bg_rect);
@@ -146,13 +160,12 @@ SDL_Texture* Inventory::render_categoryButtons(){
         int content_size = (icon_size+icon_gap)*buttons.size();
         int scrollbar_height = ((float)cat_h/(float)content_size)*130;
         category_slider_size = scrollbar_height;
-        
+        cout<<buttons[2].icon_on<<endl;
         for(int i=0;i<buttons.size();i++){
+            cout<<i<<endl;
             buttons[i].posx = 5;
             buttons[i].posy = (50+10)*i - category_slider_y;
-            // cout<<buttons[i].posx<<"  "<<buttons[i].posy<<endl;
             buttons[i].draw();
-            // SDL_RenderCopy(renderer,buttons[i].)
         }
         SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
         SDL_Rect rect = {category_slider_x,category_slider_y,9,scrollbar_height};
@@ -163,6 +176,9 @@ SDL_Texture* Inventory::render_categoryButtons(){
     }
 }
 void Inventory::draw(){
+    if(!shown)
+        return;
+
     int inv_w = 200,inv_h = 150;
     SDL_Texture* inventory_background = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,inv_w,inv_h);
     if(inventory_background == NULL)
@@ -179,6 +195,7 @@ void Inventory::draw(){
         SDL_SetRenderTarget(renderer,inventory_background);
         int w,h;
         SDL_QueryTexture(category_buttons,NULL,NULL,&w,&h);
+        cout<<"WH: "<<w<<"  "<<h<<endl;
         SDL_Rect category_buttons_rect = {5,5,w,h};
         SDL_RenderCopy(renderer,category_buttons, NULL,&category_buttons_rect);
         SDL_SetRenderTarget(renderer,NULL);
