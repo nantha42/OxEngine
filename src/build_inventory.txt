@@ -1,6 +1,12 @@
 3
 ../Assets/Images/buttons/tree
-2
+8
+../Assets/Images/isometric_tree4
+../Assets/Images/isometric_tree5
+../Assets/Images/isometric_tree4
+../Assets/Images/isometric_tree5
+../Assets/Images/isometric_tree4
+../Assets/Images/isometric_tree5
 ../Assets/Images/isometric_tree4
 ../Assets/Images/isometric_tree5
 ../Assets/Images/buttons/power
