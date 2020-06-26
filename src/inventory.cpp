@@ -65,8 +65,8 @@ void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
     x-= posx+5;
     y-= posy;
     if(mouse_holded){
-        cout<<category_slider_x<<" "<<9<<category_slider_y<<" "<<category_slider_size<<endl;
-        cout<<(x>= category_slider_x && x <category_slider_x+9)<<" "<<(y>=category_slider_y && y< category_slider_y + category_slider_size)<<endl;
+        // cout<<category_slider_x<<" "<<9<<category_slider_y<<" "<<category_slider_size<<endl;
+        // cout<<(x>= category_slider_x && x <category_slider_x+9)<<" "<<(y>=category_slider_y && y< category_slider_y + category_slider_size)<<endl;
         if(x>= category_slider_x && x <category_slider_x+9 && y>=category_slider_y && y< category_slider_y + category_slider_size){
             if(!category_dragging){
                 category_dragging = true;
@@ -90,6 +90,27 @@ void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
     }
 }
 void Inventory::item_slider_clicked(int x,int y,bool mouse_holded){
+    x -= posx + 70;
+    y -= posy;
+    if(mouse_holded){
+        if(x>= item_slider_x && x < item_slider_x+9 && y>= item_slider_y && item_slider_y+item_slider_size){
+            if(!item_dragging){
+                item_dragging = true;
+                items_drag_startpoint = y;
+            }
+        }
+        if(item_dragging){
+            int t = y - items_drag_startpoint;
+            if(t<0)
+                item_slider_y = 0;
+            if(t > (135- item_slider_size)){
+                item_slider_y = (135-item_slider_size);
+            }
+            if(t>0 && t<(135-item_slider_size))
+                item_slider_y = t;
+        }
+    }else if(item_dragging)
+        item_dragging = false;
     
 }
 void Inventory::handle_clicks(EventTriggered &et){
@@ -115,6 +136,7 @@ void Inventory::handle_clicks(EventTriggered &et){
             for(int i=0;i<buttons.size();i++){
                 if(i != selected)
                     buttons[i].state = false;
+                item_slider_y = 0;
             }
     }
 }
@@ -137,22 +159,28 @@ SDL_Texture* Inventory::render_itemButtons(){
         SDL_SetRenderDrawColor(renderer,0xDC,0xDC,0xDC,0xFF);
         SDL_Rect bg_rect = {0,0,item_w,item_h};
         SDL_RenderFillRect(renderer,&bg_rect);
-        // SDL_RenderCopy(renderer,item_button_bg,NULL,&bg_rect);
-        int content_size = (icon_size+icon_gap)*(sub_buttons.size()/2);
-        item_slider_size = ((float)item_h/(float)content_size)*130;
         int selected = 0;
         for(int j=0;j<buttons.size();j++)
             if(buttons[j].state){
                 selected = j;break;}
+        
+        // SDL_RenderCopy(renderer,item_button_bg,NULL,&bg_rect);
+        cout<<sub_buttons.size()<<endl;
+        int content_size = (icon_size+icon_gap)*(sub_buttons[selected].size()/2);
+        cout<<content_size<<"  "<<item_h<<endl;
+        item_slider_size = ((float)item_h/(float)content_size)*130.0;
+        cout<<"Slider Size:  "<<item_slider_size<<endl;
+        float r = ((float)(content_size - 130))/((float)(130-item_slider_size));
+        cout<<"R:  "<<r<<endl;
         // cout<<"Sub buttons:  "<<sub_buttons[selected].size()<<endl;
         for(int i=0;i<sub_buttons[selected].size();i+=2){
             sub_buttons[selected][i].posx = 5;
-            sub_buttons[selected][i].posy = (50+10)*(i/2) - item_slider_y;
+            sub_buttons[selected][i].posy = (50+10)*(i/2) - item_slider_y*r;
             // cout<<sub_buttons[selected][i].posx<<"  "<<sub_buttons[selected][i].posy<<endl;
             sub_buttons[selected][i].draw();
             if(i+1<sub_buttons[selected].size()){
                 sub_buttons[selected][i+1].posx = 50+5+10;
-                sub_buttons[selected][i+1].posy = (50+10)*(i/2) - item_slider_y;
+                sub_buttons[selected][i+1].posy = (50+10)*(i/2) - item_slider_y*r;
                 // cout<<sub_buttons[selected][i+1].posx<<"  "<<sub_buttons[selected][i+1].posy<<endl;
                 sub_buttons[selected][i+1].draw();
             }
@@ -183,17 +211,18 @@ SDL_Texture* Inventory::render_categoryButtons(){
         int content_size = (icon_size+icon_gap)*buttons.size();
         int scrollbar_height = ((float)cat_h/(float)content_size)*130;
         category_slider_size = scrollbar_height;
-        
+        float r = ((float)(content_size - 130))/((float)(130-category_slider_size));
+                
         for(int i=0;i<buttons.size();i++){
 
             buttons[i].offset_x = posx+5;
             buttons[i].offset_y = posy+5;
             buttons[i].posx = 5;
-            buttons[i].posy = (50+10)*i - category_slider_y;
+            buttons[i].posy = (50+10)*i - category_slider_y*r;
             buttons[i].draw();
         }
         SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
-        SDL_Rect rect = {category_slider_x,category_slider_y,9,scrollbar_height};
+        SDL_Rect rect = {category_slider_x,category_slider_y,9,category_slider_size};
         SDL_RenderFillRect(renderer,&rect);
         SDL_SetRenderTarget(renderer,NULL);
         return categorbutton_bg;
