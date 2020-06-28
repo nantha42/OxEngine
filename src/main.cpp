@@ -148,17 +148,12 @@ public:
         }
         
         for (int i = 0; i < structures.localsize; i++)
-        {
             for (int j = 0; j < structures.localsize; j++)
-            {
                 local_map[i][j] = structures.world[(int)structures.curx + i][(int)structures.cury + j];
                 
-            }
-        }
         for (int i = 0; i < sprites.size(); i++)
-        {
             sprites[i].update();
-        }
+        
     }
     void eventhandler(EventTriggered &et)
     {

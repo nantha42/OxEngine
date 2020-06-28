@@ -207,7 +207,6 @@ class InventoryButton{
         if(!show_state){
             rect.x = posx;
             rect.y = posy;
-            
             SDL_RenderCopy(renderer,icon_on,NULL,&rect);
         }else{
             if(state){
@@ -222,8 +221,7 @@ class InventoryButton{
             }
         }
     }
-    bool handleClicks(int mx,int my,EventTriggered &et){
-        
+    bool handleClicks(int mx,int my,EventTriggered &et){   
         if(mx >posx+offset_x && mx<posx+offset_x+rect.w && my > posy+offset_y && my < posy+offset_y+rect.h && et.mouse_clicked){
             et.mouse_clicked = false;
             cout<<"Set mouseclicked"<<et.mouse_clicked<<endl;
@@ -232,7 +230,6 @@ class InventoryButton{
         }
         return false;
     }
-    
 };
 
 struct point{

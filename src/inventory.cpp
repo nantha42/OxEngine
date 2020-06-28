@@ -151,12 +151,30 @@ void Inventory::handle_clicks(EventTriggered &et){
                 posy = y;
             }
         }
+
+        selected = -1;
+        for(int i=0;i<buttons.size();i++)
+            if(buttons[i].state){selected = i;break;}
+
+        if(selected!=-1){
+            if(et.mosy-posy-5 < inventory_height-20)
+                for(int i=0;i<sub_buttons[selected].size();i++){
+                    if(sub_buttons[selected][i].handleClicks(et.mosx-posx-75,et.mosy-posy-5,et)){
+                        cout<<"Sub button selection ::"<<i<<endl;
+                        for(int j=0;j<sub_buttons[selected].size();j++)
+                            if(i!=j) sub_buttons[selected][j].state = false;
+                        break;
+                    }
+                }
+            cout<<"Out of for loop"<<endl;
+        }
     }else{
         if(drag_inventory)
             drag_inventory = false;
     }
 }
 bool Inventory::checkAnyItemClicked(){
+
     return true;
 }
 /*void Inventory::handleClicks(int x,int y,bool holded){
@@ -181,13 +199,13 @@ SDL_Texture* Inventory::render_itemButtons(){
                 selected = j;break;}
         
         // SDL_RenderCopy(renderer,item_button_bg,NULL,&bg_rect);
-        cout<<sub_buttons.size()<<endl;
+        // cout<<sub_buttons.size()<<endl;
         int content_size = (icon_size+icon_gap)*(sub_buttons[selected].size()/2);
-        cout<<content_size<<"  "<<item_h<<endl;
+        // cout<<content_size<<"  "<<item_h<<endl;
         item_slider_size = ((float)item_h/(float)content_size)*130.0;
-        cout<<"Slider Size:  "<<item_slider_size<<endl;
+        // cout<<"Slider Size:  "<<item_slider_size<<endl;
         float r = ((float)(content_size - 130))/((float)(130-item_slider_size));
-        cout<<"R:  "<<r<<endl;
+        // cout<<"R:  "<<r<<endl;
         // cout<<"Sub buttons:  "<<sub_buttons[selected].size()<<endl;
         for(int i=0;i<sub_buttons[selected].size();i+=2){
             sub_buttons[selected][i].posx = 5;
