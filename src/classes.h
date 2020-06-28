@@ -257,7 +257,11 @@ class Inventory{
     int category_drag_startpoint;
     int items_drag_startpoint;
     
+    bool drag_inventory = false;
+    int inv_drag_offset = 0;
     
+    int inventory_width = 200;
+    int inventory_height = 150;
     void category_slider_clicked(int x,int y,bool mouse_holded);
     void item_slider_clicked(int x,int y,bool mouse_holded);
     public:

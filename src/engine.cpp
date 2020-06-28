@@ -481,13 +481,13 @@ bool IsOutside(int x1,int y1,int x2, int y2,int x3,int y3,int x,int y){
 void Engine::update(){
     SDL_RenderPresent(gRender);
     if(events_triggered.k_right && camerax < 400)//a
-        camerax+=1;
+        camerax+=4;
     if(events_triggered.k_left && camerax > -100)//d
-        camerax-=1;
+        camerax-=4;
     if(events_triggered.k_down && cameray<200)//w
-        cameray+=1;
+        cameray+=4;
     if(events_triggered.k_up && cameray > -100)//s
-        cameray-=1;
+        cameray-=4;
     int x,y;
     x = events_triggered.mosx;
     y = events_triggered.mosy;

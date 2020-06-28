@@ -123,6 +123,7 @@ void Inventory::handle_clicks(EventTriggered &et){
     cout<<"Mouse Clicked "<<et.mouse_clicked<<endl;
     category_slider_clicked(x,y,mouse_holded);
     item_slider_clicked(x,y,mouse_holded);
+    
     if(et.mouse_clicked){
         int selected = -1;
         for(int i=0;i<buttons.size();i++){
@@ -138,6 +139,21 @@ void Inventory::handle_clicks(EventTriggered &et){
                     buttons[i].state = false;
                 item_slider_y = 0;
             }
+        else {
+            if(x-posx>=0 && x-posx<=inventory_width && y-posy>=0 && y-posy<=6){
+                if(!drag_inventory  ){
+                    drag_inventory = true;
+                    inv_drag_offset = x-posx;
+                }
+            }
+            if(drag_inventory){
+                posx = x - inv_drag_offset;
+                posy = y;
+            }
+        }
+    }else{
+        if(drag_inventory)
+            drag_inventory = false;
     }
 }
 bool Inventory::checkAnyItemClicked(){
@@ -232,7 +248,7 @@ void Inventory::draw(){
     if(!shown)
         return;
 
-    int inv_w = 200,inv_h = 150;
+    int inv_w = inventory_width,inv_h = inventory_height;
     SDL_Texture* inventory_background = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,inv_w,inv_h);
     if(inventory_background == NULL)
         cout<<"Texture is Null :"<<SDL_GetError()<<endl;
