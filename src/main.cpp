@@ -128,7 +128,6 @@ public:
         create_buttons();
         cout<<"Size of buttons  :"<<buttons.size()<<endl;
         build_inventory = new Inventory("build_inventory.txt");
-        
     }
     void create_buttons(){
         Button button(10,100,"../Assets/Images/buttons/build");

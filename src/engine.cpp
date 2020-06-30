@@ -285,7 +285,9 @@ void Engine::drawisoworld(){
 
 
 void Engine::event_handler(){
-    
+    if(events_triggered.mouse_clicked)
+        events_triggered.mouse_clicked = false;
+            
     while (SDL_PollEvent(&e)){
         if (e.type == SDL_QUIT){
         quit = true;
@@ -389,19 +391,16 @@ void Engine::event_handler(){
             }
         }
         else if(e.type == SDL_MOUSEBUTTONDOWN){
-            if(events_triggered.mouse_clicked)
-                events_triggered.mouse_clicked = false;
             
             if(!events_triggered.mouse_holded)
                 events_triggered.mouse_clicked = true;
-                
-            
+        
             events_triggered.mouse_holded = true;
+            // cout<<events_triggered.mouse_holded<<"  "<<events_triggered.mouse_clicked<<endl; 
             SDL_GetMouseState(&events_triggered.mosx,&events_triggered.mosy);
             // cout<<"Mouse :"<<events_triggered.mosx<<"   "<<events_triggered.mosy<<endl;
         }
         else if(e.type == SDL_MOUSEBUTTONUP){
-
             events_triggered.mouse_holded = false;
             if(events_triggered.mouse_clicked)
                 events_triggered.mouse_clicked = false;

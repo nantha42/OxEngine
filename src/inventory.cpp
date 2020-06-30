@@ -72,21 +72,38 @@ void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
                 category_dragging = true;
                 category_drag_startpoint = y;
             }
-            
         }
         if(category_dragging){
             int t = y-category_drag_startpoint;
-            if(t<0)
+            cout<<y<<"  "<<category_drag_startpoint<<"  "<<t<<"  "<<category_slider_y<<endl;
+            
+            /*if(t+category_slider_y<0)
                 category_slider_y = 0;
-            if (t>(135-category_slider_size))
-                category_slider_y = (135-category_slider_size);
-            if(t>0 && t< (135-category_slider_size))
-                category_slider_y = t;
+            if(t+category_slider_y>0 && t+category_slider_y< (135-category_slider_size))
+                category_slider_y = t+previous_category_slider_y;
+            */
+            if(category_drag_startpoint>y){
+                int t = category_drag_startpoint-y;
+                category_drag_startpoint = y;
+                if(category_slider_y-t > 0)
+                    category_slider_y -= t;
+                else category_slider_y = 0;
+            }else{
+                int t = y - category_drag_startpoint;
+                category_drag_startpoint = y;
+                if(category_slider_y+t < 135-category_slider_size)
+                    category_slider_y += t;
+                else
+                    category_slider_y = 135 - category_slider_size;
+                
+            }
                 
         }
     }else{
-        if(category_dragging)
+        if(category_dragging){
             category_dragging = false;
+         
+        }
     }
 }
 void Inventory::item_slider_clicked(int x,int y,bool mouse_holded){
@@ -100,14 +117,20 @@ void Inventory::item_slider_clicked(int x,int y,bool mouse_holded){
             }
         }
         if(item_dragging){
-            int t = y - items_drag_startpoint;
-            if(t<0)
-                item_slider_y = 0;
-            if(t > (135- item_slider_size)){
-                item_slider_y = (135-item_slider_size);
+            if(items_drag_startpoint > y){
+                int t = items_drag_startpoint-y;
+                items_drag_startpoint = y;
+                if(item_slider_y-t > 0)
+                    item_slider_y -= t;
+                else item_slider_y = 0;
+            }else{
+                int t = y - items_drag_startpoint;
+                items_drag_startpoint = y;
+                if(item_slider_y+t < 135-item_slider_size)
+                    item_slider_y += t;
+                else
+                    item_slider_y = 135 - item_slider_size;
             }
-            if(t>0 && t<(135-item_slider_size))
-                item_slider_y = t;
         }
     }else if(item_dragging)
         item_dragging = false;
@@ -120,27 +143,12 @@ void Inventory::handle_clicks(EventTriggered &et){
     int y = et.movy;
     bool mouse_holded = et.mouse_holded;
     //x -= posx+5;y-=posy;
-    cout<<"Mouse Clicked "<<et.mouse_clicked<<endl;
+    // cout<<"Mouse Clicked "<<et.mouse_clicked<<"Mouse Hoded:  "<<et.mouse_holded<<endl;
     category_slider_clicked(x,y,mouse_holded);
     item_slider_clicked(x,y,mouse_holded);
+    if(mouse_holded && !et.mouse_clicked){
     
-    if(et.mouse_clicked){
-        int selected = -1;
-        for(int i=0;i<buttons.size();i++){
-            if(buttons[i].handleClicks(et.mosx,et.mosy,et)){
-                cout<<"MOuse clicked:  "<<et.mouse_clicked<<endl;
-                selected = i;
-                break;
-            }
-        }
-        if(selected!=-1)
-            for(int i=0;i<buttons.size();i++){
-                if(i != selected)
-                    buttons[i].state = false;
-                item_slider_y = 0;
-            }
-        else {
-            if(x-posx>=0 && x-posx<=inventory_width && y-posy>=0 && y-posy<=6){
+        if(x-posx>=0 && x-posx<=inventory_width && y-posy>=0 && y-posy<=6){
                 if(!drag_inventory  ){
                     drag_inventory = true;
                     inv_drag_offset = x-posx;
@@ -150,14 +158,29 @@ void Inventory::handle_clicks(EventTriggered &et){
                 posx = x - inv_drag_offset;
                 posy = y;
             }
-        }
-
+    }
+    else if(et.mouse_clicked){
+        int selected = -1;
+        if(et.mosy-posy-5 < inventory_height-20 && et.mosy-posy-5 > 0)
+            for(int i=0;i<buttons.size();i++){
+                if(buttons[i].handleClicks(et.mosx,et.mosy,et)){
+                    // cout<<"MOuse clicked:  "<<et.mouse_clicked<<endl;
+                    selected = i;
+                    break;
+                }
+            }
+        if(selected!=-1)
+            for(int i=0;i<buttons.size();i++){
+                if(i != selected)
+                    buttons[i].state = false;
+                item_slider_y = 0;
+            }
         selected = -1;
         for(int i=0;i<buttons.size();i++)
             if(buttons[i].state){selected = i;break;}
 
         if(selected!=-1){
-            if(et.mosy-posy-5 < inventory_height-20)
+            if(et.mosy-posy-5 < inventory_height-20  && et.mosy-posy-5 > 0)
                 for(int i=0;i<sub_buttons[selected].size();i++){
                     if(sub_buttons[selected][i].handleClicks(et.mosx-posx-75,et.mosy-posy-5,et)){
                         cout<<"Sub button selection ::"<<i<<endl;
@@ -166,7 +189,7 @@ void Inventory::handle_clicks(EventTriggered &et){
                         break;
                     }
                 }
-            cout<<"Out of for loop"<<endl;
+            // cout<<"Out of for loop"<<endl;
         }
     }else{
         if(drag_inventory)
