@@ -419,22 +419,26 @@ void Engine::event_handler(){
     
     if(placing_buildings && !game->buttons[0].isPressed()){
         placing_buildings = false;    
-        events_triggered.k1 = false;
-        events_triggered.k2 = false;
-        events_triggered.k3 = false;
-        events_triggered.k4 = false;
-        events_triggered.k5 = false;
-        events_triggered.k6 = false;
-        events_triggered.k1 = false;
         for(int j=0;j<grid_size;j++)
             for(int i=0;i<grid_size;i++){
                 if(game->selected_tile[i][j]){
                     
-                    game->local_map[i][j] = tile_selected;
+                    // game->local_map[i][j] = tile_selected;
                     if(game->sprites[tile_selected].size==1){
                         game->local_map_changed = true;
+                        cout<<"Previous Size: "<<game->sprites[game->local_map[i][j]].size<<endl;
+                        if(game->sprites[game->local_map[i][j]].size > 1 ){
+                            int size = game->sprites[game->local_map[i][j]].size;
+                            for(int k=j;k<j+size;k++){
+                                for(int q=i;q<i+size;q++){
+                                    game->local_map[q][k] = 1;
+                                }
+                            }
+                        }
                         game->local_map[i][j]= tile_selected;
+
                     }
+                    
                     
                     else if(game->sprites[tile_selected].size==2){
                         //assigning the other indices of the structure area with -1
@@ -492,6 +496,7 @@ void Engine::update(){
     int x,y;
     x = events_triggered.mosx;
     y = events_triggered.mosy;
+    game->eventhandler(events_triggered);
     if(events_triggered.mouse_clicked){
         
         int i=0;
@@ -563,7 +568,7 @@ void Engine::update(){
         }
      }
     
-    game->eventhandler(events_triggered);
+    
     SDL_Delay(50);
 }
 void Engine::select_tilesOrder(int i,int j){
