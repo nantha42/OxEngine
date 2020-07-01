@@ -28,6 +28,7 @@ Inventory::Inventory(string categoryfile){
             sub_buttons.push_back(temp);
             // items_names.push_back(items_group);
         }
+        buttons[0].state = true;
     }
 void Inventory::place_inventory(int x,int y){
     posx = x;
