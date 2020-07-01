@@ -1,17 +1,14 @@
 3
 ../Assets/Images/buttons/tree
-8
-../Assets/Images/isometric_tree4
-../Assets/Images/isometric_tree5
-../Assets/Images/isometric_tree4
-../Assets/Images/isometric_tree5
-../Assets/Images/isometric_tree4
-../Assets/Images/isometric_tree5
-../Assets/Images/isometric_tree4
-../Assets/Images/isometric_tree5
+5
+../Assets/Images/isometric_tree4 2
+../Assets/Images/isometric_tree5 3
+../Assets/Images/isometric_tree6 7
+../Assets/Images/isometric_tree7 8
+../Assets/Images/isometric_tree8 9
 ../Assets/Images/buttons/power
 1
-../Assets/Images/laboratory/lab_tile1
+../Assets/Images/reactor_tile/reactor_tile1 5
 ../Assets/Images/buttons/research
 1
-../Assets/Images/reactor_tile/reactor_tile1
+../Assets/Images/laboratory/lab_tile1 4

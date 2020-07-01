@@ -107,8 +107,10 @@ class Button{
         
     }
     bool handleClicks(int mosx,int mosy){
+        
         if(mosx>posx && mosx<posx+50 && mosy > posy && mosy<posy+50){
             state = !state;
+            cout<<"state"<<state<<endl;
             return true;
             
         }
@@ -280,7 +282,7 @@ class Inventory{
     void assignRenderer(SDL_Renderer*gRender);
     void showInventory();
     void hideInventory();
-    bool checkAnyItemClicked();
+    int getClickedItem();
     void draw();
     
 };

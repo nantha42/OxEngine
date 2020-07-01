@@ -152,7 +152,6 @@ public:
                 
         for (int i = 0; i < sprites.size(); i++)
             sprites[i].update();
-        
     }
     void eventhandler(EventTriggered &et)
     {

@@ -18,9 +18,11 @@ Inventory::Inventory(string categoryfile){
             vector<InventoryButton> temp;
             while(nitems--){
                 string itemname;
-                file>>itemname;
+                int idd;
+                file>>itemname>>idd;
                 // items_group.push_back(itemname);
                 InventoryButton subbutton(id2++,itemname,false);
+                subbutton.id = idd;
                 temp.push_back(subbutton);
             }
             sub_buttons.push_back(temp);
@@ -196,9 +198,18 @@ void Inventory::handle_clicks(EventTriggered &et){
             drag_inventory = false;
     }
 }
-bool Inventory::checkAnyItemClicked(){
-
-    return true;
+int Inventory::getClickedItem(){
+    int selected = 0;
+    for(int i=0;i<buttons.size();i++)
+        if(buttons[i].state){
+            selected = i;
+            break;
+        }    
+    for(int i=0;i<sub_buttons[selected].size();i++){
+        if(sub_buttons[selected][i].state)
+            return sub_buttons[selected][i].id;
+    }
+   return -1;
 }
 /*void Inventory::handleClicks(int x,int y,bool holded){
 }*/
@@ -222,8 +233,9 @@ SDL_Texture* Inventory::render_itemButtons(){
                 selected = j;break;}
         
         // SDL_RenderCopy(renderer,item_button_bg,NULL,&bg_rect);
-        // cout<<sub_buttons.size()<<endl;
-        int content_size = (icon_size+icon_gap)*(sub_buttons[selected].size()/2);
+        
+        int content_size = (icon_size+icon_gap)*(ceil(sub_buttons[selected].size()/2.0));
+        
         // cout<<content_size<<"  "<<item_h<<endl;
         item_slider_size = ((float)item_h/(float)content_size)*130.0;
         // cout<<"Slider Size:  "<<item_slider_size<<endl;

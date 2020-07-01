@@ -270,9 +270,11 @@ void Engine::drawisoworld(){
         }
     }
     if(game->buttons[0].isPressed()){
-        // draw_selected_tiles();
-        game->buttons[0].stablize();
-        game->build_inventory->shown = !game->build_inventory->shown;
+        draw_selected_tiles();
+        // game->buttons[0].stablize();
+        game->build_inventory->shown = true;
+    }else{
+        game->build_inventory->shown = false;
     }
     game->build_inventory->draw();
      //x = (x+y)*2;
@@ -546,17 +548,18 @@ void Engine::update(){
                 }
             }
             // cout<<i<<"  "<<j<<endl;
+            cout<<"Before call"<<game->buttons[0].isPressed()<<endl;
             if(i>=0 && i<grid_size && j>=0 && j<grid_size){
-                // cout<<"Modified selected tile"<<endl;
                 if(game->buttons[0].isPressed()){
                     select_tilesOrder(i,j);
                 }
             }
         }
-   
+        cout<<game->buttons[i].isPressed()<<endl;
         for(int i=0;i<game->buttons.size();i++){
-            if(game->buttons[i].handleClicks(x,y))
+            if(game->buttons[i].handleClicks(x,y)){
                 events_triggered.mouse_clicked = false;
+            }
         }
      }
     
@@ -565,13 +568,10 @@ void Engine::update(){
 }
 void Engine::select_tilesOrder(int i,int j){
     tile_selected=0;
-    if(events_triggered.k1)tile_selected = 1;
-    else if(events_triggered.k2)tile_selected = 2;
-    else if(events_triggered.k3)tile_selected = 3;
-    else if(events_triggered.k4)tile_selected = 4;
-    else if(events_triggered.k5)tile_selected = 5;
-    else if(events_triggered.k6)tile_selected = 6;
-    if(tile_selected==0)return;
+    tile_selected = game->build_inventory->getClickedItem();
+    cout<<"Tile seelcted:  "<<tile_selected<<endl;
+    
+    if(tile_selected==-1)return;
     int size = game->sprites[tile_selected].size;
     cout<<"Size:  "<<size<<endl;
     if(size==1)
