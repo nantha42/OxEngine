@@ -244,7 +244,8 @@ void Engine::drawisoworld(){
                 // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
                 int size = game->sprites[id].size;
                 if(size>1){
-                    renderit(rendered,i,j+1,size-1);
+                    if(j+1 < grid_size)
+                        renderit(rendered,i,j+1,size-1);
                     rendered[i][j] = true;
                     getPosition(i,j,x,y,tilesize/2,size);
                     game->sprites[id].rect.x = x;
@@ -275,6 +276,7 @@ void Engine::drawisoworld(){
         game->build_inventory->shown = true;
     }else{
         game->build_inventory->shown = false;
+        game->build_inventory->stable_buttons();
     }
     game->build_inventory->draw();
      //x = (x+y)*2;

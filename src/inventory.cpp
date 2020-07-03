@@ -109,6 +109,14 @@ void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
         }
     }
 }
+void Inventory::stable_buttons(){
+    
+    for(int i=0;i<sub_buttons.size();i++){
+        for(int j=0;j<sub_buttons[i].size();j++){
+            sub_buttons[i][j].state = false;
+        }
+    }
+}
 void Inventory::item_slider_clicked(int x,int y,bool mouse_holded){
     x -= posx + 70;
     y -= posy;
