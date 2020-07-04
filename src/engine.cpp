@@ -581,15 +581,60 @@ void Engine::select_tilesOrder(int i,int j){
     if(tile_selected==-1)return;
     int size = game->sprites[tile_selected].size;
     cout<<"Size:  "<<size<<endl;
-    if(size==1)
+    if(size==1){
+        // if(game->sprites[->local_map[i-1][j-1]]
+        if(game->sprites[game->local_map[i-1][j-1]].size==2 ||
+            game->sprites[game->local_map[i-1][j]].size==2 ||
+            game->sprites[game->local_map[i][j-1]].size==2)
+            return;
         game->selected_tile[i][j] = !game->selected_tile[i][j];
+    }
     else{
-        if(i+size<=grid_size && j+size<=grid_size)
-        for(int a=i;a<i+size;a++)
-            for(int b=j;b<j+size;b++){
-                cout<<a<<"  "<<b<<endl;
-                game->selected_tile[a][b] = !game->selected_tile[a][b];
+        
+        if(i+size<=grid_size && j+size<=grid_size){
+            
+            // if(game->selected_tile[i-1][j-1]==1 && 
+            //     game->selected_tile[i-1][j]==1 && 
+            //     game->selected_tile[i][j-1]==1 && )
+
+
+            //     game->selected_tile[i+1][j+1]==1 || 
+            //     game->selected_tile[i+1][j]==1 ||
+            //     game->selected_tile[i+1][j-1]==1 ||
+            //     game->selected_tile[i-1][j+1==1] || 
+            //     game->selected_tile[i][j+1] ==1 )
+            if(game->selected_tile[i][j]==1){
+                //deselection
+                int selected_tops = 0;
+                int selected_sides = 0;
+
+                for(int a=i-1; a>0 && game->selected_tile[a][j]==1;a--)
+                    selected_tops++;
+                int start_i = i-selected_tops;
+                
+                for(int b=j-1; b>0 && game->selected_tile[i][b]==1;b--)
+                    selected_sides++;
+                int start_j = j-selected_sides;
+
+                if( (i-start_i)%size!=0 || (j-start_j)%size!=0)
+                    return;   
+            }else{
+                if(
+                game->selected_tile[i+1][j]==0 && 
+                game->selected_tile[i][j+1]==0 &&
+                game->selected_tile[i+1][j+1]==0 
+                );
+                else return;
+                
+
             }
+
+            for(int a=i;a<i+size;a++)
+                for(int b=j;b<j+size;b++){
+                    cout<<a<<"  "<<b<<endl;
+                    game->selected_tile[a][b] = !game->selected_tile[a][b];
+                }
+        }
     }    
 }
 void Engine::run(){

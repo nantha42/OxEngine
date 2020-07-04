@@ -7,8 +7,8 @@
 #include<vector>
 #include<sstream>
 #include<string>
-#include<SDL2/SDL.h>
-#include<SDL2/SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 const int grid_size = 10;
 const int tile_size = 64;
 const int screen_width = 1030;
@@ -277,6 +277,7 @@ class Inventory{
     void place_inventory(int x,int y);
     void handle_clicks(EventTriggered &et);
     void load_images();
+    void stable_buttons();
     SDL_Texture* render_categoryButtons();
     SDL_Texture* render_itemButtons();
     void assignRenderer(SDL_Renderer*gRender);
