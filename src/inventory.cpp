@@ -307,8 +307,11 @@ SDL_Texture* Inventory::render_categoryButtons(){
     }
 }
 void Inventory::draw(){
-    if(!shown)
+    update_attached_buttons();
+    if(!shown){
+        
         return;
+    }
 
     int inv_w = inventory_width,inv_h = inventory_height;
     SDL_Texture* inventory_background = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,inv_w,inv_h);
@@ -342,5 +345,17 @@ void Inventory::draw(){
         SDL_DestroyTexture(category_buttons);
         SDL_DestroyTexture(inventory_background);
         SDL_DestroyTexture(item_buttons);
+        
+    }
+}
+void Inventory::add_attached_button(Button *button){
+    attached_buttons.push_back(button);
+}
+void Inventory::update_attached_buttons(){
+    int offset = 0;
+    for(auto button:attached_buttons){
+        button->visible = this->shown;
+        button->setPos(posx+inventory_width+5,posy+offset);
+        offset += 42;
     }
 }

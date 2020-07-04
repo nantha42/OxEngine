@@ -213,7 +213,8 @@ void Engine::draw_selected_tiles(){
 }
 void Engine::drawcontrols(){
     for(int i=0;i<game->buttons.size();i++){
-        game->buttons[i].drawButton();
+        if(game->buttons[i].isVisible())
+            game->buttons[i].drawButton();
     }
 }
 void Engine::drawisoworld(){
@@ -416,8 +417,9 @@ void Engine::event_handler(){
         placing_buildings = true;
 
     
-    if(placing_buildings && !game->buttons[0].isPressed()){
-        placing_buildings = false;    
+    if(game->buttons[2].isPressed()){
+        placing_buildings = false; 
+        game->buttons[2].stablize();
         for(int j=0;j<grid_size;j++)
             for(int i=0;i<grid_size;i++){
                 if(game->selected_tile[i][j]){

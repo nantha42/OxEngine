@@ -54,14 +54,22 @@ class Button{
     SDL_Texture *button_on;
     SDL_Texture *button_off;
     string imgpath;
+    
     public:
     SDL_Renderer* renderer;
-    
+    bool visible=true;
+
     Button(int x,int y,string img_path){
         posx = x;
         posy = y;
         state = false;
         imgpath = img_path;
+    }
+    bool isVisible(){return visible;}
+
+    void setPos(int x,int y){
+        posx = x;
+        posy = y;
     }
     void load_images(){
         cout<<"Button Imag path "<<imgpath<<endl;
@@ -163,7 +171,7 @@ class InventoryButton{
     string name;
     SDL_Texture* icon_on;
     SDL_Texture* icon_off;
-
+    
     SDL_Rect rect;
     SDL_Renderer *renderer;
     InventoryButton(int id,string icon_path,bool show_state){
@@ -263,6 +271,8 @@ class Inventory{
     int inventory_height = 150;
     void category_slider_clicked(int x,int y,bool mouse_holded);
     void item_slider_clicked(int x,int y,bool mouse_holded);
+    vector<Button* >attached_buttons; 
+
     public:
     bool shown = false;
     vector<string> categories_names;
@@ -285,7 +295,8 @@ class Inventory{
     void hideInventory();
     int getClickedItem();
     void draw();
-    
+    void add_attached_button(Button *button);
+    void update_attached_buttons();
 };
 
 class Game{

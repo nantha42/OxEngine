@@ -126,12 +126,18 @@ public:
             n--;
         }
         create_buttons();
-        cout<<"Size of buttons  :"<<buttons.size()<<endl;
         build_inventory = new Inventory("build_inventory.txt");
+        build_inventory->add_attached_button(&buttons[1]);
+        build_inventory->add_attached_button(&buttons[2]);
     }
     void create_buttons(){
-        Button button(10,100,"../Assets/Images/buttons/build");
-        buttons.push_back(button);
+        Button build_button(10,100,"../Assets/Images/buttons/build");
+        Button build_cancel_button(70,100,"../Assets/Images/buttons/cancel");
+        Button build_place_button(70,100,"../Assets/Images/buttons/place");
+        buttons.push_back(build_button);
+        buttons.push_back(build_cancel_button);
+        buttons.push_back(build_place_button);
+
     }
     void update()
     {
@@ -152,6 +158,13 @@ public:
                 
         for (int i = 0; i < sprites.size(); i++)
             sprites[i].update();
+        
+        if(buttons[1].isPressed()){
+            buttons[1].stablize();
+            for(int i=0;i<grid_size;i++)
+                for(int j=0;j<grid_size;j++)
+                    selected_tile[i][j] = false;
+        }
     }
     void eventhandler(EventTriggered &et)
     {
