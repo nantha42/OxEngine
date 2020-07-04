@@ -1,6 +1,7 @@
 3
 ../Assets/Images/buttons/tree
-5
+6
+../Assets/Images/isometric_tile 1
 ../Assets/Images/isometric_tree4 2
 ../Assets/Images/isometric_tree5 3
 ../Assets/Images/isometric_tree6 7

@@ -146,7 +146,6 @@ void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
     bool atleastonenotrendered = false;
     for(int j=b;j<b+size;j++){
         for(int i=0;i<a;i++){
-            
             if(!atleastonenotrendered && game->local_map[i][j]==-1){
                 int x,y;
                 getPosition(i,j,x,y,tile_size/2,tile_size);
@@ -190,8 +189,6 @@ void Engine::draw_selected_tiles(){
     int tilesize = tile_size;
     for(int j=0;j<grid_size;j++){
         for(int i=0;i<grid_size;i++){
-    
-                
                 int x,y;
                 int frame;
                 SDL_Rect rect;
@@ -203,7 +200,7 @@ void Engine::draw_selected_tiles(){
                 int size = game->sprites[id].size;
                 
                 getPosition(i,j,x,y,tilesize/2,size);
-                cout<<x<<"   "<<y<<endl;
+                
                 rect.x = x;
                 rect.y = y;
                 rect.w = game->sprites[id].rect.w;
@@ -456,13 +453,7 @@ void Engine::event_handler(){
                         }
                         //assigning the left corner indice with the structure index
                         game->local_map[i][j] = tile_selected;
-                        // cout<<"Placed at "<<i<<" "<<j<<endl;
-                        // cout<<"SSize:  "<<size<<"   "<<endl;
-                        for(int p=0;p<grid_size;p++){
-                            for(int q=0;q<grid_size;q++)
-                                cout<<game->local_map[p][q]<<" ";
-                            cout<<endl;
-                        }
+                        
                         //setting false for the -1 index in the selected_tile 
                         //so we won't place the structure multiple times 
                         for(int k=j;k<j+size;k++){
@@ -499,6 +490,7 @@ void Engine::update(){
     x = events_triggered.mosx;
     y = events_triggered.mosy;
     game->eventhandler(events_triggered);
+    
     if(events_triggered.mouse_clicked){
         
         int i=0;
@@ -554,14 +546,17 @@ void Engine::update(){
                     }
                 }
             }
-            // cout<<i<<"  "<<j<<endl;
-            cout<<"Before call"<<game->buttons[0].isPressed()<<endl;
+            
             if(i>=0 && i<grid_size && j>=0 && j<grid_size){
                 if(game->buttons[0].isPressed()){
+                    cout<<"Click once Placing"<<endl;
                     select_tilesOrder(i,j);
+                    selected_tile_i = i;
+                    selected_tile_j = j;
                 }
             }
         }
+        //Code to handle buttons like build_inventory button and all the main buttons
         cout<<game->buttons[i].isPressed()<<endl;
         for(int i=0;i<game->buttons.size();i++){
             if(game->buttons[i].handleClicks(x,y)){
@@ -569,7 +564,74 @@ void Engine::update(){
             }
         }
      }
-    
+    else if(events_triggered.mouse_holded){
+        int i=0;
+        x = events_triggered.movx;
+        y = events_triggered.movy;
+        if(x>tiles_positionx[0][grid_size-1]&& x<tiles_positionx[grid_size-1][0]+tile_size && y>tiles_positiony[0][0] && y<tiles_positiony[grid_size-1][grid_size-1]+tile_size/2){
+            bool found = false;
+            int j=0;
+            for(i=0;i<grid_size ;i++){
+                for(j=0;j<grid_size;j++){
+                    //cout<<"Traversing :"<<i<<"  "<<j<<endl;
+                    if(x>tiles_positionx[i][j] && x < tiles_positionx[i][j]+tile_size){
+                        if(y>tiles_positiony[i][j] && y< tiles_positiony[i][j]+tile_size/2){
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if(found)
+                    break;
+            }
+            if(found){
+                int ax = tiles_positionx[i][j];
+                int ay = tiles_positiony[i][j];
+                int xp = x-ax;
+                int yp = y-ay;
+
+                if(xp<tile_size/2 && yp<tile_size/4){
+                    int x1 = tile_size/2,x2 =0 ,x3 =tile_size/2 ;
+                    int y1 = 0,y2 =tile_size/4 ,y3 =tile_size/4 ;
+                    // cout<<"1"<<endl;
+                    if(IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                        i--;}
+                        
+                }else if(xp>tile_size/2 && yp<tile_size/4){
+                    int x1 = 0+tile_size/2,x2 =tile_size/2+tile_size/2 ,x3 = tile_size/2+tile_size/2;
+                    int y1 = 0,y2 = tile_size/2-tile_size/4,y3 =tile_size/4-tile_size/4 ;
+                    // cout<<"2"<<endl;
+                    if(!IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                    j--;}
+                }else if(xp<tile_size/2 && yp>tile_size/4){
+                    int x1 = 0,x2 =tile_size/2 ,x3 = tile_size/2;
+                    int y1 = tile_size/4,y2 = tile_size/2,y3 =tile_size/4 ;
+                    // cout<<"3"<<endl;
+                    if(IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                    j++;
+                    }
+                }else{
+                    int x1 = tile_size/2+tile_size/2,x2 =0+tile_size/2 ,x3 =tile_size/2+tile_size/2 ;
+                    int y1 = 0+tile_size/4,y2 =tile_size/4+tile_size/4 ,y3 =tile_size/4+tile_size/4 ;
+                    // cout<<"4"<<endl;
+                    if(!IsOutside(x1,y1,x2,y2,x3,y3,xp,yp)){
+                        i++;
+                    }
+                }
+            }
+            
+            if(i>=0 && i<grid_size && j>=0 && j<grid_size){
+                cout<<"After found"<<"  "<<game->buttons[0].isPressed() <<"  "<<i<<selected_tile_i <<"  "<<j<<selected_tile_j<<endl;    
+                if(game->buttons[0].isPressed() && (selected_tile_i!= i || selected_tile_j != j)){
+                    cout<<"Calling seelcte"<<i<<"  "<<j<<endl;
+                    select_tilesOrder(i,j);
+                    selected_tile_i = i;
+                    selected_tile_j = j;
+                }
+            }
+        }
+        
+    }
     
     SDL_Delay(50);
 }
@@ -580,29 +642,24 @@ void Engine::select_tilesOrder(int i,int j){
     
     if(tile_selected==-1)return;
     int size = game->sprites[tile_selected].size;
-    cout<<"Size:  "<<size<<endl;
+    
     if(size==1){
         // if(game->sprites[->local_map[i-1][j-1]]
-        if(game->sprites[game->local_map[i-1][j-1]].size==2 ||
-            game->sprites[game->local_map[i-1][j]].size==2 ||
-            game->sprites[game->local_map[i][j-1]].size==2)
+        if(i-1 >= 0 && j-1 >= 0){
+            if(game->sprites[game->local_map[i-1][j-1]].size==2 ||
+                game->sprites[game->local_map[i-1][j]].size==2 ||
+                game->sprites[game->local_map[i][j-1]].size==2)
+                return;
+        }
+        else if(game->local_map[i][j]== -1)
             return;
+            
         game->selected_tile[i][j] = !game->selected_tile[i][j];
     }
     else{
         
         if(i+size<=grid_size && j+size<=grid_size){
             
-            // if(game->selected_tile[i-1][j-1]==1 && 
-            //     game->selected_tile[i-1][j]==1 && 
-            //     game->selected_tile[i][j-1]==1 && )
-
-
-            //     game->selected_tile[i+1][j+1]==1 || 
-            //     game->selected_tile[i+1][j]==1 ||
-            //     game->selected_tile[i+1][j-1]==1 ||
-            //     game->selected_tile[i-1][j+1==1] || 
-            //     game->selected_tile[i][j+1] ==1 )
             if(game->selected_tile[i][j]==1){
                 //deselection
                 int selected_tops = 0;
@@ -625,13 +682,11 @@ void Engine::select_tilesOrder(int i,int j){
                 game->selected_tile[i+1][j+1]==0 
                 );
                 else return;
-                
-
             }
 
             for(int a=i;a<i+size;a++)
                 for(int b=j;b<j+size;b++){
-                    cout<<a<<"  "<<b<<endl;
+                    
                     game->selected_tile[a][b] = !game->selected_tile[a][b];
                 }
         }

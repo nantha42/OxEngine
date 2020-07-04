@@ -332,7 +332,8 @@ class Engine{
     vector<vector<int>> tiles_positiony;
     int tile_selected = 0;
     bool placing_buildings = false;
-
+    int selected_tile_i=-1;
+    int selected_tile_j=-1;
     void getPosition(int i,int j,int &x,int &y,int tile_size,int size);
     public:
     vector<Sprite> sprites;
