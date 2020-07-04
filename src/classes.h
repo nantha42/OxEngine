@@ -23,10 +23,10 @@ struct EventTriggered{
         bool k_p=false;
         bool k_space;
         bool k_shift;
-        bool k_up;
-        bool k_down;
-        bool k_left;
-        bool k_right;
+        bool k_up=false;
+        bool k_down=false;
+        bool k_left=false;
+        bool k_right=false;
         bool mouse_clicked = false;
         bool mouse_moved = false;
         bool mouse_holded = false;
