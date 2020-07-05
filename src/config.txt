@@ -1,5 +1,5 @@
 50
-10
+11
 ../Assets/Images/water_tile/water_tile
 1 
 8
@@ -43,3 +43,7 @@
 0
 1
 1
+../Assets/Images/oil_refinery/oilrefinery
+0
+1
+4

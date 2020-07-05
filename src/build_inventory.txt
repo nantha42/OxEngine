@@ -11,5 +11,6 @@
 1
 ../Assets/Images/reactor_tile/reactor_tile1 5
 ../Assets/Images/buttons/research
-1
+2
 ../Assets/Images/laboratory/lab_tile1 4
+../Assets/Images/oil_refinery/oilrefinery 10

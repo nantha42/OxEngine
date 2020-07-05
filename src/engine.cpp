@@ -134,7 +134,7 @@ void Engine::getPosition(int i,int j,int &x,int &y,int tile_size,int size)
     x = (camerax-cameray)*2 + (i-j-(size-1) )*tile_size;
     y = (camerax+cameray)*1 + (i+j-(size-1) )*tile_size/2.0;
     if(size-1)
-       y-= (size-1)*15;
+       y-= (size-1)*17;
     //problem might be here
     //tiles_positionx[i][j] = x+(64.0*tile_size/2/128.0);
     //tiles_positiony[i][j] = y+(52.0*tile_size/2/128.0);
@@ -162,7 +162,7 @@ void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
                     continue;
                 }
                 int size = game->sprites[id].size;
-                if(size==2){
+                if(size>1){
                     rendered[i][j] = true;
                     renderit(rendered,i,b+1,size-1);
                     getPosition(i,j,x,y,tile_size/2,size);
@@ -234,6 +234,8 @@ void Engine::drawisoworld(){
                 int frame;
                 SDL_Rect rect;
                 int id = game->local_map[i][j];
+                if(id==10)
+                    cout<<"Oil refinery: "<<game->sprites[id].size<<endl;
                 if(id==-1){
                     rendered[i][j]= true;//doublt
                     getPosition(i,j,x,y,tilesize/2,1);
@@ -241,9 +243,13 @@ void Engine::drawisoworld(){
                 }
                 // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
                 int size = game->sprites[id].size;
+                
                 if(size>1){
-                    if(j+1 < grid_size)
+                    //for(int q=1;q<size;q++)
+                    if(j+(size-1) < grid_size)
                         renderit(rendered,i,j+1,size-1);
+                    //if(j+1 < grid_size)
+                    //    renderit(rendered,i,j+1,size-1);
                     rendered[i][j] = true;
                     getPosition(i,j,x,y,tilesize/2,size);
                     game->sprites[id].rect.x = x;
@@ -277,11 +283,6 @@ void Engine::drawisoworld(){
         game->build_inventory->stable_buttons();
     }
     game->build_inventory->draw();
-     //x = (x+y)*2;
-    //SDL_Rect boxrect = {x*tile_size+ ((camerax-cameray)*2)%tile_size-tile_size/2, y*tile_size+ ((camerax+cameray)%tile_size)-tile_size/2,tile_size,tile_size};
-    //SDL_SetRenderDrawColor(gRender,255,255,255,255);
-//    SDL_RenderDrawRect(gRender,&boxrect);
-    
     
 }
 
@@ -441,7 +442,7 @@ void Engine::event_handler(){
                     }
                     
                     
-                    else if(game->sprites[tile_selected].size==2){
+                    else if(game->sprites[tile_selected].size>1){
                         //assigning the other indices of the structure area with -1
                         game->local_map_changed = true;
                         game->local_map[i][j] = tile_selected;
