@@ -206,8 +206,7 @@ void Engine::draw_selected_tiles(){
                 rect.w = game->sprites[id].rect.w;
                 rect.h = game->sprites[id].rect.h;
                 frame = game->sprites[6].curframe;
-                SDL_RenderCopy(gRender, game->sprites[6].images[frame],NULL,&rect);
-                          
+                SDL_RenderCopy(gRender, game->sprites[6].images[frame],NULL,&rect);  
         }
     }
 }
@@ -639,6 +638,8 @@ void Engine::update(){
     SDL_Delay(50);
 }
 void Engine::select_tilesOrder(int i,int j){
+    
+
     tile_selected=0;
     tile_selected = game->build_inventory->getClickedItem();
     cout<<"Tile seelcted:  "<<tile_selected<<endl;
@@ -662,29 +663,26 @@ void Engine::select_tilesOrder(int i,int j){
     else{
         
         if(i+size<=grid_size && j+size<=grid_size){
-            
             if(game->selected_tile[i][j]==1){
-                //deselection
+                //This code checks if we selecting already selected tile 
+                //so deselection happens
                 int selected_tops = 0;
                 int selected_sides = 0;
-
                 for(int a=i-1; a>0 && game->selected_tile[a][j]==1;a--)
                     selected_tops++;
                 int start_i = i-selected_tops;
-                
                 for(int b=j-1; b>0 && game->selected_tile[i][b]==1;b--)
                     selected_sides++;
                 int start_j = j-selected_sides;
-
                 if( (i-start_i)%size!=0 || (j-start_j)%size!=0)
                     return;   
             }else{
-                if(
-                game->selected_tile[i+1][j]==0 && 
-                game->selected_tile[i][j+1]==0 &&
-                game->selected_tile[i+1][j+1]==0 
-                );
-                else return;
+                //Checks if the selection of tiles are done rightly
+                //without overlapping 
+                for(int x=0;x<size;x++)
+                    for(int y=0;y<size;y++)
+                        if((x!=0 || y!=0) && game->selected_tile[i+x][j+y]==1)
+                            return;
             }
 
             for(int a=i;a<i+size;a++)
