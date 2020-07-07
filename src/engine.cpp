@@ -28,11 +28,11 @@ Engine::Engine(){
     
 }
 
-bool Engine::init(Game &ggame)
+bool Engine::init()
 {
     //Initialization flag
     bool success = true;
-    this->game = &ggame;
+    
     
     // sort(this->game->sprites.begin(),this->game->sprites.end(),isometric_position_comparator);
     
@@ -53,52 +53,66 @@ bool Engine::init(Game &ggame)
             printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
             success = false;
         }
-
         else
         {
+            cout<<"Created Window"<<endl;
             if(!(IMG_Init(IMG_INIT_PNG)&IMG_INIT_PNG)){
                 cout<<"Error Img INit"<<endl;
             }
             gRender = SDL_CreateRenderer(gWindow,-1,SDL_RENDERER_ACCELERATED| SDL_RENDERER_TARGETTEXTURE);
+            if( TTF_Init() == -1 )
+            {
+                printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+                success = false;
+            }
         }
     }
 
     return success;
+}
+void Engine::assignGame(Game &game){
+    this->game = &game;
 }
 bool Engine::loadMedia()
 {
     //Loading success flag
     bool success = true;
 
-    //Load splash image
-    
+    //Load splash image    
     gHelloWorld = IMG_Load("../Assets/Images/isometric_tile.png");
-    if( gHelloWorld == NULL )
-    {
-        printf( "Unable to load image %s! SDL Error: %s\n", "images/hello_world.bmp", SDL_GetError() );
-        success = false;
-    }else{
-        SDL_SetRenderDrawColor(gRender,0x00,0x00,0x00,0x00);
-        gTexture = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
-        this->textures.push_back(gTexture);
-        if(gTexture == NULL)
-            cout<<"Texture is Null"<<endl;
-        SDL_FreeSurface(gHelloWorld);
+    // if( gHelloWorld == NULL )
+    // {
+    //     printf( "Unable to load image %s! SDL Error: %s\n", "images/hello_world.bmp", SDL_GetError() );
+    //     success = false;
+    // }else{
+        // SDL_SetRenderDrawColor(gRender,0x00,0x00,0x00,0x00);
+        // gTexture = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
+        // this->textures.push_back(gTexture);
+        // if(gTexture == NULL)
+        //     cout<<"Texture is Null"<<endl;
+        // SDL_FreeSurface(gHelloWorld);
 
-        gHelloWorld = NULL;
-        gHelloWorld = IMG_Load("../Assets/Images/building1.png");
-        building = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
-        this->textures.push_back(building);
-        if(building == NULL)
-            cout<<"Texture is Null"<<endl;
-        SDL_FreeSurface(gHelloWorld);
-        gHelloWorld = NULL;
-        gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
-        this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
+        // gHelloWorld = NULL;
+        // gHelloWorld = IMG_Load("../Assets/Images/building1.png");
+        // building = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
+        // this->textures.push_back(building);
+        // if(building == NULL)
+        //     cout<<"Texture is Null"<<endl;
+        // SDL_FreeSurface(gHelloWorld);
+        // gHelloWorld = NULL;
+        // gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
+        // this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
+        
+        for(int i=0;i<game->texts.size();i++)
+            game->texts[i]->render = gRender;
+        
+        
+
         for(int i=0;i<game->sprites.size();i++){
             game->sprites[i].gRender = gRender;
             game->sprites[i].load_images();
         }
+        
         cout<<"Button size in engine:  "<<game->buttons.size()<<endl;
         for(int i=0;i<game->buttons.size();i++){
             game->buttons[i].renderer = gRender;
@@ -106,12 +120,13 @@ bool Engine::loadMedia()
             game->buttons[i].load_images();
             
         }
+        
         cout<<"Inventory Loading"<<endl;
         game->build_inventory->renderer = gRender;
         game->build_inventory->assignRenderer(gRender);
         game->build_inventory->load_images();
         
-    }   
+    // }   
     return success;
 }
 void Engine::close()
@@ -693,13 +708,35 @@ void Engine::select_tilesOrder(int i,int j){
         }
     }    
 }
+void Engine::free(){
+
+    SDL_Quit();
+    IMG_Quit();
+    TTF_Quit();
+}
+void Engine::drawTexts(){
+    for(int i=0;i<game->texts.size();i++){
+
+        SDL_Rect rect;
+        rect.x = game->texts[i]->x;
+        rect.y = game->texts[i]->y;
+        rect.w = 100;
+        rect.h = 50;
+        cout<<"Calling getTexture"<<endl;
+        SDL_RenderCopy(gRender,game->texts[i]->getTexture(),NULL,&rect);
+    }
+}
 void Engine::run(){
     while(!quit){
+        
         event_handler();
         game->update();
         drawisoworld();
         drawcontrols();
+        drawTexts();
         update();
         
     }
+    free();
+    
 }

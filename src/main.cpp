@@ -83,7 +83,15 @@ class MyGame : public Game
     
 public:
     MyGame(bool isometric) : Game(isometric)
-    {
+    {   string font;
+        cin>>font;
+        textRenderer = new TextRenderer(font,15);
+        textRenderer->textcolor = {0xff,0xff,0xff,0xff};
+        cout<<"Renderint Text"<<endl;
+        Text *t = new Text(textRenderer->renderText("Stellar"));
+        t->x = screen_width/2-t->w/2;
+        t->y = 80;
+        texts.push_back(t);
         int n;
         for(int i=0;i<grid_size;i++){
             for(int j=0;j<grid_size;j++){
@@ -216,14 +224,16 @@ int main()
     // cin>>grid_size;
     // cin>>tile_size;
     Engine ox;
-    MyGame game(true);
-    cout<<"Main "<<game.buttons.size()<<endl;
-    if (!ox.init(game))
+    
+    if (!ox.init())
     {
         printf("Failed to initialize!\n");
     }
     else
     {
+        MyGame game(true);
+        cout<<"Main "<<game.buttons.size()<<endl;    
+        ox.assignGame(game);
         //Load media
         if (!ox.loadMedia())
         {

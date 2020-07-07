@@ -9,6 +9,7 @@
 #include<string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 const int grid_size = 10;
 const int tile_size = 64;
 const int screen_width = 1030;
@@ -298,14 +299,98 @@ class Inventory{
     void add_attached_button(Button *button);
     void update_attached_buttons();
 };
+class TextRenderer{
+    TTF_Font *font;
+    string ttf_path;
+    int size;
 
+    public:
+    SDL_Color textcolor;
+    SDL_Renderer *renderer;
+    TextRenderer(string ttf_path,int size){
+        this->size = size;
+        this->ttf_path = ttf_path;
+        cout<<"Loading "<<ttf_path.c_str()<<endl;
+        // SDL_RWops *rw=SDL_RWFromFile(ttf_path.c_str(),"rb");
+        
+        if(!TTF_WasInit()) {
+            cerr << "TTF_Init failed " << TTF_GetError() << endl;
+            exit(1);
+        }else{
+            cout<<"TTF initialized"<<endl;
+        }
+        // if(!rw){
+        //     fprintf(stderr, "Couldn't load 23 pt font from %s: %s\n", ttf_path.c_str(), SDL_GetError());
+        //     // return(2);
+        // }
+        
+        font = TTF_OpenFont(ttf_path.c_str(),20);
+        if ( font == NULL ) 
+        {    
+            fprintf(stderr, "Couldn't load 22 pt font from %s: %s\n", ttf_path.c_str(),SDL_GetError());    
+            // return(2);
+        }else{
+            cout<<"Font Loaded"<<endl;
+        }
+
+        // font = TTF_OpenFont(ttf_path.c_str(),size);
+        if(font == NULL){
+            cout<<"Error loading font: "<<TTF_GetError()<<endl;
+        }
+    }
+    SDL_Surface* renderText(string s){
+        SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
+        cout<<"Textu Surface Readu"<<endl;
+        if(text_surface!=NULL){
+            return text_surface;
+        }else
+            return NULL;
+    }
+};
+class Text{
+    SDL_Texture* texture=NULL;
+    SDL_Surface* text_surface=NULL;
+    
+    public:
+    SDL_Renderer *render=NULL;
+    int x=0,y=0;
+    int w=0,h =0;
+    Text(SDL_Surface* text){
+        if(text!=NULL){
+            this->text_surface = text;   
+            int a,b;
+            w = text_surface->w;
+            h = text_surface->h;
+            cout<<"WH"<<w<<" "<<h<<endl;
+        }
+        else{
+            cout<<"FFETexture is NULL"<<endl;
+        }
+    }
+    SDL_Texture* getTexture(){
+
+        if(texture!=NULL){
+            cout<<"Texture is Not NULL "<<texture<<endl;
+            return texture;
+        }else{
+            cout<<"FFTexture is NULL"<<endl;
+            if(render!=NULL){
+                cout<<"Texture Created"<<endl;
+                texture = SDL_CreateTextureFromSurface(render,text_surface);
+                return texture;
+            }
+            else{ cout<<"Renderer is NULL"<<endl;return NULL;}
+        }
+    }
+};
 class Game{
     protected:
     bool isometric_game = false;
     Uint32 unit_time=0;
     
+    TextRenderer *textRenderer;
     public:
-    
+    vector<Text*> texts;
     bool selected_tile[grid_size][grid_size];
     int local_map[grid_size][grid_size];
     bool local_map_changed = false;
@@ -352,16 +437,19 @@ class Engine{
     Engine(int screenwidth,int screenheight);
     Engine();
     void renderit(vector<vector<bool>> &rendered,int a,int b,int size);
-    bool init(Game &game);
+    bool init();
     bool loadMedia();
     void draw_selected_tiles();
     void close();
+    void assignGame(Game &game);
     void select_tilesOrder(int i,int j);
     void drawisoworld();
     void drawcontrols();
+    void drawTexts();
     void run();
     void update();
     void event_handler();
+    void free();
 };
 
 #endif
