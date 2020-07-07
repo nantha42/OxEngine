@@ -1,5 +1,5 @@
 50
-/Users/nantha/Projc/my_projects/OxEngine/Assets/Fonts/RapierZero.ttf
+lazy.ttf 10
 11
 ../Assets/Images/water_tile/water_tile
 1 

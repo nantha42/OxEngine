@@ -720,9 +720,8 @@ void Engine::drawTexts(){
         SDL_Rect rect;
         rect.x = game->texts[i]->x;
         rect.y = game->texts[i]->y;
-        rect.w = 100;
-        rect.h = 50;
-        cout<<"Calling getTexture"<<endl;
+        rect.w = game->texts[i]->w;
+        rect.h = game->texts[i]->h;
         SDL_RenderCopy(gRender,game->texts[i]->getTexture(),NULL,&rect);
     }
 }

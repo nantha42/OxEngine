@@ -324,7 +324,7 @@ class TextRenderer{
         //     // return(2);
         // }
         
-        font = TTF_OpenFont(ttf_path.c_str(),20);
+        font = TTF_OpenFont(ttf_path.c_str(),size);
         if ( font == NULL ) 
         {    
             fprintf(stderr, "Couldn't load 22 pt font from %s: %s\n", ttf_path.c_str(),SDL_GetError());    
@@ -370,7 +370,7 @@ class Text{
     SDL_Texture* getTexture(){
 
         if(texture!=NULL){
-            cout<<"Texture is Not NULL "<<texture<<endl;
+            
             return texture;
         }else{
             cout<<"FFTexture is NULL"<<endl;

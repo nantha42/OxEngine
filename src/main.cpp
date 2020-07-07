@@ -84,14 +84,23 @@ class MyGame : public Game
 public:
     MyGame(bool isometric) : Game(isometric)
     {   string font;
-        cin>>font;
-        textRenderer = new TextRenderer(font,15);
-        textRenderer->textcolor = {0xff,0xff,0xff,0xff};
-        cout<<"Renderint Text"<<endl;
-        Text *t = new Text(textRenderer->renderText("Stellar"));
-        t->x = screen_width/2-t->w/2;
-        t->y = 80;
-        texts.push_back(t);
+        int size;
+        cin>>font>>size;
+        // textRenderer = new TextRenderer(font,size);
+        // textRenderer->textcolor = {0xff,0xff,0xff,0xff};
+        // cout<<"Renderint Text"<<endl;
+        // Text *t = new Text(textRenderer->renderText("SSSe"));
+        // t->x = screen_width/2 - t->w/2;
+        // t->y = 80;
+        
+        // TextRenderer* textRenderer1 = new TextRenderer(font,10);
+        // textRenderer1->textcolor = {0xff,0xff,0xff,0xff};
+        // Text *t1 = new Text(textRenderer1->renderText("SSSe"));
+        // t1->x = screen_width/2 + t1->w/2 +2;
+        // t1->y = 80;
+        // texts.push_back(t1);
+        // texts.push_back(t);
+        
         int n;
         for(int i=0;i<grid_size;i++){
             for(int j=0;j<grid_size;j++){
