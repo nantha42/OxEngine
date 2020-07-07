@@ -6,10 +6,11 @@ Inventory::Inventory(string categoryfile){
         file>>ncategories;
         int id=0;
         while(ncategories--){
+            string categorypath;
             string categoryname;
-            file>>categoryname;
+            file>>categorypath>>categoryname;
             //categories_names.push_back(categoryname);
-            InventoryButton button(id++,categoryname,true);
+            InventoryButton button(id++,categorypath,categoryname,true);
             buttons.push_back(button);
             int nitems;
             file>>nitems;
@@ -17,11 +18,13 @@ Inventory::Inventory(string categoryfile){
             int id2=0;
             vector<InventoryButton> temp;
             while(nitems--){
-                string itemname;
+                string itempath;
                 int idd;
-                file>>itemname>>idd;
+                string name;
+                file>>itempath>>name>>idd;
+                cout<<"Loading "<<name<<endl;
                 // items_group.push_back(itemname);
-                InventoryButton subbutton(id2++,itemname,false);
+                InventoryButton subbutton(id2++,itempath,name,false);
                 subbutton.id = idd;
                 temp.push_back(subbutton);
             }
@@ -36,14 +39,16 @@ void Inventory::place_inventory(int x,int y){
 }
 
 void Inventory::load_images(){
+
         for(int i=0;i<buttons.size();i++){
-            if(buttons[i].load_icon()==false){
+            if(buttons[i].load_icon(NULL)==false){
                 cout<<"Button Image loading failed"<<endl;
                 continue;
             }
             else{
                 for(int j=0;j<sub_buttons[i].size();j++){
-                    sub_buttons[i][j].load_icon();
+                    SDL_Texture* text = textRenderer->renderTexture(sub_buttons[i][j].name);
+                    sub_buttons[i][j].load_icon(text);
                 }
         }
     }
@@ -231,11 +236,12 @@ SDL_Texture* Inventory::render_itemButtons(){
         return NULL;
     }else{
         int icon_size = 50;
-        int icon_gap = 10;
+        int icon_gap = 20;
         SDL_SetRenderTarget(renderer,item_button_bg);
         SDL_SetRenderDrawColor(renderer,0xDC,0xDC,0xDC,0xFF);
         SDL_Rect bg_rect = {0,0,item_w,item_h};
         SDL_RenderFillRect(renderer,&bg_rect);
+        
         int selected = 0;
         for(int j=0;j<buttons.size();j++)
             if(buttons[j].state){
@@ -253,12 +259,12 @@ SDL_Texture* Inventory::render_itemButtons(){
         // cout<<"Sub buttons:  "<<sub_buttons[selected].size()<<endl;
         for(int i=0;i<sub_buttons[selected].size();i+=2){
             sub_buttons[selected][i].posx = 5;
-            sub_buttons[selected][i].posy = (50+10)*(i/2) - item_slider_y*r;
+            sub_buttons[selected][i].posy = (50+icon_gap)*(i/2) - item_slider_y*r;
             // cout<<sub_buttons[selected][i].posx<<"  "<<sub_buttons[selected][i].posy<<endl;
             sub_buttons[selected][i].draw();
             if(i+1<sub_buttons[selected].size()){
                 sub_buttons[selected][i+1].posx = 50+5+10;
-                sub_buttons[selected][i+1].posy = (50+10)*(i/2) - item_slider_y*r;
+                sub_buttons[selected][i+1].posy = (50+icon_gap)*(i/2) - item_slider_y*r;
                 // cout<<sub_buttons[selected][i+1].posx<<"  "<<sub_buttons[selected][i+1].posy<<endl;
                 sub_buttons[selected][i+1].draw();
             }

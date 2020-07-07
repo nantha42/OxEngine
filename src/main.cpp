@@ -86,7 +86,7 @@ public:
     {   string font;
         int size;
         cin>>font>>size;
-        // textRenderer = new TextRenderer(font,size);
+        textRenderer = new TextRenderer(font,size);
         // textRenderer->textcolor = {0xff,0xff,0xff,0xff};
         // cout<<"Renderint Text"<<endl;
         // Text *t = new Text(textRenderer->renderText("SSSe"));
@@ -143,9 +143,11 @@ public:
             n--;
         }
         create_buttons();
+        cout<<"Building Inventory"<<endl;
         build_inventory = new Inventory("build_inventory.txt");
         build_inventory->add_attached_button(&buttons[1]);
         build_inventory->add_attached_button(&buttons[2]);
+        build_inventory->textRenderer = textRenderer;
     }
     void create_buttons(){
         Button build_button(10,100,"../Assets/Images/buttons/build");

@@ -1,5 +1,5 @@
 50
-lazy.ttf 10
+../Assets/Fonts/RapierZero.ttf 30
 11
 ../Assets/Images/water_tile/water_tile
 1 

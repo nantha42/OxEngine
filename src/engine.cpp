@@ -102,17 +102,18 @@ bool Engine::loadMedia()
         // gHelloWorld = NULL;
         // gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
         // this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
-        
+        cout<<"Assigning Render"<<endl;
         for(int i=0;i<game->texts.size();i++)
             game->texts[i]->render = gRender;
+        cout<<"Assigning Render"<<endl;
+        game->textRenderer->renderer = gRender;
         
-        
-
+        cout<<"Assigning Render for "<<endl;
         for(int i=0;i<game->sprites.size();i++){
             game->sprites[i].gRender = gRender;
             game->sprites[i].load_images();
         }
-        
+        cout<<"Assigning Render"<<endl;
         cout<<"Button size in engine:  "<<game->buttons.size()<<endl;
         for(int i=0;i<game->buttons.size();i++){
             game->buttons[i].renderer = gRender;

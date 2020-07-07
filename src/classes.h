@@ -175,12 +175,13 @@ class InventoryButton{
     
     SDL_Rect rect;
     SDL_Renderer *renderer;
-    InventoryButton(int id,string icon_path,bool show_state){
+    InventoryButton(int id,string icon_path,string name,bool show_state){
         this->id = 0;
         this->icon_path = icon_path;
         this->show_state = show_state;
+        this->name = name;
     }
-    bool load_icon(){
+    bool load_icon(SDL_Texture* text_name){
         string s;
         if(show_state)
             s = icon_path+"0.png";
@@ -189,14 +190,38 @@ class InventoryButton{
         cout<<"Loading "<<s<<endl;
         SDL_Surface* img = IMG_Load(s.c_str());
         if(img != NULL){
-            icon_on = SDL_CreateTextureFromSurface(renderer,img);
+            int a=0,b=0;
+            if(text_name!=NULL)
+                SDL_QueryTexture(text_name,NULL,NULL,&a,&b);
+            SDL_Texture* temp = SDL_CreateTextureFromSurface(renderer,img);
+            int iw=img->w,ih=img->h;
+            if(iw>128){
+                iw = 128;ih = 128;}
+
+            cout<<"IMWH"<<img->w<<" "<<img->h<<endl;
+            icon_on = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, iw,ih+b);
+            SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+
+            SDL_SetRenderTarget(renderer,icon_on);
+            SDL_SetTextureBlendMode(icon_on,SDL_BLENDMODE_BLEND);
+            // SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
+            // SDL_Rect fillrect = {0,0,img->w,img->h};
+            // SDL_RenderFillRect(renderer,&fillrect);
+            SDL_Rect temp_rect = {0,0,ih,ih};
+            SDL_RenderCopy(renderer,temp,NULL,&temp_rect);
+            SDL_Rect text_rect = {0,ih,a,b};
+            SDL_RenderCopy(renderer,text_name,NULL,&text_rect);
+            SDL_SetRenderTarget(renderer,NULL);
+
             if(icon_on==NULL){
                 cout<<"Error in loading inventory button"<<endl;
                 SDL_FreeSurface(img);
                 return false;
             }
+            // SDL_QueryTexture(icon_on,NULL,NULL,&rect.w,&rect.h);
             rect.w = 50;
             rect.h = 50;
+            
         }else{
             cout<<"Loading Failed"<<endl;
         }
@@ -242,62 +267,8 @@ class InventoryButton{
         return false;
     }
 };
-
 struct point{
     int x,y;
-
-};
-
-class Inventory{
-    
-    int category_slider_x = 60;
-    int category_slider_y = 0;
-
-    int item_slider_x = 50+50+5+10+5;
-    int item_slider_y = 0;
-
-    int category_slider_size = 0;
-    int item_slider_size = 0;
-
-    bool category_dragging = false;
-    bool item_dragging = false;
-    
-    int category_drag_startpoint;
-    int items_drag_startpoint;
-    
-    bool drag_inventory = false;
-    int inv_drag_offset = 0;
-    
-    int inventory_width = 200;
-    int inventory_height = 150;
-    void category_slider_clicked(int x,int y,bool mouse_holded);
-    void item_slider_clicked(int x,int y,bool mouse_holded);
-    vector<Button* >attached_buttons; 
-
-    public:
-    bool shown = false;
-    vector<string> categories_names;
-    vector<vector<string>>items_names;
-    vector<SDL_Texture*> texture_categories;
-    vector<vector<SDL_Texture*>> texture_items;
-    vector<InventoryButton> buttons;
-    vector<vector<InventoryButton>> sub_buttons;
-    int posx=500,posy=500;
-    SDL_Renderer * renderer;
-    Inventory(string categoryfile);
-    void place_inventory(int x,int y);
-    void handle_clicks(EventTriggered &et);
-    void load_images();
-    void stable_buttons();
-    SDL_Texture* render_categoryButtons();
-    SDL_Texture* render_itemButtons();
-    void assignRenderer(SDL_Renderer*gRender);
-    void showInventory();
-    void hideInventory();
-    int getClickedItem();
-    void draw();
-    void add_attached_button(Button *button);
-    void update_attached_buttons();
 };
 class TextRenderer{
     TTF_Font *font;
@@ -306,7 +277,7 @@ class TextRenderer{
 
     public:
     SDL_Color textcolor;
-    SDL_Renderer *renderer;
+    SDL_Renderer *renderer=NULL;
     TextRenderer(string ttf_path,int size){
         this->size = size;
         this->ttf_path = ttf_path;
@@ -338,7 +309,7 @@ class TextRenderer{
             cout<<"Error loading font: "<<TTF_GetError()<<endl;
         }
     }
-    SDL_Surface* renderText(string s){
+    SDL_Surface* renderSurface(string s){
         SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
         cout<<"Textu Surface Readu"<<endl;
         if(text_surface!=NULL){
@@ -346,7 +317,71 @@ class TextRenderer{
         }else
             return NULL;
     }
+    SDL_Texture* renderTexture(string s){
+        SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
+        cout<<"Textu Surface Readu"<<endl;
+        if(text_surface!=NULL){
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,text_surface);
+            return texture;
+        }else
+            return NULL;
+    }
 };
+
+
+class Inventory{
+    
+    int category_slider_x = 60;
+    int category_slider_y = 0;
+
+    int item_slider_x = 50+50+5+10+5;
+    int item_slider_y = 0;
+
+    int category_slider_size = 0;
+    int item_slider_size = 0;
+
+    bool category_dragging = false;
+    bool item_dragging = false;
+    
+    int category_drag_startpoint;
+    int items_drag_startpoint;
+    
+    bool drag_inventory = false;
+    int inv_drag_offset = 0;
+    
+    int inventory_width = 200;
+    int inventory_height = 150;
+    void category_slider_clicked(int x,int y,bool mouse_holded);
+    void item_slider_clicked(int x,int y,bool mouse_holded);
+    vector<Button* >attached_buttons; 
+
+    public:
+    bool shown = false;
+    TextRenderer *textRenderer;
+    vector<string> categories_names;
+    vector<vector<string>>items_names;
+    vector<SDL_Texture*> texture_categories;
+    vector<vector<SDL_Texture*>> texture_items;
+    vector<InventoryButton> buttons;
+    vector<vector<InventoryButton>> sub_buttons;
+    int posx=500,posy=500;
+    SDL_Renderer * renderer;
+    Inventory(string categoryfile);
+    void place_inventory(int x,int y);
+    void handle_clicks(EventTriggered &et);
+    void load_images();
+    void stable_buttons();
+    SDL_Texture* render_categoryButtons();
+    SDL_Texture* render_itemButtons();
+    void assignRenderer(SDL_Renderer*gRender);
+    void showInventory();
+    void hideInventory();
+    int getClickedItem();
+    void draw();
+    void add_attached_button(Button *button);
+    void update_attached_buttons();
+};
+
 class Text{
     SDL_Texture* texture=NULL;
     SDL_Surface* text_surface=NULL;
@@ -382,14 +417,16 @@ class Text{
             else{ cout<<"Renderer is NULL"<<endl;return NULL;}
         }
     }
+    
 };
 class Game{
     protected:
     bool isometric_game = false;
     Uint32 unit_time=0;
     
-    TextRenderer *textRenderer;
+    
     public:
+    TextRenderer *textRenderer;
     vector<Text*> texts;
     bool selected_tile[grid_size][grid_size];
     int local_map[grid_size][grid_size];
