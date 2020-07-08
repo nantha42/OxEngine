@@ -32,6 +32,7 @@ Inventory::Inventory(string categoryfile){
             // items_names.push_back(items_group);
         }
         buttons[0].state = true;
+        file.close();
     }
 void Inventory::place_inventory(int x,int y){
     posx = x;

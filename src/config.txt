@@ -1,5 +1,5 @@
-50
-../Assets/Fonts/RapierZero.ttf 30
+40
+../Assets/Fonts/Quicksand-Bold.ttf 35
 11
 ../Assets/Images/water_tile/water_tile
 1 

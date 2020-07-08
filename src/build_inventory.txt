@@ -1,16 +1,16 @@
 3
 ../Assets/Images/buttons/tree trees
 6
-../Assets/Images/isometric_tile ground 1
-../Assets/Images/isometric_tree4 tree1 2
-../Assets/Images/isometric_tree5 tree2 3
-../Assets/Images/isometric_tree6 tree3 7
-../Assets/Images/isometric_tree7 tree4 8
-../Assets/Images/isometric_tree8 tree5 9
-../Assets/Images/buttons/power power
+../Assets/Images/isometric_tile Ground 1
+../Assets/Images/isometric_tree4 Tree1 2
+../Assets/Images/isometric_tree5 Tree2 3
+../Assets/Images/isometric_tree6 Tree3 7
+../Assets/Images/isometric_tree7 Tree4 8
+../Assets/Images/isometric_tree8 Tree5 9
+../Assets/Images/buttons/power Power
 1
-../Assets/Images/reactor_tile/reactor_tile1 reactor 5
+../Assets/Images/reactor_tile/reactor_tile1 Reactor 5
 ../Assets/Images/buttons/research research
 2
-../Assets/Images/laboratory/lab_tile1 lab 4
-../Assets/Images/oil_refinery/oilrefinery oil 10
+../Assets/Images/laboratory/lab_tile1 Lab 4
+../Assets/Images/oil_refinery/oilrefinery Oil 10

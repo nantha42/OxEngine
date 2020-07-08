@@ -36,7 +36,6 @@ struct EventTriggered{
         int mosy;
         int movx;
         int movy;
-
 };
 
 class Vector{

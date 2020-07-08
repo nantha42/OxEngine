@@ -30,13 +30,9 @@ Engine::Engine(){
 
 bool Engine::init()
 {
-    //Initialization flag
     bool success = true;
     
     
-    // sort(this->game->sprites.begin(),this->game->sprites.end(),isometric_position_comparator);
-    
-    // sort(game->sprites.begin(),game->sprites.end(),isometric_position_comparator());
     //Initialize SDL
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
     {
@@ -80,28 +76,6 @@ bool Engine::loadMedia()
 
     //Load splash image    
     gHelloWorld = IMG_Load("../Assets/Images/isometric_tile.png");
-    // if( gHelloWorld == NULL )
-    // {
-    //     printf( "Unable to load image %s! SDL Error: %s\n", "images/hello_world.bmp", SDL_GetError() );
-    //     success = false;
-    // }else{
-        // SDL_SetRenderDrawColor(gRender,0x00,0x00,0x00,0x00);
-        // gTexture = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
-        // this->textures.push_back(gTexture);
-        // if(gTexture == NULL)
-        //     cout<<"Texture is Null"<<endl;
-        // SDL_FreeSurface(gHelloWorld);
-
-        // gHelloWorld = NULL;
-        // gHelloWorld = IMG_Load("../Assets/Images/building1.png");
-        // building = SDL_CreateTextureFromSurface(gRender,gHelloWorld);
-        // this->textures.push_back(building);
-        // if(building == NULL)
-        //     cout<<"Texture is Null"<<endl;
-        // SDL_FreeSurface(gHelloWorld);
-        // gHelloWorld = NULL;
-        // gHelloWorld = IMG_Load("../Assets/Images/isometric_water_tile.png");
-        // this->textures.push_back(SDL_CreateTextureFromSurface(gRender,gHelloWorld));
         cout<<"Assigning Render"<<endl;
         for(int i=0;i<game->texts.size();i++)
             game->texts[i]->render = gRender;
@@ -134,15 +108,13 @@ void Engine::close()
 {
     //Deallocate surface
     SDL_DestroyRenderer(gRender);
-
     //Destroy window
     SDL_DestroyWindow( gWindow );
-    
-    gWindow = NULL;
-    
+    gWindow = NULL;    
     //Quit SDL subsystems
     IMG_Quit();
     SDL_Quit();
+    TTF_Quit();
 }
 void Engine::getPosition(int i,int j,int &x,int &y,int tile_size,int size)
 {
