@@ -1,6 +1,69 @@
 #include "classes.h"
 using namespace std;
 
+enum Elements
+{
+    energy,
+    hydrogen,
+    helium,
+    carbon,
+    aluminium,
+    silicon,
+    titanium,
+    uranium,
+    plutonium,
+    elements_size
+};
+class Item
+{
+    int posx;
+    int posy;
+    time_t begin_time;
+
+public:
+    Item(int x, int y)
+    {
+        posx = x;
+        posy = y;
+        begin_time = time(NULL);
+    }
+    double getElapsedTime()
+    {
+        return (double)(begin_time - time(NULL));
+    }
+};
+class Manager
+{
+public:
+    int stock[elements_size];
+    int available[elements_size];
+    map<pair<int, int>, bool> buildings_existed;
+    vector<vector<int>> *world;
+    Manager(vector<vector<int>> &map)
+    {
+        //   istream avaliable("available.txt","r");
+        world = &map;
+        for (int i = 0; i < elements_size; i++)
+            stock[i] = 0;
+        cout<<"Traversing world"<<endl;
+        
+        cout<<"Finished"<<endl;
+    }
+    void update()
+    {
+        for (int i = 0; i < world->size(); i++)
+        {
+            
+            for (int j = 0; j < (world->at(i)).size(); j++)
+            {
+                if( (world->at(i))[j]==1){
+                    
+                }
+            }
+        }
+    }
+};
+
 class Structures
 {
 private:
@@ -13,7 +76,7 @@ public:
     vector<vector<int>> world;
     Structures()
     {
-        cin>>mapsize;
+        cin >> mapsize;
         for (int i = 0; i < mapsize; i++)
         {
             vector<int> rows(mapsize, 1);
@@ -25,47 +88,48 @@ public:
             for (int j = 0; j < mapsize; j++)
             {
                 int x = 1 + rand() % 10;
-                switch(x){
-                    case 1:
+                switch (x)
+                {
+                case 1:
                     world[i][j] = x;
                     break;
-                    case 2:
-                    world[i][j]=x;
+                case 2:
+                    world[i][j] = x;
                     break;
-                    case 3:
+                case 3:
                     world[i][j] = x;
                     break;
                 }
             }
         }
         //place river
-        int x=0,y=0;
-        while(x<mapsize && y <mapsize){
-            int k = rand()%2;
-            if(k==0)
+        int x = 0, y = 0;
+        while (x < mapsize && y < mapsize)
+        {
+            int k = rand() % 2;
+            if (k == 0)
                 x++;
-            if(k)
+            if (k)
                 y++;
             world[x][y] = 0;
         }
         int c = 3;
-        world[1+c][3+c]=5;
-        world[c][3+c] = 3;
-        world[c][3+c+1]=3;
-        world[1+1+c][3+1+c] = -1;
-        world[1+c][3+1+c] = -1;
-        world[1+1+c][3+c] = -1;
+        world[1 + c][3 + c] = 5;
+        world[c][3 + c] = 3;
+        world[c][3 + c + 1] = 3;
+        world[1 + 1 + c][3 + 1 + c] = -1;
+        world[1 + c][3 + 1 + c] = -1;
+        world[1 + 1 + c][3 + c] = -1;
 
         world[1][7] = 5;
-        world[1+1][7] = -1;
-        world[1][7+1] = -1;
-        world[1+1][7+1] = -1;
+        world[1 + 1][7] = -1;
+        world[1][7 + 1] = -1;
+        world[1 + 1][7 + 1] = -1;
         world[0][8] = 2;
 
-        world[1][4]= 4;
+        world[1][4] = 4;
         world[1][5] = 4;
     }
-    
 };
 class MyGame : public Game
 {
@@ -75,35 +139,27 @@ class MyGame : public Game
     Sprite *treeTile1;
     Sprite *simpletile;
     Structures structures;
-    
+
     bool oup = false;
     bool odown = false;
     bool oleft = false;
     bool oright = false;
-    
+
 public:
     MyGame(bool isometric) : Game(isometric)
-    {   string font;
+    {
+        string font;
+
+        Manager m(structures.world);
         int size;
-        cin>>font>>size;
-        textRenderer = new TextRenderer(font,size);
-        // textRenderer->textcolor = {0xff,0xff,0xff,0xff};
-        // cout<<"Renderint Text"<<endl;
-        // Text *t = new Text(textRenderer->renderText("SSSe"));
-        // t->x = screen_width/2 - t->w/2;
-        // t->y = 80;
-        
-        // TextRenderer* textRenderer1 = new TextRenderer(font,10);
-        // textRenderer1->textcolor = {0xff,0xff,0xff,0xff};
-        // Text *t1 = new Text(textRenderer1->renderText("SSSe"));
-        // t1->x = screen_width/2 + t1->w/2 +2;
-        // t1->y = 80;
-        // texts.push_back(t1);
-        // texts.push_back(t);
-        
+        cin >> font >> size;
+        textRenderer = new TextRenderer(font, size);
+
         int n;
-        for(int i=0;i<grid_size;i++){
-            for(int j=0;j<grid_size;j++){
+        for (int i = 0; i < grid_size; i++)
+        {
+            for (int j = 0; j < grid_size; j++)
+            {
                 selected_tile[i][j] = false;
             }
         }
@@ -120,13 +176,13 @@ public:
             cin >> n_images;
             if (animated)
                 cin >> animation_fps;
-            cin>>size;
+            cin >> size;
             Sprite tile(animated, true, NULL);
             simpletile = &tile;
-            
+
             if (animated)
             {
-                cout<<path<<endl;
+                cout << path << endl;
                 simpletile->animation_images_path = path;
                 simpletile->animation_fps = animation_fps;
             }
@@ -134,54 +190,57 @@ public:
                 simpletile->image_path = path;
             simpletile->size = size;
             simpletile->n_images = n_images;
-            simpletile->rect.w = tile_size*size;
-            simpletile->rect.h = tile_size*size;
-            // cout<<tile_size*size<<endl;
+            simpletile->rect.w = tile_size * size;
+            simpletile->rect.h = tile_size * size;
             simpletile->rect.x = 0;
             simpletile->rect.y = 0;
             sprites.push_back(*simpletile);
             n--;
         }
         create_buttons();
-        cout<<"Building Inventory"<<endl;
+        cout << "Building Inventory" << endl;
         build_inventory = new Inventory("build_inventory.txt");
         build_inventory->add_attached_button(&buttons[1]);
         build_inventory->add_attached_button(&buttons[2]);
         build_inventory->textRenderer = textRenderer;
     }
-    void create_buttons(){
-        Button build_button(10,100,"../Assets/Images/buttons/build");
-        Button build_cancel_button(70,100,"../Assets/Images/buttons/cancel");
-        Button build_place_button(70,100,"../Assets/Images/buttons/place");
+    void create_buttons()
+    {
+        Button build_button(10, 100, "../Assets/Images/buttons/build");
+        Button build_cancel_button(70, 100, "../Assets/Images/buttons/cancel");
+        Button build_place_button(70, 100, "../Assets/Images/buttons/place");
         buttons.push_back(build_button);
         buttons.push_back(build_cancel_button);
         buttons.push_back(build_place_button);
-
     }
     void update()
     {
         Uint32 curtime = SDL_GetTicks();
         //updating the local map changes into world map
-        if(local_map_changed){
-            local_map_changed= false;
-            for(int i=0;i<grid_size;i++){
-                for(int j=0;j<grid_size;j++){
-                    structures.world[(int)structures.curx+i][(int)structures.cury+j] = local_map[i][j];
+        if (local_map_changed)
+        {
+            local_map_changed = false;
+            for (int i = 0; i < grid_size; i++)
+            {
+                for (int j = 0; j < grid_size; j++)
+                {
+                    structures.world[(int)structures.curx + i][(int)structures.cury + j] = local_map[i][j];
                 }
             }
         }
-        
+
         for (int i = 0; i < structures.localsize; i++)
             for (int j = 0; j < structures.localsize; j++)
                 local_map[i][j] = structures.world[(int)structures.curx + i][(int)structures.cury + j];
-                
+
         for (int i = 0; i < sprites.size(); i++)
             sprites[i].update();
-        
-        if(buttons[1].isPressed()){
+
+        if (buttons[1].isPressed())
+        {
             buttons[1].stablize();
-            for(int i=0;i<grid_size;i++)
-                for(int j=0;j<grid_size;j++)
+            for (int i = 0; i < grid_size; i++)
+                for (int j = 0; j < grid_size; j++)
                     selected_tile[i][j] = false;
         }
     }
@@ -208,8 +267,8 @@ public:
         if (et.k_s && !odown)
         {
             odown = true;
-            if(structures.curx<structures.mapsize-structures.localsize-1)
-                structures.curx+=1;
+            if (structures.curx < structures.mapsize - structures.localsize - 1)
+                structures.curx += 1;
         }
         if (et.k_a && !oleft)
         {
@@ -235,7 +294,7 @@ int main()
     // cin>>grid_size;
     // cin>>tile_size;
     Engine ox;
-    
+
     if (!ox.init())
     {
         printf("Failed to initialize!\n");
@@ -243,7 +302,7 @@ int main()
     else
     {
         MyGame game(true);
-        cout<<"Main "<<game.buttons.size()<<endl;    
+        cout << "Main " << game.buttons.size() << endl;
         ox.assignGame(game);
         //Load media
         if (!ox.loadMedia())
