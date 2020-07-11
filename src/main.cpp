@@ -12,6 +12,7 @@ enum Elements
     titanium,
     uranium,
     plutonium,
+    research,
     elements_size
 };
 class Item
@@ -159,17 +160,14 @@ class MyGame : public Game
     bool oleft = false;
     bool oright = false;
     Manager *manager;
-
 public:
     MyGame(bool isometric) : Game(isometric)
     {
         string font;
-
         manager = new Manager(structures.world);
         int size;
         cin >> font >> size;
         textRenderer = new TextRenderer(font, size);
-
         int n;
         for (int i = 0; i < grid_size; i++)
         {
@@ -218,6 +216,7 @@ public:
         build_inventory->add_attached_button(&buttons[1]);
         build_inventory->add_attached_button(&buttons[2]);
         build_inventory->textRenderer = textRenderer;
+        level_status_bar = new LevelStatusBar(screen_width/2-100,0);
     }
     void create_buttons()
     {
@@ -239,6 +238,7 @@ public:
         Uint32 curtime = SDL_GetTicks();
         //updating the local map changes into world map
         manager->update();
+        
         if (local_map_changed)
         {
             local_map_changed = false;

@@ -128,6 +128,47 @@ class Button{
     }
 };
 
+class LevelStatusBar{
+    int bar_length;
+    int current_value;
+    int posx=0,posy=0;
+    SDL_Texture* status_bg;
+    SDL_Texture* bg;
+    SDL_Renderer* renderer;
+    SDL_Surface* img;
+    public:
+    LevelStatusBar(int x,int y){
+        posx = x;
+        posy = y;
+    }
+    void setRenderer(SDL_Renderer* renderer){
+        this->renderer = renderer;
+        if(this->renderer!=NULL){
+            img = IMG_Load("../Assets/Images/level_status_bar.png");
+            if(img!=NULL){
+                cout<<"Status Bar Loaded"<<endl;
+                bg = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,img->w,img->h);
+                
+                status_bg = SDL_CreateTextureFromSurface(renderer,img);
+            }else{
+                cout<<"Status Bar Not Loaded"<<endl;
+            }
+        }
+    }
+    void draw(){
+    
+        SDL_Rect rect = {0,0,img->w,img->h};
+        SDL_SetTextureBlendMode(bg,SDL_BLENDMODE_BLEND);
+        SDL_SetRenderTarget(renderer,bg);
+        SDL_RenderCopy(renderer,status_bg,NULL,&rect);
+        
+        // SDL_RenderDrawRectF(renderer,)
+        SDL_SetRenderTarget(renderer,NULL);
+    
+        rect = {posx,posy,img->w,img->h};
+        SDL_RenderCopy(renderer,bg,NULL,&rect);
+    }
+};
 class Sprite{
     
     public:
@@ -434,6 +475,7 @@ class Game{
     vector<Sprite> sprites;
     vector<Button> buttons;
     Inventory* build_inventory;
+    LevelStatusBar *level_status_bar;
     Game(bool isometric_game){
         this->isometric_game = isometric_game;
     }
@@ -483,6 +525,7 @@ class Engine{
     void drawisoworld();
     void drawcontrols();
     void drawTexts();
+    void drawStatusBars();
     void run();
     void update();
     void event_handler();

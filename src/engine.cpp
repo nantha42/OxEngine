@@ -101,6 +101,7 @@ bool Engine::loadMedia()
         game->build_inventory->assignRenderer(gRender);
         game->build_inventory->load_images();
         
+        game->level_status_bar->setRenderer(gRender);
     // }   
     return success;
 }
@@ -698,6 +699,9 @@ void Engine::drawTexts(){
         SDL_RenderCopy(gRender,game->texts[i]->getTexture(),NULL,&rect);
     }
 }
+void Engine::drawStatusBars(){
+    game->level_status_bar->draw();
+}
 void Engine::run(){
     while(!quit){
         
@@ -706,6 +710,7 @@ void Engine::run(){
         drawisoworld();
         drawcontrols();
         drawTexts();
+        drawStatusBars();
         update();
         
     }
