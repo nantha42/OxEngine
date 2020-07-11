@@ -16,20 +16,41 @@ enum Elements
 };
 class Item
 {
+    
+public:
     int posx;
     int posy;
     time_t begin_time;
-
-public:
+    time_t  prev_time;
+    int id;
+    int produces_element;
+    int produces_per_sec;
+    int produced = 0;
+    
     Item(int x, int y)
     {
         posx = x;
         posy = y;
         begin_time = time(NULL);
+        prev_time = (int)time(NULL);    
     }
-    double getElapsedTime()
+    int transfer_produced(){
+        int t = produced;
+        produced = 0;
+        return t;
+    }
+    void update(){
+        // if(begin_time-time(NULL)>)
+        time_t curtime = time(NULL);
+        if((int)(curtime-prev_time) >= 1){
+            produced += (curtime-prev_time)*produces_per_sec;
+            prev_time = curtime;
+        }
+        // cout<<prev_time<<" "<<curtime<<endl;
+    }
+    double getLifeTime()
     {
-        return (double)(begin_time - time(NULL));
+        return (double)(time(NULL) - begin_time);
     }
 };
 class Manager
@@ -38,6 +59,7 @@ public:
     int stock[elements_size];
     int available[elements_size];
     map<pair<int, int>, bool> buildings_existed;
+    vector<Item> catalog;
     vector<vector<int>> *world;
     Manager(vector<vector<int>> &map)
     {
@@ -47,18 +69,22 @@ public:
             stock[i] = 0;
         cout<<"Traversing world"<<endl;
         cout<<"Finished"<<endl;
+        Item reactor(1,7);
+        reactor.produces_element = energy;
+        reactor.produces_per_sec = 1;
+        reactor.id = 1;
+        catalog.push_back(reactor);
     }
     void update()
     {
-        for (int i = 0; i < world->size(); i++)
-        {
-            for (int j = 0; j < (world->at(i)).size(); j++)
-            {
-                if( (world->at(i))[j]==1){
-                    
-                }
-            }
+        for(auto &item:catalog){
+            item.update();
+            stock[item.produces_element] += item.transfer_produced();   
         }
+        for(int i=0;i<elements_size;i++){
+            cout<<stock[i]<<" ";
+        }
+        cout<<endl;
     }
 };
 
@@ -111,22 +137,12 @@ public:
                 y++;
             world[x][y] = 0;
         }
-        int c = 3;
-        world[1 + c][3 + c] = 5;
-        world[c][3 + c] = 3;
-        world[c][3 + c + 1] = 3;
-        world[1 + 1 + c][3 + 1 + c] = -1;
-        world[1 + c][3 + 1 + c] = -1;
-        world[1 + 1 + c][3 + c] = -1;
-
+        
         world[1][7] = 5;
         world[1 + 1][7] = -1;
         world[1][7 + 1] = -1;
         world[1 + 1][7 + 1] = -1;
-        world[0][8] = 2;
-
-        world[1][4] = 4;
-        world[1][5] = 4;
+        
     }
 };
 class MyGame : public Game
@@ -142,13 +158,14 @@ class MyGame : public Game
     bool odown = false;
     bool oleft = false;
     bool oright = false;
+    Manager *manager;
 
 public:
     MyGame(bool isometric) : Game(isometric)
     {
         string font;
 
-        Manager m(structures.world);
+        manager = new Manager(structures.world);
         int size;
         cin >> font >> size;
         textRenderer = new TextRenderer(font, size);
@@ -221,6 +238,7 @@ public:
     {
         Uint32 curtime = SDL_GetTicks();
         //updating the local map changes into world map
+        manager->update();
         if (local_map_changed)
         {
             local_map_changed = false;
