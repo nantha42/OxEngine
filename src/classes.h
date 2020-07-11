@@ -158,7 +158,6 @@ class Sprite{
     void load_images();
     void set_image_path(string path);
     virtual void update();
-
 };
 
 class InventoryButton{
