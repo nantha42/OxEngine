@@ -128,27 +128,92 @@ class Button{
     }
 };
 
+class TextRenderer{
+    TTF_Font *font;
+    string ttf_path;
+    int size;
+
+    public:
+    SDL_Color textcolor;
+    SDL_Renderer *renderer=NULL;
+    TextRenderer(string ttf_path,int size){
+        this->size = size;
+        this->ttf_path = ttf_path;
+        textcolor = {0xff,0xff,0xff,0xff};
+        cout<<"Loading "<<ttf_path.c_str()<<endl;
+        // SDL_RWops *rw=SDL_RWFromFile(ttf_path.c_str(),"rb");
+        
+        if(!TTF_WasInit()) {
+            cerr << "TTF_Init failed " << TTF_GetError() << endl;
+            exit(1);
+        }else{
+            cout<<"TTF initialized"<<endl;
+        }
+        // if(!rw){
+        //     fprintf(stderr, "Couldn't load 23 pt font from %s: %s\n", ttf_path.c_str(), SDL_GetError());
+        //     // return(2);
+        // }
+        
+        font = TTF_OpenFont(ttf_path.c_str(),size);
+        if ( font == NULL ) 
+        {    
+            fprintf(stderr, "Couldn't load 22 pt font from %s: %s\n", ttf_path.c_str(),SDL_GetError());    
+            // return(2);
+        }else{
+            cout<<"Font Loaded"<<endl;
+        }
+
+        // font = TTF_OpenFont(ttf_path.c_str(),size);
+        if(font == NULL){
+            cout<<"Error loading font: "<<TTF_GetError()<<endl;
+        }
+    }
+    SDL_Surface* renderSurface(string s){
+        SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
+        cout<<"Textu Surface Readu"<<endl;
+        if(text_surface!=NULL){
+            return text_surface;
+        }else
+            return NULL;
+    }
+    SDL_Texture* renderTexture(string s){
+
+        SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
+        cout<<"Textu Surface Readu"<<endl;
+        if(text_surface!=NULL){
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,text_surface);
+            return texture;
+        }else
+            return NULL;
+    }
+};
+
+
 class LevelStatusBar{
     int bar_length;
-    int current_value;
+    int current_value = 30;
     int posx=0,posy=0;
+    
     SDL_Texture* status_bg;
     SDL_Texture* bg;
     SDL_Renderer* renderer;
     SDL_Surface* img;
+    TextRenderer *textRenderer;
     public:
     LevelStatusBar(int x,int y){
         posx = x;
         posy = y;
+
     }
     void setRenderer(SDL_Renderer* renderer){
         this->renderer = renderer;
+        textRenderer = new TextRenderer("../Assets/Fonts/Quicksand-Bold.ttf",12);
+        textRenderer->renderer = renderer;
         if(this->renderer!=NULL){
             img = IMG_Load("../Assets/Images/level_status_bar.png");
             if(img!=NULL){
                 cout<<"Status Bar Loaded"<<endl;
                 bg = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,img->w,img->h);
-                
                 status_bg = SDL_CreateTextureFromSurface(renderer,img);
             }else{
                 cout<<"Status Bar Not Loaded"<<endl;
@@ -161,12 +226,19 @@ class LevelStatusBar{
         SDL_SetTextureBlendMode(bg,SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer,bg);
         SDL_RenderCopy(renderer,status_bg,NULL,&rect);
-        
+        SDL_Texture* left_number = textRenderer->renderTexture(to_string(current_value/1000));
+        SDL_Texture* right_number = textRenderer->renderTexture(to_string(current_value/1000+1));
+        int w,h;
+        SDL_QueryTexture(left_number,NULL,NULL,&w,&h);
+        SDL_Rect text1 = {6,18,w,h};
+        SDL_Rect text2 = {177,18,w,h};
+        SDL_RenderCopy(renderer,left_number,NULL,&text1);
+        SDL_RenderCopy(renderer,right_number,NULL,&text2);
         // SDL_RenderDrawRectF(renderer,)
         SDL_SetRenderTarget(renderer,NULL);
-    
         rect = {posx,posy,img->w,img->h};
         SDL_RenderCopy(renderer,bg,NULL,&rect);
+        
     }
 };
 class Sprite{
@@ -310,63 +382,6 @@ class InventoryButton{
 };
 struct point{
     int x,y;
-};
-class TextRenderer{
-    TTF_Font *font;
-    string ttf_path;
-    int size;
-
-    public:
-    SDL_Color textcolor;
-    SDL_Renderer *renderer=NULL;
-    TextRenderer(string ttf_path,int size){
-        this->size = size;
-        this->ttf_path = ttf_path;
-        cout<<"Loading "<<ttf_path.c_str()<<endl;
-        // SDL_RWops *rw=SDL_RWFromFile(ttf_path.c_str(),"rb");
-        
-        if(!TTF_WasInit()) {
-            cerr << "TTF_Init failed " << TTF_GetError() << endl;
-            exit(1);
-        }else{
-            cout<<"TTF initialized"<<endl;
-        }
-        // if(!rw){
-        //     fprintf(stderr, "Couldn't load 23 pt font from %s: %s\n", ttf_path.c_str(), SDL_GetError());
-        //     // return(2);
-        // }
-        
-        font = TTF_OpenFont(ttf_path.c_str(),size);
-        if ( font == NULL ) 
-        {    
-            fprintf(stderr, "Couldn't load 22 pt font from %s: %s\n", ttf_path.c_str(),SDL_GetError());    
-            // return(2);
-        }else{
-            cout<<"Font Loaded"<<endl;
-        }
-
-        // font = TTF_OpenFont(ttf_path.c_str(),size);
-        if(font == NULL){
-            cout<<"Error loading font: "<<TTF_GetError()<<endl;
-        }
-    }
-    SDL_Surface* renderSurface(string s){
-        SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
-        cout<<"Textu Surface Readu"<<endl;
-        if(text_surface!=NULL){
-            return text_surface;
-        }else
-            return NULL;
-    }
-    SDL_Texture* renderTexture(string s){
-        SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
-        cout<<"Textu Surface Readu"<<endl;
-        if(text_surface!=NULL){
-            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,text_surface);
-            return texture;
-        }else
-            return NULL;
-    }
 };
 
 

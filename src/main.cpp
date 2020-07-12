@@ -47,7 +47,6 @@ public:
             produced += (curtime-prev_time)*produces_per_sec;
             prev_time = curtime;
         }
-        // cout<<prev_time<<" "<<curtime<<endl;
     }
     double getLifeTime()
     {
@@ -172,9 +171,8 @@ public:
         for (int i = 0; i < grid_size; i++)
         {
             for (int j = 0; j < grid_size; j++)
-            {
                 selected_tile[i][j] = false;
-            }
+            
         }
         cin >> n;
         while (n > 0)
@@ -223,7 +221,7 @@ public:
         Button build_button(10, 100, "../Assets/Images/buttons/build");
         Button build_cancel_button(70, 100, "../Assets/Images/buttons/cancel");
         Button build_place_button(70, 100, "../Assets/Images/buttons/place");
-        Button resources_stats_button(10,50,"../Assets/Images/buttons/resources_stats_button");        
+        Button resources_stats_button(10,50,"../Assets/Images/buttons/resources_stats_button");
         Button research_button(10,150,"../Assets/Images/buttons/research_button");
         Button solar_button(10,200,"../Assets/Images/buttons/solar_button");
         buttons.push_back(build_button);
