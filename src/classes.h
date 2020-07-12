@@ -136,6 +136,11 @@ class TextRenderer{
     public:
     SDL_Color textcolor;
     SDL_Renderer *renderer=NULL;
+    TextRenderer(string ttf_path,int size,SDL_Color color):TextRenderer(ttf_path,size){
+        cout<<"Colors:  "<<color.r<<" "<<color.g<<" "<<color.b<<endl;
+        
+        textcolor = color;
+    }
     TextRenderer(string ttf_path,int size){
         this->size = size;
         this->ttf_path = ttf_path;
@@ -177,7 +182,7 @@ class TextRenderer{
             return NULL;
     }
     SDL_Texture* renderTexture(string s){
-
+        
         SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
         cout<<"Textu Surface Readu"<<endl;
         if(text_surface!=NULL){
@@ -191,7 +196,7 @@ class TextRenderer{
 
 class LevelStatusBar{
     int bar_length;
-    int current_value = 30;
+    int current_value = 30000;
     int posx=0,posy=0;
     
     SDL_Texture* status_bg;
@@ -221,7 +226,6 @@ class LevelStatusBar{
         }
     }
     void draw(){
-    
         SDL_Rect rect = {0,0,img->w,img->h};
         SDL_SetTextureBlendMode(bg,SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer,bg);
@@ -230,15 +234,15 @@ class LevelStatusBar{
         SDL_Texture* right_number = textRenderer->renderTexture(to_string(current_value/1000+1));
         int w,h;
         SDL_QueryTexture(left_number,NULL,NULL,&w,&h);
-        SDL_Rect text1 = {6,18,w,h};
-        SDL_Rect text2 = {177,18,w,h};
+        SDL_Rect text1 = {13-w/2,18,w,h};
+        SDL_QueryTexture(right_number,NULL,NULL,&w,&h);
+        SDL_Rect text2 = {173+13-w/2,18,w,h};
         SDL_RenderCopy(renderer,left_number,NULL,&text1);
         SDL_RenderCopy(renderer,right_number,NULL,&text2);
         // SDL_RenderDrawRectF(renderer,)
         SDL_SetRenderTarget(renderer,NULL);
         rect = {posx,posy,img->w,img->h};
-        SDL_RenderCopy(renderer,bg,NULL,&rect);
-        
+        SDL_RenderCopy(renderer,bg,NULL,&rect);   
     }
 };
 class Sprite{
