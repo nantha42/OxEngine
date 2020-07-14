@@ -146,7 +146,6 @@ class TextRenderer{
         this->ttf_path = ttf_path;
         textcolor = {0xff,0xff,0xff,0xff};
         cout<<"Loading "<<ttf_path.c_str()<<endl;
-        // SDL_RWops *rw=SDL_RWFromFile(ttf_path.c_str(),"rb");
         
         if(!TTF_WasInit()) {
             cerr << "TTF_Init failed " << TTF_GetError() << endl;
@@ -154,23 +153,13 @@ class TextRenderer{
         }else{
             cout<<"TTF initialized"<<endl;
         }
-        // if(!rw){
-        //     fprintf(stderr, "Couldn't load 23 pt font from %s: %s\n", ttf_path.c_str(), SDL_GetError());
-        //     // return(2);
-        // }
         
         font = TTF_OpenFont(ttf_path.c_str(),size);
         if ( font == NULL ) 
         {    
             fprintf(stderr, "Couldn't load 22 pt font from %s: %s\n", ttf_path.c_str(),SDL_GetError());    
-            // return(2);
         }else{
             cout<<"Font Loaded"<<endl;
-        }
-
-        // font = TTF_OpenFont(ttf_path.c_str(),size);
-        if(font == NULL){
-            cout<<"Error loading font: "<<TTF_GetError()<<endl;
         }
     }
     SDL_Surface* renderSurface(string s){
@@ -191,9 +180,77 @@ class TextRenderer{
         }else
             return NULL;
     }
+
 };
 
+class Text{
+    SDL_Texture* texture=NULL;
+    SDL_Surface* text_surface=NULL;
+    
+    public:
+    SDL_Renderer *render=NULL;
+    int x=0,y=0;
+    int w=0,h =0;
+    Text(SDL_Surface* text){
+        if(text!=NULL){
+            this->text_surface = text;   
+            int a,b;
+            w = text_surface->w;
+            h = text_surface->h;
+            cout<<"WH"<<w<<" "<<h<<endl;
+        }
+        else{
+            cout<<"FFETexture is NULL"<<endl;
+        }
+    }
+    SDL_Texture* getTexture(){
 
+        if(texture!=NULL){
+            
+            return texture;
+        }else{
+            cout<<"FFTexture is NULL"<<endl;
+            if(render!=NULL){
+                cout<<"Texture Created"<<endl;
+                texture = SDL_CreateTextureFromSurface(render,text_surface);
+                return texture;
+            }
+            else{ cout<<"Renderer is NULL"<<endl;return NULL;}
+        }
+    }  
+};
+class TextBox{
+    string text;
+    int text_size = 0;
+    
+    int textBox_width=100;
+    int textBox_height=75;
+    int posx = 0;
+    int posy = 0;
+    
+    int slider_x = 0;
+    int slider_y = 0;
+    bool slider_dragging = false;
+    bool shown = false;
+    
+    TextRenderer* textRenderer;
+    SDL_Surface* single_letter;
+    SDL_Renderer* renderer;
+    SDL_Texture* single_line;
+    SDL_Texture* textbox_texture;
+    
+    void renderText();
+    public:
+    TextBox(string font,int size);
+    void LoadText(string s);
+    void showTextBox();
+    void hideTextBox();
+    void slider_clicked(int x,int y,bool mouse_holded);
+    void assignRenderer(SDL_Renderer* grender);
+    void handle_clicks(EventTriggered &et);
+    void draw();
+    
+};
 class LevelStatusBar{
     int bar_length;
     int current_value = 30000;
@@ -442,43 +499,6 @@ class Inventory{
     void update_attached_buttons();
 };
 
-class Text{
-    SDL_Texture* texture=NULL;
-    SDL_Surface* text_surface=NULL;
-    
-    public:
-    SDL_Renderer *render=NULL;
-    int x=0,y=0;
-    int w=0,h =0;
-    Text(SDL_Surface* text){
-        if(text!=NULL){
-            this->text_surface = text;   
-            int a,b;
-            w = text_surface->w;
-            h = text_surface->h;
-            cout<<"WH"<<w<<" "<<h<<endl;
-        }
-        else{
-            cout<<"FFETexture is NULL"<<endl;
-        }
-    }
-    SDL_Texture* getTexture(){
-
-        if(texture!=NULL){
-            
-            return texture;
-        }else{
-            cout<<"FFTexture is NULL"<<endl;
-            if(render!=NULL){
-                cout<<"Texture Created"<<endl;
-                texture = SDL_CreateTextureFromSurface(render,text_surface);
-                return texture;
-            }
-            else{ cout<<"Renderer is NULL"<<endl;return NULL;}
-        }
-    }
-    
-};
 class Game{
     protected:
     bool isometric_game = false;
