@@ -228,7 +228,7 @@ class TextBox{
     int text_size = 0;
     
     int textBox_width=100;
-    int textBox_height=75;
+    int textBox_height=150;
     int posx = 0;
     int posy = 0;
     
@@ -249,10 +249,7 @@ class TextBox{
     TextBox(string font,int size);
     void LoadText(string s);
     void showTextBox();
-    void setPos(int x,int y){
-        this->posx = x-textBox_width;
-        this->posy = y-textBox_height;
-    }
+    void setPos(int x,int y);
     bool isTextBoxClear();
     void clearTexture();
     void hideTextBox();

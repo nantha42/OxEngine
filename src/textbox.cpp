@@ -13,7 +13,10 @@ void TextBox::LoadText(string s){
     cout<<"Rendering Text"<<endl;
     renderText();
 }
-
+void TextBox::setPos(int x,int y){
+        this->posx = x-textBox_width-4;
+        this->posy = y;
+}
 void TextBox::renderText(){
     cout<<"TextRenderer"<<endl;
     SDL_Surface* a = textRenderer->renderSurface("a");
@@ -48,9 +51,10 @@ void TextBox::renderText(){
         textures.push_back(textRenderer->renderTexture(s));
     }
     cout<<"Textures for lines is created"<<endl;
+    textbox_texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,textBox_width,textBox_height);
     SDL_SetRenderTarget(renderer,textbox_texture);
     SDL_Rect bg_rect = {0,0,textBox_width,textBox_height};
-    SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
+    SDL_SetRenderDrawColor(renderer,0xdc,0xdc,0xdc,0xff);
     SDL_RenderFillRect(renderer,&bg_rect);
     int x=5,y=5;
     for(SDL_Texture* texture:textures){
@@ -69,7 +73,9 @@ void TextBox::assignRenderer(SDL_Renderer* grender){
 }
 void TextBox::draw(){
     SDL_Rect rect = {posx,posy,textBox_width,textBox_height};
-    cout<<"PPP"<<posx<<posy<<endl;
+    // cout<<"PPP"<<posx<<" "<<posy<<endl;
+    SDL_SetRenderTarget(renderer,NULL);
+    
     SDL_RenderCopy(renderer,textbox_texture,NULL,&rect);
 }
 void TextBox::clearTexture(){

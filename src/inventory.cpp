@@ -197,6 +197,7 @@ void Inventory::handle_clicks(EventTriggered &et){
                 if(buttons[i].handleClicks(et.mosx,et.mosy,et)){
                     // cout<<"MOuse clicked:  "<<et.mouse_clicked<<endl;
                     selected = i;
+                    if(textBox!=NULL)textBox->clearTexture();
                     break;
                 }
             }
@@ -215,6 +216,7 @@ void Inventory::handle_clicks(EventTriggered &et){
                 for(int i=0;i<sub_buttons[selected].size();i++){
                     if(sub_buttons[selected][i].handleClicks(et.mosx-posx-75,et.mosy-posy-5,et)){
                         cout<<"Sub button selection ::"<<i<<endl;
+                        if(textBox!=NULL)textBox->clearTexture();
                         for(int j=0;j<sub_buttons[selected].size();j++)
                             if(i!=j) sub_buttons[selected][j].state = false;
                         break;
