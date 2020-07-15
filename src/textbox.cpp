@@ -2,17 +2,24 @@
 
 TextBox::TextBox(string font,int size){
     text_size = size;
-    textRenderer = new TextRenderer(font,text_size);   
+    renderer = NULL;
+    textbox_texture = NULL;
+    SDL_Color color = {0x00,0x00,0x00,0xff};
+    textRenderer = new TextRenderer(font,text_size,color);   
+    
 }
 void TextBox::LoadText(string s){
     text = s;
+    cout<<"Rendering Text"<<endl;
     renderText();
 }
 
 void TextBox::renderText(){
+    cout<<"TextRenderer"<<endl;
     SDL_Surface* a = textRenderer->renderSurface("a");
     SDL_Surface* A = textRenderer->renderSurface("A");
     // int maxletters_perline = textBox_width/(a)
+    cout<<"Lines"<<endl;
     vector<string> lines;
     int line_occupy = 0;
     int seg_start = 0;
@@ -62,7 +69,15 @@ void TextBox::assignRenderer(SDL_Renderer* grender){
 }
 void TextBox::draw(){
     SDL_Rect rect = {posx,posy,textBox_width,textBox_height};
+    cout<<"PPP"<<posx<<posy<<endl;
     SDL_RenderCopy(renderer,textbox_texture,NULL,&rect);
+}
+void TextBox::clearTexture(){
+    SDL_DestroyTexture(textbox_texture);
+    textbox_texture = NULL;
+}
+bool TextBox::isTextBoxClear(){
+    return (textbox_texture!=NULL?false:true);
 }
 void TextBox::showTextBox(){ shown = true;}
 

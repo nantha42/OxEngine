@@ -1,16 +1,25 @@
 3
 ../Assets/Images/buttons/tree trees
 6
-../Assets/Images/isometric_tile Ground 1
-../Assets/Images/isometric_tree4 Tree1 2
-../Assets/Images/isometric_tree5 Tree2 3
-../Assets/Images/isometric_tree6 Tree3 7
-../Assets/Images/isometric_tree7 Tree4 8
-../Assets/Images/isometric_tree8 Tree5 9
+../Assets/Images/isometric_tile Ground 1 1
+This is an empty ground where you can build structures 
+../Assets/Images/isometric_tree4 Tree1 2 1
+Oxygen: 5 units/sec
+../Assets/Images/isometric_tree5 Tree2 3 1
+Oxygen: 7 units/sec 
+../Assets/Images/isometric_tree6 Tree3 7 1
+Oxygen: 7 units/sec 
+../Assets/Images/isometric_tree7 Tree4 8 1
+Oxygen: 8 units/sec 
+../Assets/Images/isometric_tree8 Tree5 9 1
+Oxygen: 8 units/sec 
 ../Assets/Images/buttons/power Power
 1
-../Assets/Images/reactor_tile/reactor_tile1 Reactor 5
+../Assets/Images/reactor_tile/reactor_tile1 Reactor 5 1
+Power: 1k units/sec 
 ../Assets/Images/buttons/research research
 2
-../Assets/Images/laboratory/lab_tile1 Lab 4
-../Assets/Images/oil_refinery/oilrefinery Oil 10
+../Assets/Images/laboratory/lab_tile1 Lab 4 1
+Research : 1 unit/sec Laboratory that researchs and generates research points and unlocks you new buildings.
+../Assets/Images/oil_refinery/oilrefinery Oil 10 1
+Oil: 100 units/sec

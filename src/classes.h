@@ -163,7 +163,11 @@ class TextRenderer{
         }
     }
     SDL_Surface* renderSurface(string s){
+        cout<<"Rendering text: "<<textcolor.r<<endl;
+        if(font==NULL)
+            cout<<"Font NULL"<<endl;
         SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
+        cout<<"Rendering text1"<<endl;
         cout<<"Textu Surface Readu"<<endl;
         if(text_surface!=NULL){
             return text_surface;
@@ -231,7 +235,7 @@ class TextBox{
     int slider_x = 0;
     int slider_y = 0;
     bool slider_dragging = false;
-    bool shown = false;
+    
     
     TextRenderer* textRenderer;
     SDL_Surface* single_letter;
@@ -241,9 +245,16 @@ class TextBox{
     
     void renderText();
     public:
+    bool shown = true;
     TextBox(string font,int size);
     void LoadText(string s);
     void showTextBox();
+    void setPos(int x,int y){
+        this->posx = x-textBox_width;
+        this->posy = y-textBox_height;
+    }
+    bool isTextBoxClear();
+    void clearTexture();
     void hideTextBox();
     void slider_clicked(int x,int y,bool mouse_holded);
     void assignRenderer(SDL_Renderer* grender);
@@ -338,6 +349,7 @@ class InventoryButton{
     string icon_path;
     bool show_state = false;
     public:
+    string info="";
     int offset_x = 0;
     int offset_y = 0;
     int posx,posy;
@@ -471,8 +483,10 @@ class Inventory{
     void category_slider_clicked(int x,int y,bool mouse_holded);
     void item_slider_clicked(int x,int y,bool mouse_holded);
     vector<Button* >attached_buttons; 
-
+    TextBox *textBox;
+    vector<string> infos;
     public:
+    
     bool shown = false;
     TextRenderer *textRenderer;
     vector<string> categories_names;
@@ -493,6 +507,7 @@ class Inventory{
     void assignRenderer(SDL_Renderer*gRender);
     void showInventory();
     void hideInventory();
+    
     int getClickedItem();
     void draw();
     void add_attached_button(Button *button);

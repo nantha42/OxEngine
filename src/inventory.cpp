@@ -17,21 +17,35 @@ Inventory::Inventory(string categoryfile){
             vector<string>items_group;
             int id2=0;
             vector<InventoryButton> temp;
+            cout<<nitems<<endl;
             while(nitems--){
                 string itempath;
                 int idd;
                 string name;
-                file>>itempath>>name>>idd;
-                cout<<"Loading "<<name<<endl;
+                int info_given=0;
+                file>>itempath>>name>>idd>>info_given;
+                cout<<name<<" info: "<<info_given<<endl;
+                // cout<<"Loading "<<name<<endl;
+                string info="";
+                if(info_given){
+                    // file>>info;
+                    getline(file,info);
+                    getline(file,info);
+                }
+                cout<<" infotext: "<<info<<endl;
                 // items_group.push_back(itemname);
                 InventoryButton subbutton(id2++,itempath,name,false);
                 subbutton.id = idd;
+                subbutton.info = info;
                 temp.push_back(subbutton);
+                // exit(0);
             }
             sub_buttons.push_back(temp);
             // items_names.push_back(items_group);
         }
         buttons[0].state = true;
+        
+        textBox = new TextBox("../Assets/Fonts/Quicksand-Bold.ttf",12);
         file.close();
     }
 void Inventory::place_inventory(int x,int y){
@@ -61,7 +75,7 @@ void Inventory::assignRenderer(SDL_Renderer* gRender){
             sub_buttons[i][j].renderer = gRender;
         }
     }
-
+    textBox->assignRenderer(gRender);
 }
 void Inventory::showInventory(){
         shown = true;
@@ -319,6 +333,30 @@ void Inventory::draw(){
         
         return;
     }
+    if(textBox!=NULL){
+        // cout<<"TextBox not null"<<endl;
+        int selected = 0;
+        for(int j=0;j<buttons.size();j++)
+            if(buttons[j].state){
+                selected = j;break;}
+        // cout<<"selected"<<selected<<endl;
+        for(int i=0;i<sub_buttons[selected].size();i+=1){
+            string info = sub_buttons[selected][i].info;
+            // cout<<"Info: "<<info<<endl;
+            if(sub_buttons[selected][i].state && info != "" ){
+                if(textBox->isTextBoxClear()){
+                    // cout<<"Loading tText"<<endl;
+                    textBox->LoadText(info);
+                    
+                }
+                // cout<<"Drawing"<<endl;
+                textBox->setPos(posx,posy);
+                textBox->draw();
+                break;
+            }
+        }
+    }
+    
 
     int inv_w = inventory_width,inv_h = inventory_height;
     SDL_Texture* inventory_background = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,inv_w,inv_h);
