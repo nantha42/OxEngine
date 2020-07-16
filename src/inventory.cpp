@@ -99,12 +99,7 @@ void Inventory::category_slider_clicked(int x,int y,bool mouse_holded){
         if(category_dragging){
             int t = y-category_drag_startpoint;
             cout<<y<<"  "<<category_drag_startpoint<<"  "<<t<<"  "<<category_slider_y<<endl;
-            
-            /*if(t+category_slider_y<0)
-                category_slider_y = 0;
-            if(t+category_slider_y>0 && t+category_slider_y< (135-category_slider_size))
-                category_slider_y = t+previous_category_slider_y;
-            */
+
             if(category_drag_startpoint>y){
                 int t = category_drag_startpoint-y;
                 category_drag_startpoint = y;
@@ -177,6 +172,7 @@ void Inventory::handle_clicks(EventTriggered &et){
     // cout<<"Mouse Clicked "<<et.mouse_clicked<<"Mouse Hoded:  "<<et.mouse_holded<<endl;
     category_slider_clicked(x,y,mouse_holded);
     item_slider_clicked(x,y,mouse_holded);
+    if(textBox!=NULL)textBox->handle_clicks(et);
     if(mouse_holded && !et.mouse_clicked){
     
         if(x-posx>=0 && x-posx<=inventory_width && y-posy>=0 && y-posy<=6){
@@ -235,7 +231,7 @@ int Inventory::getClickedItem(){
         if(buttons[i].state){
             selected = i;
             break;
-        }    
+        }
     for(int i=0;i<sub_buttons[selected].size();i++){
         if(sub_buttons[selected][i].state)
             return sub_buttons[selected][i].id;

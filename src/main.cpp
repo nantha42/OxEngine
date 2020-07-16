@@ -67,24 +67,18 @@ public:
         world = &map;
         for (int i = 0; i < elements_size; i++)
             stock[i] = 0;
-        cout<<"Traversing world"<<endl;
-        cout<<"Finished"<<endl;
         Item reactor(1,7);
         reactor.produces_element = energy;
         reactor.produces_per_sec = 1;
         reactor.id = 1;
         catalog.push_back(reactor);
-    }
+    }  
     void update()
     {
         for(auto &item:catalog){
             item.update();
             stock[item.produces_element] += item.transfer_produced();   
         }
-        for(int i=0;i<elements_size;i++){
-            cout<<stock[i]<<" ";
-        }
-        cout<<endl;
     }
 };
 
@@ -142,7 +136,6 @@ public:
         world[1 + 1][7] = -1;
         world[1][7 + 1] = -1;
         world[1 + 1][7 + 1] = -1;
-        
     }
 };
 class MyGame : public Game

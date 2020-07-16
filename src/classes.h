@@ -163,12 +163,9 @@ class TextRenderer{
         }
     }
     SDL_Surface* renderSurface(string s){
-        cout<<"Rendering text: "<<textcolor.r<<endl;
         if(font==NULL)
             cout<<"Font NULL"<<endl;
         SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
-        cout<<"Rendering text1"<<endl;
-        cout<<"Textu Surface Readu"<<endl;
         if(text_surface!=NULL){
             return text_surface;
         }else
@@ -177,7 +174,6 @@ class TextRenderer{
     SDL_Texture* renderTexture(string s){
         
         SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
-        cout<<"Textu Surface Readu"<<endl;
         if(text_surface!=NULL){
             SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,text_surface);
             return texture;
@@ -232,10 +228,12 @@ class TextBox{
     int posx = 0;
     int posy = 0;
     
-    int slider_x = 0;
+    int slider_x = textBox_width-9;
     int slider_y = 0;
+    int slider_size = 1;
+    int content_size = 0;
+    int slider_drag_startpoint = 0;
     bool slider_dragging = false;
-    
     
     TextRenderer* textRenderer;
     SDL_Surface* single_letter;
@@ -253,6 +251,7 @@ class TextBox{
     bool isTextBoxClear();
     void clearTexture();
     void hideTextBox();
+    void renderSlider();
     void slider_clicked(int x,int y,bool mouse_holded);
     void assignRenderer(SDL_Renderer* grender);
     void handle_clicks(EventTriggered &et);
