@@ -45,7 +45,8 @@ Inventory::Inventory(string categoryfile){
         }
         buttons[0].state = true;
         
-        textBox = new TextBox("../Assets/Fonts/Quicksand-Bold.ttf",12);
+        textBox = new TextBox("../Assets/Fonts/Quicksand.ttf",12);
+        textBox->setSize(200,150);
         file.close();
     }
 void Inventory::place_inventory(int x,int y){

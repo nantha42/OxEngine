@@ -2,7 +2,7 @@
 ../Assets/Images/buttons/tree trees
 6
 ../Assets/Images/isometric_tile Ground 1 1
-This is an empty ground where you can build structures 
+    This is an empty ground where you can build structures 
 ../Assets/Images/isometric_tree4 Tree1 2 1
 Oxygen: 5 units/sec
 ../Assets/Images/isometric_tree5 Tree2 3 1
@@ -20,6 +20,6 @@ Power: 1k units/sec
 ../Assets/Images/buttons/research research
 2
 ../Assets/Images/laboratory/lab_tile1 Lab 4 1
-Research : 1 unit/sec Laboratory that researchs and generates research points and unlocks you new buildings and generates research points.
+Research : 1 unit/sec ` Laboratory that researchs and generates research points and unlocks you new buildings and generates research points. ` Laboratory that researchs and generates research points and unlocks you new buildings and generates research points.
 ../Assets/Images/oil_refinery/oilrefinery Oil 10 1
 Oil: 100 units/sec

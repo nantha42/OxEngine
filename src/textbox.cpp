@@ -8,6 +8,11 @@ TextBox::TextBox(string font,int size){
     textRenderer = new TextRenderer(font,text_size,color);   
     
 }
+void TextBox::setSize(int w,int h){
+    textBox_width = w;
+    textBox_height = h;
+    slider_x = textBox_width-9;
+}
 void TextBox::LoadText(string s){
     text = s;
     cout<<"Rendering Text"<<endl;
@@ -27,24 +32,55 @@ void TextBox::renderText(){
     int line_occupy = 0;
     int seg_start = 0;
     cout<<"A a size"<<A->w<<" "<<a->w<<endl;
-    for(int i=0;i<text.size();i++){
-        char c = text[i];
-        
-        if( (c>='a' && c<= 'z') || (c>='0' && c<='9')){
-            line_occupy += a->w;
-        }
-        else if(c>='A' && c<='Z'){
-            line_occupy += A->w;
+    int i=0;
+
+    vector<string> words;
+    istringstream ss(text);
+    do{
+        string word;
+        ss>>word;
+        words.push_back(word);
+    }while(ss);
+    string line = "";
+    for(int i=0;i<words.size();i++){
+        if(words[i][0]=='`'){
+            lines.push_back(line);
+            line = "";
         }else{
-            line_occupy+=A->w;
-        }                     
-        if(line_occupy+A->w>= textBox_width){
-            line_occupy = 0;
-            string newstring = text.substr(seg_start,(i-seg_start+1));
-            lines.push_back(newstring);
-            seg_start = i+1;
+            if( (line.size()+words[i].size())*a->w < textBox_width){
+                line+=(words[i]+" ");
+            }else{
+                if(line !=""){
+                    lines.push_back(line);
+                    line = "";
+                }else if(line==""){
+                    lines.push_back(words[i]);
+                }
+            }
         }
     }
+    if(line!="")
+        lines.push_back(line);
+
+    // for(i=0;i<text.size();i++){
+    //     char c = text[i];
+    //     if( (c>='a' && c<= 'z') || (c>='0' && c<='9')){
+    //         line_occupy += a->w;
+    //     }
+    //     else if(c>='A' && c<='Z'){
+    //         line_occupy += A->w;
+    //     }else if(c!='`'){
+    //         line_occupy+=A->w;
+    //     }                     
+    //     if(line_occupy+A->w>= textBox_width || c=='`'){
+    //         line_occupy = 0;
+    //         string newstring = text.substr(seg_start,(i-seg_start+1));
+    //         lines.push_back(newstring);
+    //         seg_start = i+1;
+    //     }
+    // }
+    // string newstring = text.substr(seg_start,i-seg_start+1);
+    // lines.push_back(newstring);
     cout<<"Text is parsed"<<endl;
     vector<SDL_Texture*> textures;
     for(string s:lines){
@@ -66,11 +102,8 @@ void TextBox::renderText(){
         SDL_RenderCopy(renderer,texture,NULL,&rect);
         y+= texh+(texh)*0.2f;
     }
-    
     slider_size = ((float)textBox_height/(float)content_size)*130;
-    
     SDL_SetRenderTarget(renderer,NULL);
-    
     cout<<"Successfully Loaded TextBox"<<endl;
 }
 void TextBox::assignRenderer(SDL_Renderer* grender){
@@ -93,7 +126,7 @@ void TextBox::draw(){
     SDL_RenderFillRect(renderer,&fill_rect);
     SDL_RenderCopy(renderer,textbox_texture,NULL,&rect);
     SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
-    SDL_Rect slider_rect = {textBox_width-9,slider_y,9,slider_size};
+    SDL_Rect slider_rect = {textBox_width-slider_width,slider_y,slider_width,slider_size};
     SDL_RenderFillRect(renderer,&slider_rect); 
     SDL_SetRenderTarget(renderer,NULL);
     SDL_Rect global_rect = {posx,posy,textBox_width,textBox_height};
@@ -116,7 +149,7 @@ void TextBox::slider_clicked(int x,int y,bool mouse_holded){
     y-= posy;
     
     if(mouse_holded){
-        if(x>= slider_x && x <slider_x + 9 && y>= slider_y && y<= slider_y+slider_size){
+        if(x>= slider_x && x <slider_x + slider_width && y>= slider_y && y<= slider_y+slider_size){
             if(!slider_dragging){
                 slider_dragging = true;
                 slider_drag_startpoint = y;

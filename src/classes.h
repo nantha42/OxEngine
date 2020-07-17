@@ -228,7 +228,8 @@ class TextBox{
     int posx = 0;
     int posy = 0;
     
-    int slider_x = textBox_width-9;
+    int slider_width = 9;
+    int slider_x = textBox_width-slider_width;
     int slider_y = 0;
     int slider_size = 1;
     int content_size = 0;
@@ -245,6 +246,7 @@ class TextBox{
     public:
     bool shown = true;
     TextBox(string font,int size);
+    void setSize(int w,int h);
     void LoadText(string s);
     void showTextBox();
     void setPos(int x,int y);
