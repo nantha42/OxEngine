@@ -251,7 +251,7 @@ class TextBox{
     bool isTextBoxClear();
     void clearTexture();
     void hideTextBox();
-    void renderSlider();
+    
     void slider_clicked(int x,int y,bool mouse_holded);
     void assignRenderer(SDL_Renderer* grender);
     void handle_clicks(EventTriggered &et);

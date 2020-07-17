@@ -70,20 +70,14 @@ void TextBox::renderText(){
     slider_size = ((float)textBox_height/(float)content_size)*130;
     
     SDL_SetRenderTarget(renderer,NULL);
-    this->renderSlider();
+    
     cout<<"Successfully Loaded TextBox"<<endl;
 }
 void TextBox::assignRenderer(SDL_Renderer* grender){
     renderer = grender;
     textRenderer->renderer = grender;
 }
-void TextBox::renderSlider(){
-    SDL_SetRenderTarget(renderer,textbox_texture);
-    SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
-    SDL_Rect slider_rect = {textBox_width-9,slider_y,9,slider_size};
-    SDL_RenderFillRect(renderer,&slider_rect);
-    SDL_SetRenderTarget(renderer,NULL);
-}
+
 void TextBox::draw(){
     float r = ((float)content_size - 130)/((float)130-slider_size);
     cout<<"Content SIze "<<content_size<<" Slider size"<<slider_size<<" r: "<<r<<endl;
@@ -97,11 +91,14 @@ void TextBox::draw(){
     SDL_SetRenderDrawColor(renderer,0xdc,0xdc,0xdc,0xff);
     SDL_Rect fill_rect = {0,0,textBox_width,textBox_height};
     SDL_RenderFillRect(renderer,&fill_rect);
-    
     SDL_RenderCopy(renderer,textbox_texture,NULL,&rect);
+    SDL_SetRenderDrawColor(renderer,0x80,0x80,0x80,0xff);
+    SDL_Rect slider_rect = {textBox_width-9,slider_y,9,slider_size};
+    SDL_RenderFillRect(renderer,&slider_rect); 
     SDL_SetRenderTarget(renderer,NULL);
     SDL_Rect global_rect = {posx,posy,textBox_width,textBox_height};
     SDL_RenderCopy(renderer,temp_,NULL,&global_rect);
+    SDL_DestroyTexture(temp_);
 }
 void TextBox::clearTexture(){
     SDL_DestroyTexture(textbox_texture);
