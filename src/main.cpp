@@ -15,70 +15,77 @@ enum Elements
     research,
     elements_size
 };
-class Item
-{
-    
-public:
-    int posx;
-    int posy;
-    time_t begin_time;
-    time_t  prev_time;
+struct Record{
     int id;
-    int produces_element;
-    int produces_per_sec;
-    int produced = 0;
-    
-    Item(int x, int y)
-    {
-        posx = x;
-        posy = y;
-        begin_time = time(NULL);
-        prev_time = (int)time(NULL);    
-    }
-    int transfer_produced(){
-        int t = produced;
-        produced = 0;
-        return t;
-    }
-    void update(){
-        // if(begin_time-time(NULL)>)
-        time_t curtime = time(NULL);
-        if((int)(curtime-prev_time) >= 1){
-            produced += (curtime-prev_time)*produces_per_sec;
-            prev_time = curtime;
-        }
-    }
-    double getLifeTime()
-    {
-        return (double)(time(NULL) - begin_time);
-    }
+    int type;
+    string name;
+    time_t founded;
+    int product_id;
+    vector<int> consumes_id;
 };
-class Manager
+struct Request{
+
+};
+// class Record
+// {
+
+// public:
+//     int posx;
+//     int posy;
+//     time_t begin_time;
+//     time_t prev_time;
+//     int id;
+//     int produces_element;
+//     int produces_per_sec;
+//     int produced = 0;
+
+//     Item(int x, int y)
+//     {
+//         posx = x;
+//         posy = y;
+//         begin_time = time(NULL);
+//         prev_time = (int)time(NULL);
+//     }
+//     int transfer_produced()
+//     {
+//         int t = produced;
+//         produced = 0;
+//         return t;
+//     }
+//     void update()
+//     {
+//         // if(begin_time-time(NULL)>)
+//         time_t curtime = time(NULL);
+//         if ((int)(curtime - prev_time) >= 1)
+//         {
+//             produced += (curtime - prev_time) * produces_per_sec;
+//             prev_time = curtime;
+//         }
+//     }
+//     double getLifeTime()
+//     {
+//         return (double)(time(NULL) - begin_time);
+//     }
+// };
+class RecordManager
 {
 public:
     int stock[elements_size];
     int available[elements_size];
-    map<pair<int, int>, bool> buildings_existed;
-    vector<Item> catalog;
-    vector<vector<int>> *world;
-    Manager(vector<vector<int>> &map)
+    vector<Record> records;
+    RecordManager()
     {
         //   istream avaliable("available.txt","r");
-        world = &map;
-        for (int i = 0; i < elements_size; i++)
-            stock[i] = 0;
-        Item reactor(1,7);
-        reactor.produces_element = energy;
-        reactor.produces_per_sec = 1;
-        reactor.id = 1;
-        catalog.push_back(reactor);
-    }  
+        
+    }
+    void create_record(Request request){
+
+    }
+    void delete_record(Request request){
+
+    }
     void update()
     {
-        for(auto &item:catalog){
-            item.update();
-            stock[item.produces_element] += item.transfer_produced();   
-        }
     }
 };
 
@@ -131,7 +138,7 @@ public:
                 y++;
             world[x][y] = 0;
         }
-        
+
         world[1][7] = 5;
         world[1 + 1][7] = -1;
         world[1][7 + 1] = -1;
@@ -151,19 +158,20 @@ class MyGame : public Game
     bool odown = false;
     bool oleft = false;
     bool oright = false;
-    Manager *manager;
+    RecordManager *manager;
+
 public:
     MyGame(bool isometric) : Game(isometric)
     {
         string font;
-        manager = new Manager(structures.world);
+        manager = new RecordManager();
         int size;
         cin >> font >> size;
-        SDL_Color color = {0x00,0x00,0x00,0xFF};
+        SDL_Color color = {0x00, 0x00, 0x00, 0xFF};
         textRenderer = new TextRenderer(font, size, color);
-        cout<<"Red:"<<textRenderer->textcolor.r<<endl;
+        cout << "Red:" << textRenderer->textcolor.r << endl;
         // textRenderer->textcolor = color;
-        cout<<"Here After Renderer"<<endl;
+        cout << "Here After Renderer" << endl;
         // textRenderer->textcolor = {0x00,0x00,0x00,0x00};
         int n;
         for (int i = 0; i < grid_size; i++)
@@ -211,17 +219,17 @@ public:
         build_inventory->add_attached_button(&buttons[1]);
         build_inventory->add_attached_button(&buttons[2]);
         build_inventory->textRenderer = textRenderer;
-        level_status_bar = new LevelStatusBar(screen_width/2-100,0);
+        level_status_bar = new LevelStatusBar(screen_width / 2 - 100, 0);
     }
     void create_buttons()
     {
         Button build_button(10, 100, "../Assets/Images/buttons/build");
         Button build_cancel_button(70, 100, "../Assets/Images/buttons/cancel");
         Button build_place_button(70, 100, "../Assets/Images/buttons/place");
-        Button resources_stats_button(10,50,"../Assets/Images/buttons/resources_stats_button");
-        Button research_button(10,150,"../Assets/Images/buttons/research_button");
-        Button solar_button(10,200,"../Assets/Images/buttons/solar_button");
-        
+        Button resources_stats_button(10, 50, "../Assets/Images/buttons/resources_stats_button");
+        Button research_button(10, 150, "../Assets/Images/buttons/research_button");
+        Button solar_button(10, 200, "../Assets/Images/buttons/solar_button");
+
         buttons.push_back(build_button);
         buttons.push_back(build_cancel_button);
         buttons.push_back(build_place_button);
@@ -234,7 +242,7 @@ public:
         Uint32 curtime = SDL_GetTicks();
         //updating the local map changes into world map
         manager->update();
-        
+
         if (local_map_changed)
         {
             local_map_changed = false;

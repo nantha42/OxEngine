@@ -61,26 +61,7 @@ void TextBox::renderText(){
     }
     if(line!="")
         lines.push_back(line);
-
-    // for(i=0;i<text.size();i++){
-    //     char c = text[i];
-    //     if( (c>='a' && c<= 'z') || (c>='0' && c<='9')){
-    //         line_occupy += a->w;
-    //     }
-    //     else if(c>='A' && c<='Z'){
-    //         line_occupy += A->w;
-    //     }else if(c!='`'){
-    //         line_occupy+=A->w;
-    //     }                     
-    //     if(line_occupy+A->w>= textBox_width || c=='`'){
-    //         line_occupy = 0;
-    //         string newstring = text.substr(seg_start,(i-seg_start+1));
-    //         lines.push_back(newstring);
-    //         seg_start = i+1;
-    //     }
-    // }
-    // string newstring = text.substr(seg_start,i-seg_start+1);
-    // lines.push_back(newstring);
+        
     cout<<"Text is parsed"<<endl;
     vector<SDL_Texture*> textures;
     for(string s:lines){
