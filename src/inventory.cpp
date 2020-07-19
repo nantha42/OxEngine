@@ -212,7 +212,7 @@ void Inventory::handle_clicks(EventTriggered &et){
             if(et.mosy-posy-5 < inventory_height-20  && et.mosy-posy-5 > 0)
                 for(int i=0;i<sub_buttons[selected].size();i++){
                     if(sub_buttons[selected][i].handleClicks(et.mosx-posx-75,et.mosy-posy-5,et)){
-                        cout<<"Sub button selection ::"<<i<<endl;
+                        // cout<<"Sub button selection ::"<<i<<endl;
                         if(textBox!=NULL)textBox->clearTexture();
                         for(int j=0;j<sub_buttons[selected].size();j++)
                             if(i!=j) sub_buttons[selected][j].state = false;

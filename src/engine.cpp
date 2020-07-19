@@ -83,9 +83,9 @@ bool Engine::loadMedia()
         game->textRenderer->renderer = gRender;
         
         cout<<"Assigning Render for "<<endl;
-        for(int i=0;i<game->sprites.size();i++){
-            game->sprites[i].gRender = gRender;
-            game->sprites[i].load_images();
+        for(int i=0;i<game->structural_sprites.size();i++){
+            game->structural_sprites[i].gRender = gRender;
+            game->structural_sprites[i].load_images();
         }
         cout<<"Assigning Render"<<endl;
         cout<<"Button size in engine:  "<<game->buttons.size()<<endl;
@@ -150,25 +150,25 @@ void Engine::renderit(vector<vector<bool>> &rendered,int a,int b,int size){
                     getPosition(i,j,x,y,tile_size/2,tile_size);
                     continue;
                 }
-                int size = game->sprites[id].size;
+                int size = game->structural_sprites[id].size;
                 if(size>1){
                     rendered[i][j] = true;
                     renderit(rendered,i,b+1,size-1);
                     getPosition(i,j,x,y,tile_size/2,size);
-                    game->sprites[id].rect.x = x;
-                    game->sprites[id].rect.y = y;
-                    rect = game->sprites[id].rect;
-                    frame = game->sprites[id].curframe;
-                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                    game->structural_sprites[id].rect.x = x;
+                    game->structural_sprites[id].rect.y = y;
+                    rect = game->structural_sprites[id].rect;
+                    frame = game->structural_sprites[id].curframe;
+                    SDL_RenderCopy(gRender, game->structural_sprites[id].images[frame],NULL,&rect);
                 }
                 if(size==1){
                     rendered[i][j] = true;
                     getPosition(i,j,x,y,tile_size/2,size);
-                    game->sprites[id].rect.x = x;
-                    game->sprites[id].rect.y = y;
-                    rect = game->sprites[id].rect;
-                    frame = game->sprites[id].curframe;
-                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                    game->structural_sprites[id].rect.x = x;
+                    game->structural_sprites[id].rect.y = y;
+                    rect = game->structural_sprites[id].rect;
+                    frame = game->structural_sprites[id].curframe;
+                    SDL_RenderCopy(gRender, game->structural_sprites[id].images[frame],NULL,&rect);
                 }
             }
         }
@@ -186,16 +186,16 @@ void Engine::draw_selected_tiles(){
                     continue;
                 }
                 // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
-                int size = game->sprites[id].size;
+                int size = game->structural_sprites[id].size;
                 
                 getPosition(i,j,x,y,tilesize/2,size);
                 
                 rect.x = x;
                 rect.y = y;
-                rect.w = game->sprites[id].rect.w;
-                rect.h = game->sprites[id].rect.h;
-                frame = game->sprites[6].curframe;
-                SDL_RenderCopy(gRender, game->sprites[6].images[frame],NULL,&rect);  
+                rect.w = game->structural_sprites[id].rect.w;
+                rect.h = game->structural_sprites[id].rect.h;
+                frame = game->structural_sprites[6].curframe;
+                SDL_RenderCopy(gRender, game->structural_sprites[6].images[frame],NULL,&rect);  
         }
     }
 }
@@ -223,14 +223,14 @@ void Engine::drawisoworld(){
                 SDL_Rect rect;
                 int id = game->local_map[i][j];
                 if(id==10)
-                    cout<<"Oil refinery: "<<game->sprites[id].size<<endl;
+                    cout<<"Oil refinery: "<<game->structural_sprites[id].size<<endl;
                 if(id==-1){
                     rendered[i][j]= true;//doublt
                     getPosition(i,j,x,y,tilesize/2,1);
                     continue;
                 }
                 // cout<<game->sprites[id].image_path<<"  "<<id<<endl;
-                int size = game->sprites[id].size;
+                int size = game->structural_sprites[id].size;
                 
                 if(size>1){
                     //for(int q=1;q<size;q++)
@@ -240,23 +240,23 @@ void Engine::drawisoworld(){
                     //    renderit(rendered,i,j+1,size-1);
                     rendered[i][j] = true;
                     getPosition(i,j,x,y,tilesize/2,size);
-                    game->sprites[id].rect.x = x;
-                    game->sprites[id].rect.y = y;
-                    rect = game->sprites[id].rect;
-                    frame = game->sprites[id].curframe;
-                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                    game->structural_sprites[id].rect.x = x;
+                    game->structural_sprites[id].rect.y = y;
+                    rect = game->structural_sprites[id].rect;
+                    frame = game->structural_sprites[id].curframe;
+                    SDL_RenderCopy(gRender, game->structural_sprites[id].images[frame],NULL,&rect);
                 }
                 else{
                     rendered[i][j] = true;
                     getPosition(i,j,x,y,tilesize/2,size);
-                    game->sprites[id].rect.x = x;
-                    game->sprites[id].rect.y = y;
-                    rect = game->sprites[id].rect;
+                    game->structural_sprites[id].rect.x = x;
+                    game->structural_sprites[id].rect.y = y;
+                    rect = game->structural_sprites[id].rect;
                        // if(id==5)
                         // cout<<rect.w<<" ::"<<rect.h<<endl;
-                    frame = game->sprites[id].curframe;
+                    frame = game->structural_sprites[id].curframe;
                     // cout<<id<<"  "<<game->sprites[id].images[frame]<<endl;
-                    SDL_RenderCopy(gRender, game->sprites[id].images[frame],NULL,&rect);
+                    SDL_RenderCopy(gRender, game->structural_sprites[id].images[frame],NULL,&rect);
                 }   
             }
              
@@ -400,12 +400,10 @@ void Engine::event_handler(){
             events_triggered.mouse_moved = true;
             SDL_GetMouseState(&events_triggered.movx,&events_triggered.movy);
         }
-    
     }
     if(game->buttons[0].isPressed())
         placing_buildings = true;
 
-    
     if(game->buttons[2].isPressed()){
         placing_buildings = false; 
         game->buttons[2].stablize();
@@ -414,11 +412,11 @@ void Engine::event_handler(){
                 if(game->selected_tile[i][j]){
                     
                     // game->local_map[i][j] = tile_selected;
-                    if(game->sprites[tile_selected].size==1){
+                    if(game->structural_sprites[tile_selected].size==1){
                         game->local_map_changed = true;
-                        cout<<"Previous Size: "<<game->sprites[game->local_map[i][j]].size<<endl;
-                        if(game->sprites[game->local_map[i][j]].size > 1 ){
-                            int size = game->sprites[game->local_map[i][j]].size;
+                        cout<<"Previous Size: "<<game->structural_sprites[game->local_map[i][j]].size<<endl;
+                        if(game->structural_sprites[game->local_map[i][j]].size > 1 ){
+                            int size = game->structural_sprites[game->local_map[i][j]].size;
                             for(int k=j;k<j+size;k++){
                                 for(int q=i;q<i+size;q++){
                                     game->local_map[q][k] = 1;
@@ -426,14 +424,15 @@ void Engine::event_handler(){
                             }
                         }
                         game->local_map[i][j]= tile_selected;
+                        game->local_map_changed_pos.push_back(pair<int,int>(i,j));
                     }
                     
-                    else if(game->sprites[tile_selected].size>1){
+                    else if(game->structural_sprites[tile_selected].size>1){
                         //assigning the other indices of the structure area with -1
                         game->local_map_changed = true;
                         game->local_map[i][j] = tile_selected;
-                        
-                        int size = game->sprites[tile_selected].size;
+                        game->local_map_changed_pos.push_back(pair<int,int>(i,j));
+                        int size = game->structural_sprites[tile_selected].size;
                         
                         for(int k=j;k<j+size;k++){
                             for(int q=i;q<i+size;q++){
@@ -630,14 +629,14 @@ void Engine::select_tilesOrder(int i,int j){
     cout<<"Tile seelcted:  "<<tile_selected<<endl;
     
     if(tile_selected==-1)return;
-    int size = game->sprites[tile_selected].size;
+    int size = game->structural_sprites[tile_selected].size;
     
     if(size==1){
         // if(game->sprites[->local_map[i-1][j-1]]
         if(i-1 >= 0 && j-1 >= 0){
-            if(game->sprites[game->local_map[i-1][j-1]].size==2 ||
-                game->sprites[game->local_map[i-1][j]].size==2 ||
-                game->sprites[game->local_map[i][j-1]].size==2)
+            if(game->structural_sprites[game->local_map[i-1][j-1]].size==2 ||
+                game->structural_sprites[game->local_map[i-1][j]].size==2 ||
+                game->structural_sprites[game->local_map[i][j-1]].size==2)
                 return;
         }
         else if(game->local_map[i][j]== -1)

@@ -15,74 +15,72 @@ enum Elements
     research,
     elements_size
 };
-struct Record{
+struct Record
+{
     int id;
+    int structure_id;
     int type;
-    string name;
+    int x, y;
     time_t founded;
     int product_id;
     vector<int> consumes_id;
 };
-struct Request{
-
+struct Request
+{
+    int x, y;
+    int structure_id;
 };
-// class Record
-// {
-
-// public:
-//     int posx;
-//     int posy;
-//     time_t begin_time;
-//     time_t prev_time;
-//     int id;
-//     int produces_element;
-//     int produces_per_sec;
-//     int produced = 0;
-
-//     Item(int x, int y)
-//     {
-//         posx = x;
-//         posy = y;
-//         begin_time = time(NULL);
-//         prev_time = (int)time(NULL);
-//     }
-//     int transfer_produced()
-//     {
-//         int t = produced;
-//         produced = 0;
-//         return t;
-//     }
-//     void update()
-//     {
-//         // if(begin_time-time(NULL)>)
-//         time_t curtime = time(NULL);
-//         if ((int)(curtime - prev_time) >= 1)
-//         {
-//             produced += (curtime - prev_time) * produces_per_sec;
-//             prev_time = curtime;
-//         }
-//     }
-//     double getLifeTime()
-//     {
-//         return (double)(time(NULL) - begin_time);
-//     }
-// };
 class RecordManager
 {
 public:
     int stock[elements_size];
     int available[elements_size];
-    vector<Record> records;
+    vector<Record *> records;
+    int last_id = 0;
     RecordManager()
     {
         //   istream avaliable("available.txt","r");
+    }
+    void create_record(Request request)
+    {
+        Record *record = new Record;
+        record->x = request.x;
+        record->y = request.y;
+        record->structure_id = request.structure_id;
+        record->founded = time(NULL);
+        record->id = last_id++;
+        records.push_back(record);
+        cout<<"Record Created"<<endl;
+    }
+    void modify_record(Request request)
+    {
+        for(Record *r:records){
+            if(r->x == request.x && r->y == request.y){
+                r->structure_id = request.structure_id;
+                cout<<"Modified Record"<<endl;
+                return;
+            }
+        }
         
     }
-    void create_record(Request request){
+    void delete_record(Request request)
+    {
+        int pos = 0;
+        bool record_found = false;
+        for(;pos<records.size();pos++){
+            if(records[pos]->x == request.x && records[pos]->y == request.y){
+                record_found = true;
+                break;
 
-    }
-    void delete_record(Request request){
-
+            }
+        }
+        
+        if(record_found){
+            cout<<"Deleted Record"<<endl;
+            records.erase(records.begin()+pos,records.begin()+pos+1);
+        }else
+            cout<<"Deleted No Record"<<endl;
+        
     }
     void update()
     {
@@ -147,10 +145,6 @@ public:
 };
 class MyGame : public Game
 {
-    Sprite *watertile;
-    Sprite *groundTile;
-    Sprite *treeTile;
-    Sprite *treeTile1;
     Sprite *simpletile;
     Structures structures;
 
@@ -169,10 +163,6 @@ public:
         cin >> font >> size;
         SDL_Color color = {0x00, 0x00, 0x00, 0xFF};
         textRenderer = new TextRenderer(font, size, color);
-        cout << "Red:" << textRenderer->textcolor.r << endl;
-        // textRenderer->textcolor = color;
-        cout << "Here After Renderer" << endl;
-        // textRenderer->textcolor = {0x00,0x00,0x00,0x00};
         int n;
         for (int i = 0; i < grid_size; i++)
         {
@@ -210,7 +200,7 @@ public:
             simpletile->rect.h = tile_size * size;
             simpletile->rect.x = 0;
             simpletile->rect.y = 0;
-            sprites.push_back(*simpletile);
+            structural_sprites.push_back(*simpletile);
             n--;
         }
         create_buttons();
@@ -246,6 +236,50 @@ public:
         if (local_map_changed)
         {
             local_map_changed = false;
+            for (int i = 0; i < local_map_changed_pos.size(); i++)
+            {
+                int x = local_map_changed_pos[i].first;
+                int y = local_map_changed_pos[i].second;
+                int id_in_world = structures.world[(int)structures.curx + x][(int)structures.cury + y];
+                if (id_in_world == local_map[x][y])
+                    continue;
+
+                if (id_in_world != 1 && id_in_world != 0)
+                {
+                    // Modifying existing record
+                    if (local_map[x][y] != 1)
+                    {
+                        Request req;
+                        req.x = x;
+                        req.y = y;
+                        req.structure_id = local_map[x][y];
+                        manager->modify_record(req);
+                    }
+                    else
+                    {
+                        //sending a delete request because the new localmap contains empty ground
+                        Request req;
+                        req.x = x;
+                        req.y = y;
+                        req.structure_id = id_in_world;
+                        manager->delete_record(req);
+                    }
+                }
+                else
+                {
+                    //Creating a new record because the world contained only a ground or water
+                    if (local_map[x][y] != 1) // Condition for preventing records for empty ground
+                    {
+                        Request req;
+                        req.x = x;
+                        req.y = y;
+                        req.structure_id = local_map[x][y];
+                        manager->create_record(req);
+                    }
+                }
+            }
+
+            local_map_changed_pos.clear();
             for (int i = 0; i < grid_size; i++)
             {
                 for (int j = 0; j < grid_size; j++)
@@ -259,8 +293,8 @@ public:
             for (int j = 0; j < structures.localsize; j++)
                 local_map[i][j] = structures.world[(int)structures.curx + i][(int)structures.cury + j];
 
-        for (int i = 0; i < sprites.size(); i++)
-            sprites[i].update();
+        for (int i = 0; i < structural_sprites.size(); i++)
+            structural_sprites[i].update();
 
         if (buttons[1].isPressed())
         {
@@ -317,6 +351,7 @@ public:
 int main()
 {
     freopen("config.txt", "r", stdin);
+    // freopen("log.txt", "w", stdout);
     // cin>>grid_size;
     // cin>>tile_size;
     Engine ox;

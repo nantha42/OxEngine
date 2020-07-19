@@ -15,7 +15,6 @@ void TextBox::setSize(int w,int h){
 }
 void TextBox::LoadText(string s){
     text = s;
-    cout<<"Rendering Text"<<endl;
     renderText();
 }
 void TextBox::setPos(int x,int y){
@@ -23,15 +22,14 @@ void TextBox::setPos(int x,int y){
         this->posy = y;
 }
 void TextBox::renderText(){
-    cout<<"TextRenderer"<<endl;
+    
     SDL_Surface* a = textRenderer->renderSurface("a");
     SDL_Surface* A = textRenderer->renderSurface("A");
     // int maxletters_perline = textBox_width/(a)
-    cout<<"Lines"<<endl;
+    
     vector<string> lines;
     int line_occupy = 0;
     int seg_start = 0;
-    cout<<"A a size"<<A->w<<" "<<a->w<<endl;
     int i=0;
 
     vector<string> words;
@@ -61,13 +59,11 @@ void TextBox::renderText(){
     }
     if(line!="")
         lines.push_back(line);
-        
-    cout<<"Text is parsed"<<endl;
+
     vector<SDL_Texture*> textures;
     for(string s:lines){
         textures.push_back(textRenderer->renderTexture(s));
     }
-    cout<<"Textures for lines is created"<<endl;
     textbox_texture = SDL_CreateTexture(renderer,SDL_PIXELFORMAT_ABGR8888,SDL_TEXTUREACCESS_TARGET,textBox_width,textBox_height);
     SDL_SetRenderTarget(renderer,textbox_texture);
     SDL_Rect bg_rect = {0,0,textBox_width,textBox_height};
@@ -85,7 +81,7 @@ void TextBox::renderText(){
     }
     slider_size = ((float)textBox_height/(float)content_size)*130;
     SDL_SetRenderTarget(renderer,NULL);
-    cout<<"Successfully Loaded TextBox"<<endl;
+    
 }
 void TextBox::assignRenderer(SDL_Renderer* grender){
     renderer = grender;
@@ -94,9 +90,9 @@ void TextBox::assignRenderer(SDL_Renderer* grender){
 
 void TextBox::draw(){
     float r = ((float)content_size - 130)/((float)130-slider_size);
-    cout<<"Content SIze "<<content_size<<" Slider size"<<slider_size<<" r: "<<r<<endl;
-    cout<<"Position drawn "<<0<<" "<<-slider_y*r<<"r: "<<r<<endl
-        <<"Content size "<<content_size<<endl;
+    // cout<<"Content SIze "<<content_size<<" Slider size"<<slider_size<<" r: "<<r<<endl;
+    // cout<<"Position drawn "<<0<<" "<<-slider_y*r<<"r: "<<r<<endl
+    //     <<"Content size "<<content_size<<endl;
     
     SDL_Rect rect = {0,(int)(0- slider_y*r),textBox_width,textBox_height};
     // cout<<"PPP"<<posx<<" "<<posy<<endl;
@@ -154,7 +150,6 @@ void TextBox::slider_clicked(int x,int y,bool mouse_holded){
     }else if(slider_dragging)
         slider_dragging = false;
     
-    cout<<"Slider y: "<<slider_y<<endl;
 
 }
 

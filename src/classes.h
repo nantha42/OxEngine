@@ -517,14 +517,14 @@ class Game{
     bool isometric_game = false;
     Uint32 unit_time=0;
     
-    
     public:
     TextRenderer *textRenderer;
     vector<Text*> texts;
     bool selected_tile[grid_size][grid_size];
     int local_map[grid_size][grid_size];
     bool local_map_changed = false;
-    vector<Sprite> sprites;
+    vector<pair<int,int>> local_map_changed_pos;
+    vector<Sprite> structural_sprites;
     vector<Button> buttons;
     Inventory* build_inventory;
     LevelStatusBar *level_status_bar;
