@@ -81,7 +81,8 @@ void TextBox::renderText(){
     }
     slider_size = ((float)textBox_height/(float)content_size)*130;
     SDL_SetRenderTarget(renderer,NULL);
-    
+    SDL_FreeSurface(a);
+    SDL_FreeSurface(A);
 }
 void TextBox::assignRenderer(SDL_Renderer* grender){
     renderer = grender;

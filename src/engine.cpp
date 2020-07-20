@@ -75,7 +75,6 @@ bool Engine::loadMedia()
     bool success = true;
 
     //Load splash image    
-    gHelloWorld = IMG_Load("../Assets/Images/isometric_tile.png");
         cout<<"Assigning Render"<<endl;
         for(int i=0;i<game->texts.size();i++)
             game->texts[i]->render = gRender;

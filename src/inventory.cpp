@@ -65,6 +65,7 @@ void Inventory::load_images(){
                 for(int j=0;j<sub_buttons[i].size();j++){
                     SDL_Texture* text = textRenderer->renderTexture(sub_buttons[i][j].name);
                     sub_buttons[i][j].load_icon(text);
+                    SDL_DestroyTexture(text);
                 }
         }
     }
@@ -289,6 +290,7 @@ SDL_Texture* Inventory::render_itemButtons(){
         SDL_SetRenderTarget(renderer,NULL);
         return item_button_bg;
     }
+    
 }
 SDL_Texture* Inventory::render_categoryButtons(){
     int cat_h = 130;
@@ -369,26 +371,28 @@ void Inventory::draw(){
         SDL_RenderFillRect(renderer,&fillrect);
 
         SDL_SetRenderTarget(renderer,NULL);
-        SDL_Texture* category_buttons = this->render_categoryButtons();
-        SDL_Texture* item_buttons = this->render_itemButtons();
-        
-        SDL_SetRenderTarget(renderer,inventory_background);
         int cw,ch,iw,ih;
+        
+        SDL_Texture* category_buttons = this->render_categoryButtons();
         SDL_QueryTexture(category_buttons,NULL,NULL,&cw,&ch);
-        SDL_QueryTexture(item_buttons,NULL,NULL,&iw,&ih);
-        
         SDL_Rect category_buttons_rect = {5,5,cw,ch};
-        SDL_Rect item_buttons_rect = {70,5,iw,ih};
+        SDL_SetRenderTarget(renderer,inventory_background);
         SDL_RenderCopy(renderer,category_buttons, NULL,&category_buttons_rect);
-        SDL_RenderCopy(renderer,item_buttons, NULL,&item_buttons_rect);
-        
         SDL_SetRenderTarget(renderer,NULL);
+        SDL_DestroyTexture(category_buttons);
 
+        SDL_Texture* item_buttons = this->render_itemButtons();
+        SDL_QueryTexture(item_buttons,NULL,NULL,&iw,&ih);
+        SDL_Rect item_buttons_rect = {70,5,iw,ih};
+        SDL_SetRenderTarget(renderer,inventory_background);
+        SDL_RenderCopy(renderer,item_buttons, NULL,&item_buttons_rect);
+        SDL_SetRenderTarget(renderer,NULL);
+        SDL_DestroyTexture(item_buttons);
+        
         SDL_Rect tar_rect = {posx,posy,inv_w,inv_h};
         SDL_RenderCopy(renderer,inventory_background,NULL,&tar_rect);
-        SDL_DestroyTexture(category_buttons);
         SDL_DestroyTexture(inventory_background);
-        SDL_DestroyTexture(item_buttons);
+        
         
     }
 }

@@ -61,7 +61,6 @@ public:
                 return;
             }
         }
-        
     }
     void delete_record(Request request)
     {
@@ -135,12 +134,7 @@ public:
             if (k)
                 y++;
             world[x][y] = 0;
-        }
-
-        world[1][7] = 5;
-        world[1 + 1][7] = -1;
-        world[1][7 + 1] = -1;
-        world[1 + 1][7 + 1] = -1;
+        }        
     }
 };
 class MyGame : public Game

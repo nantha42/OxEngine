@@ -176,6 +176,7 @@ class TextRenderer{
         SDL_Surface* text_surface = TTF_RenderText_Solid(font, s.c_str(),textcolor);
         if(text_surface!=NULL){
             SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer,text_surface);
+            SDL_FreeSurface(text_surface);
             return texture;
         }else
             return NULL;
@@ -296,15 +297,17 @@ class LevelStatusBar{
         SDL_SetTextureBlendMode(bg,SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer,bg);
         SDL_RenderCopy(renderer,status_bg,NULL,&rect);
-        SDL_Texture* left_number = textRenderer->renderTexture(to_string(current_value/1000));
-        SDL_Texture* right_number = textRenderer->renderTexture(to_string(current_value/1000+1));
         int w,h;
+        SDL_Texture* left_number = textRenderer->renderTexture(to_string(current_value/1000));
         SDL_QueryTexture(left_number,NULL,NULL,&w,&h);
         SDL_Rect text1 = {13-w/2,18,w,h};
+        SDL_RenderCopy(renderer,left_number,NULL,&text1);
+        SDL_DestroyTexture(left_number);
+        SDL_Texture* right_number = textRenderer->renderTexture(to_string(current_value/1000+1));
         SDL_QueryTexture(right_number,NULL,NULL,&w,&h);
         SDL_Rect text2 = {173+13-w/2,18,w,h};
-        SDL_RenderCopy(renderer,left_number,NULL,&text1);
         SDL_RenderCopy(renderer,right_number,NULL,&text2);
+        SDL_DestroyTexture(right_number);
         // SDL_RenderDrawRectF(renderer,)
         SDL_SetRenderTarget(renderer,NULL);
         rect = {posx,posy,img->w,img->h};
@@ -382,7 +385,7 @@ class InventoryButton{
             if(iw>128){
                 iw = 128;ih = 128;}
 
-            cout<<"IMWH"<<img->w<<" "<<img->h<<endl;
+            // cout<<"IMWH"<<img->w<<" "<<img->h<<endl;
             icon_on = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, iw,ih+b);
             SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
 
@@ -396,7 +399,7 @@ class InventoryButton{
             SDL_Rect text_rect = {0,ih,a,b};
             SDL_RenderCopy(renderer,text_name,NULL,&text_rect);
             SDL_SetRenderTarget(renderer,NULL);
-
+            SDL_DestroyTexture(temp);
             if(icon_on==NULL){
                 cout<<"Error in loading inventory button"<<endl;
                 SDL_FreeSurface(img);
@@ -544,7 +547,6 @@ class Engine{
     SDL_Event e;
     bool quit = false;
     SDL_Window* gWindow = NULL;
-    SDL_Surface* gHelloWorld = NULL;
     SDL_Renderer* gRender = NULL;
     SDL_Texture* gTexture = NULL;
     vector<SDL_Texture*> textures;
