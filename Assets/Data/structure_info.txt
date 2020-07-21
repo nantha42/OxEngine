@@ -1,0 +1,43 @@
+Tree1
+1
+water 1
+oxygen 2
+
+Tree2
+1
+water 1
+oxygen 2
+
+Tree3 
+1
+water 1
+oxygen 2
+
+Tree4
+1
+water 1
+oxygen 3
+
+Tree5
+1
+water 1
+oxygen 3
+
+Reactor
+1
+water 10
+energy 1000
+
+Lab
+3
+water 1
+oxygen 1
+energy 30
+research 2
+
+OilRefinery
+3
+water 3
+oxygen 3
+energy 50
+oil 300
