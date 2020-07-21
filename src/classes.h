@@ -322,6 +322,7 @@ class Sprite{
     int curframe = 0;
     SDL_Rect rect;
     bool alive = true;
+    string name;
     int size = 128;
     bool visible = true;
     string animation_images_path;

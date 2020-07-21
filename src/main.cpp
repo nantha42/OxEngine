@@ -19,6 +19,7 @@ struct Record
 {
     int id;
     int structure_id;
+    string structure_name;
     int type;
     int x, y;
     time_t founded;
@@ -36,10 +37,22 @@ public:
     int stock[elements_size];
     int available[elements_size];
     vector<Record *> records;
+    
     int last_id = 0;
+    map<string, int> elements_ids;
+    map<string, int> structures_ids;
     RecordManager()
     {
-        //   istream avaliable("available.txt","r");
+        ifstream file("../Data/elements_info.txt");
+        int n = 0, i = 0;
+        file >> n;
+
+        while (n--)
+        {
+            string s;
+            file >> s;
+            elements_ids.insert(pair<string, int>(s, i++));
+        }
     }
     void create_record(Request request)
     {
@@ -47,17 +60,24 @@ public:
         record->x = request.x;
         record->y = request.y;
         record->structure_id = request.structure_id;
+        for(auto it:structures_ids){
+            if(it.second == request.structure_id){
+                record->structure_name = it.first;
+            }
+        }
         record->founded = time(NULL);
         record->id = last_id++;
         records.push_back(record);
-        cout<<"Record Created"<<endl;
+        cout << "Record Created" << endl;
     }
     void modify_record(Request request)
     {
-        for(Record *r:records){
-            if(r->x == request.x && r->y == request.y){
+        for (Record *r : records)
+        {
+            if (r->x == request.x && r->y == request.y)
+            {
                 r->structure_id = request.structure_id;
-                cout<<"Modified Record"<<endl;
+                cout << "Modified Record" << endl;
                 return;
             }
         }
@@ -66,20 +86,22 @@ public:
     {
         int pos = 0;
         bool record_found = false;
-        for(;pos<records.size();pos++){
-            if(records[pos]->x == request.x && records[pos]->y == request.y){
+        for (; pos < records.size(); pos++)
+        {
+            if (records[pos]->x == request.x && records[pos]->y == request.y)
+            {
                 record_found = true;
                 break;
-
             }
         }
-        
-        if(record_found){
-            cout<<"Deleted Record"<<endl;
-            records.erase(records.begin()+pos,records.begin()+pos+1);
-        }else
-            cout<<"Deleted No Record"<<endl;
-        
+
+        if (record_found)
+        {
+            cout << "Deleted Record" << endl;
+            records.erase(records.begin() + pos, records.begin() + pos + 1);
+        }
+        else
+            cout << "Deleted No Record" << endl;
     }
     void update()
     {
@@ -134,7 +156,7 @@ public:
             if (k)
                 y++;
             world[x][y] = 0;
-        }        
+        }
     }
 };
 class MyGame : public Game
@@ -166,20 +188,22 @@ public:
         cin >> n;
         while (n > 0)
         {
-            string path;
+            string path,name;
             int n_images;
             bool animated;
             int animation_fps;
             int size;
-            cin >> path;
+            
+            cin >> path >> name;
             cin >> animated;
             cin >> n_images;
             if (animated)
                 cin >> animation_fps;
             cin >> size;
             Sprite tile(animated, true, NULL);
-            simpletile = &tile;
 
+            simpletile = &tile;
+            simpletile->name = name;
             if (animated)
             {
                 cout << path << endl;
@@ -197,6 +221,10 @@ public:
             structural_sprites.push_back(*simpletile);
             n--;
         }
+        for(int i=0;i<structural_sprites.size();i++){
+            manager->structures_ids.insert(pair<string,int>(structural_sprites[i].name,i));
+        }
+        
         create_buttons();
         cout << "Building Inventory" << endl;
         build_inventory = new Inventory("build_inventory.txt");
@@ -345,9 +373,7 @@ public:
 int main()
 {
     freopen("config.txt", "r", stdin);
-    // freopen("log.txt", "w", stdout);
-    // cin>>grid_size;
-    // cin>>tile_size;
+    
     Engine ox;
 
     if (!ox.init())

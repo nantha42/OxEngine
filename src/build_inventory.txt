@@ -21,5 +21,5 @@ Power: 1k units/sec
 2
 ../Assets/Images/laboratory/lab_tile1 Lab 4 1
 Research : 1 unit/sec ` Laboratory that researchs and generates research points and unlocks you new buildings and generates research points. ` Laboratory that researchs and generates research points and unlocks you new buildings and generates research points.
-../Assets/Images/oil_refinery/oilrefinery Oil 10 1
+../Assets/Images/oil_refinery/oilrefinery OilRefinery 10 1
 Oil: 100 units/sec
