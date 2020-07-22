@@ -106,14 +106,12 @@ public:
             {
                 record->structure_name = it.first;
                 string produces = production[it.first];
-                cout<<produces<<endl;
+                // cout<<produces<<endl;
                 int k = produces.find("-");
                 string element_produces = produces.substr(0, k);
-                cout<<element_produces<<endl;
+                // cout<<element_produces<<endl;
                 record->product_id = elements_ids[element_produces];
                 record->unit_production = stoi(produces.substr(k + 1, produces.size() - k - 1));
-                
-                cout << "product id " << record->product_id << " unit production: " << record->unit_production << endl;
 
                 vector<string> consumables = consumptions[it.first];
                 vector<int> consumptions_units(elements_size, 0);
@@ -124,7 +122,6 @@ public:
                     string consumable_name = consumable.substr(0, k);
                     int unit = stoi(consumable.substr(k + 1, consumable.size() - (k + 1)));
                     consumptions_units[elements_ids[consumable_name]] = unit;
-                    printf("consumables name: %s id: %d unit: %d\n", consumable_name.c_str(), elements_ids[consumable_name], unit);
                 }
                 record->consumption_units = consumptions_units;
                 for (auto x : consumptions_units)
@@ -180,14 +177,15 @@ public:
             cout << "Deleted No Record" << endl;
     }
     void update()
-    {   //energy should not keep increasing 
-        //but it should be equal to amount of production
-        //so equalling it to 0 for each update
-        
+    {   
         time_t curtime = time(NULL);
         
         if ((int)(curtime - prevtime) >= 1)
         {
+            //energy should not keep increasing 
+            //but it should be equal to amount of production
+            //so equalling it to 0 for each update
+            
             stock[0] = 0;
             for(auto record: records){
                 
@@ -222,7 +220,7 @@ public:
                     for (int i = 0; i < elements_size; i++)                    
                         stock[i] -= record->consumption_units[i];
                     stock[record->product_id] += record->unit_production;
-                    cout << "Produced " << record->product_id << endl;
+                 
                 }
             }
 
