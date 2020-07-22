@@ -422,6 +422,7 @@ void Engine::event_handler(){
                         }
                         game->local_map[i][j]= tile_selected;
                         game->local_map_changed_pos.push_back(pair<int,int>(i,j));
+                        // cout<<"End of pressed"<<endl;
                     }
                     
                     else if(game->structural_sprites[tile_selected].size>1){
@@ -447,7 +448,9 @@ void Engine::event_handler(){
                             }}}}
                 game->selected_tile[i][j]= false;
             }
+
     }
+    
 }
 float area(int x1,int y1,int x2, int y2,int x3,int y3){
     return abs((x1*(y2-y3) + x2*(y3-y1)+ x3*(y1-y2))/2.0);
