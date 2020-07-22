@@ -7,6 +7,7 @@ enum Elements
     hydrogen,
     helium,
     carbon,
+    oxygen,
     aluminium,
     silicon,
     titanium,
@@ -24,7 +25,9 @@ struct Record
     int x, y;
     time_t founded;
     int product_id;
+    int unit_production;
     vector<int> consumes_id;
+    vector<int> consumption_units;
 };
 struct Request
 {
@@ -37,13 +40,15 @@ public:
     int stock[elements_size];
     int available[elements_size];
     vector<Record *> records;
-    
+
     int last_id = 0;
     map<string, int> elements_ids;
     map<string, int> structures_ids;
+    map<string, vector<string>> consumptions;
+    map<string, string> production;
     RecordManager()
     {
-        ifstream file("../Data/elements_info.txt");
+        ifstream file("../Assets/Data/elements_info.txt");
         int n = 0, i = 0;
         file >> n;
 
@@ -51,8 +56,31 @@ public:
         {
             string s;
             file >> s;
-            elements_ids.insert(pair<string, int>(s, i++));
+            // elements_ids.insert(pair<string, int>(s, i++));
+            elements_ids[s] = i++;
         }
+        file.close();
+        
+        ifstream file1("../Assets/Data/structure_info.txt");
+        file1 >> n;
+        while (n--)
+        {
+            string name, product;
+            vector<string> consumables;
+            file1 >> name;
+            int n_consum;
+            file1 >> n_consum;
+            for (int i = 0; i < n_consum; i++)
+            {
+                string consumable;
+                file1 >> consumable;
+                consumables.push_back(consumable);
+            }
+            consumptions.insert(pair<string, vector<string>>(name, consumables));
+            file1 >> product;
+            production.insert(pair<string, string>(name, product));
+        }
+        file1.close();
     }
     void create_record(Request request)
     {
@@ -60,14 +88,42 @@ public:
         record->x = request.x;
         record->y = request.y;
         record->structure_id = request.structure_id;
-        for(auto it:structures_ids){
-            if(it.second == request.structure_id){
+        for (auto it : structures_ids)
+        {
+            if (it.second == request.structure_id)
+            {
                 record->structure_name = it.first;
+                string produces = production[it.first];
+                int k = produces.find("-");
+                string element_produces = produces.substr(0, k);
+
+                record->product_id = elements_ids[element_produces];
+                record->unit_production = stoi(produces.substr(k + 1, produces.size() - k - 1));
+
+                cout << "product id " << record->product_id << " unit production: " << record->unit_production << endl;
+
+                vector<string> consumables = consumptions[it.first];
+                vector<int> consumptions_units(elements_size,0);
+
+                for (string consumable : consumables)
+                {
+                    int k = consumable.find("-");
+                    string consumable_name = consumable.substr(0, k);
+                    int unit = stoi(consumable.substr(k + 1, consumable.size() - (k + 1)));
+                    consumptions_units[elements_ids[consumable_name]] = unit;
+                    printf("consumables name: %s id: %d unit: %d\n",consumable_name.c_str(),elements_ids[consumable_name],unit);
+                }
+                record->consumption_units = consumptions_units;
+                for(auto x:consumptions_units)
+                    cout<<x<<" ";
+                cout<<endl;
             }
         }
+
         record->founded = time(NULL);
         record->id = last_id++;
         records.push_back(record);
+
         cout << "Record Created" << endl;
     }
     void modify_record(Request request)
@@ -80,6 +136,11 @@ public:
                 cout << "Modified Record" << endl;
                 return;
             }
+        }
+    }
+    void print_elements(){
+        for(auto x:elements_ids){
+            cout<<x.first<<" "<<x.second<<endl;
         }
     }
     void delete_record(Request request)
@@ -175,6 +236,7 @@ public:
     {
         string font;
         manager = new RecordManager();
+        manager->print_elements();
         int size;
         cin >> font >> size;
         SDL_Color color = {0x00, 0x00, 0x00, 0xFF};
@@ -188,12 +250,12 @@ public:
         cin >> n;
         while (n > 0)
         {
-            string path,name;
+            string path, name;
             int n_images;
             bool animated;
             int animation_fps;
             int size;
-            
+
             cin >> path >> name;
             cin >> animated;
             cin >> n_images;
@@ -221,10 +283,11 @@ public:
             structural_sprites.push_back(*simpletile);
             n--;
         }
-        for(int i=0;i<structural_sprites.size();i++){
-            manager->structures_ids.insert(pair<string,int>(structural_sprites[i].name,i));
+        for (int i = 0; i < structural_sprites.size(); i++)
+        {
+            manager->structures_ids.insert(pair<string, int>(structural_sprites[i].name, i));
         }
-        
+
         create_buttons();
         cout << "Building Inventory" << endl;
         build_inventory = new Inventory("build_inventory.txt");
@@ -373,7 +436,7 @@ public:
 int main()
 {
     freopen("config.txt", "r", stdin);
-    
+
     Engine ox;
 
     if (!ox.init())

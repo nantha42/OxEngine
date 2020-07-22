@@ -3,6 +3,7 @@
     hydrogen
     helium
     carbon
+    oxygen
     aluminium
     silicon
     titanium
