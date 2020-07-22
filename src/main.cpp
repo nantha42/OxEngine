@@ -36,9 +36,12 @@ struct Request
 };
 class RecordManager
 {
+    time_t prevtime = time(NULL);
+
 public:
     int stock[elements_size];
     int available[elements_size];
+
     vector<Record *> records;
 
     int last_id = 0;
@@ -48,6 +51,11 @@ public:
     map<string, string> production;
     RecordManager()
     {
+
+        for (int i = 0; i < elements_size; i++)
+        {
+            stock[i] = 100;
+        }
         ifstream file("../Assets/Data/elements_info.txt");
         int n = 0, i = 0;
         file >> n;
@@ -60,7 +68,7 @@ public:
             elements_ids[s] = i++;
         }
         file.close();
-        
+
         ifstream file1("../Assets/Data/structure_info.txt");
         file1 >> n;
         while (n--)
@@ -103,7 +111,7 @@ public:
                 cout << "product id " << record->product_id << " unit production: " << record->unit_production << endl;
 
                 vector<string> consumables = consumptions[it.first];
-                vector<int> consumptions_units(elements_size,0);
+                vector<int> consumptions_units(elements_size, 0);
 
                 for (string consumable : consumables)
                 {
@@ -111,12 +119,12 @@ public:
                     string consumable_name = consumable.substr(0, k);
                     int unit = stoi(consumable.substr(k + 1, consumable.size() - (k + 1)));
                     consumptions_units[elements_ids[consumable_name]] = unit;
-                    printf("consumables name: %s id: %d unit: %d\n",consumable_name.c_str(),elements_ids[consumable_name],unit);
+                    printf("consumables name: %s id: %d unit: %d\n", consumable_name.c_str(), elements_ids[consumable_name], unit);
                 }
                 record->consumption_units = consumptions_units;
-                for(auto x:consumptions_units)
-                    cout<<x<<" ";
-                cout<<endl;
+                for (auto x : consumptions_units)
+                    cout << x << " ";
+                cout << endl;
             }
         }
 
@@ -138,9 +146,11 @@ public:
             }
         }
     }
-    void print_elements(){
-        for(auto x:elements_ids){
-            cout<<x.first<<" "<<x.second<<endl;
+    void print_elements()
+    {
+        for (auto x : elements_ids)
+        {
+            cout << x.first << " " << x.second << endl;
         }
     }
     void delete_record(Request request)
@@ -166,6 +176,40 @@ public:
     }
     void update()
     {
+        time_t curtime = time(NULL);
+        if ((int)(curtime - prevtime) >= 1)
+        {
+            for (auto record : records)
+            {
+                bool require_available = true;
+                for (int i = 0; i < elements_size; i++)
+                {
+                    if (stock[i] > record->consumption_units[i])
+                    {
+                        stock[i] -= record->consumption_units[i];
+                    }
+                    else
+                    {
+                        require_available = false;
+                        break;
+                    }
+                }
+                if (require_available)
+                {
+                    for (int i = 0; i < elements_size; i++)                    
+                        stock[i] -= record->consumption_units[i];
+                
+                    stock[record->product_id] += record->unit_production;
+                    cout << "Produced " << record->product_id << endl;
+                }
+            }
+
+            for (int i = 0; i < elements_size; i++)
+                cout << stock[i] << " ";
+
+            cout << endl;
+            prevtime = curtime;
+        }
     }
 };
 
