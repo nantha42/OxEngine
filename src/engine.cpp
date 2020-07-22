@@ -221,8 +221,6 @@ void Engine::drawisoworld(){
                 int frame;
                 SDL_Rect rect;
                 int id = game->local_map[i][j];
-                if(id==10)
-                    cout<<"Oil refinery: "<<game->structural_sprites[id].size<<endl;
                 if(id==-1){
                     rendered[i][j]= true;//doublt
                     getPosition(i,j,x,y,tilesize/2,1);
