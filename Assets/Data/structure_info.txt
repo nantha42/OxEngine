@@ -1,4 +1,4 @@
-8
+10
 Tree1
 3
 hydrogen-2
@@ -38,18 +38,27 @@ Reactor
 2
 hydrogen-2
 oxygen-1
-energy-1000
+energy-500
 
 Lab
 3
 hydrogen-2
 oxygen-1
-energy-30
+energy-90
 research-2
 
 OilRefinery
 3
 hydrogen-6
 oxygen-3
-energy-50
-oil-300
+energy-400
+oil-1
+
+Windmill
+0
+energy-40
+
+HydrogenExtractor
+1
+energy-100
+hydrogen-10

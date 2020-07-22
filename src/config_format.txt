@@ -5,6 +5,7 @@ n_sprites times:
     n_images
     if is_animated:
         fps
+    number of tiles
 
 
 grid [grid_size x grid_size] array

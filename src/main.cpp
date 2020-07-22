@@ -14,6 +14,7 @@ enum Elements
     uranium,
     plutonium,
     research,
+    oil,
     elements_size
 };
 struct Record
@@ -51,7 +52,6 @@ public:
     map<string, string> production;
     RecordManager()
     {
-
         for (int i = 0; i < elements_size; i++)
         {
             stock[i] = 100;
@@ -76,16 +76,20 @@ public:
             string name, product;
             vector<string> consumables;
             file1 >> name;
+            cout<<name<<endl;
             int n_consum;
             file1 >> n_consum;
+            cout<<n_consum;
             for (int i = 0; i < n_consum; i++)
             {
                 string consumable;
                 file1 >> consumable;
                 consumables.push_back(consumable);
+                cout<<consumable<<endl;
             }
             consumptions.insert(pair<string, vector<string>>(name, consumables));
             file1 >> product;
+            cout<<product<<endl;
             production.insert(pair<string, string>(name, product));
         }
         file1.close();
@@ -102,12 +106,13 @@ public:
             {
                 record->structure_name = it.first;
                 string produces = production[it.first];
+                cout<<produces<<endl;
                 int k = produces.find("-");
                 string element_produces = produces.substr(0, k);
-
+                cout<<element_produces<<endl;
                 record->product_id = elements_ids[element_produces];
                 record->unit_production = stoi(produces.substr(k + 1, produces.size() - k - 1));
-
+                
                 cout << "product id " << record->product_id << " unit production: " << record->unit_production << endl;
 
                 vector<string> consumables = consumptions[it.first];
@@ -175,21 +180,39 @@ public:
             cout << "Deleted No Record" << endl;
     }
     void update()
-    {
+    {   //energy should not keep increasing 
+        //but it should be equal to amount of production
+        //so equalling it to 0 for each update
+        
         time_t curtime = time(NULL);
+        
         if ((int)(curtime - prevtime) >= 1)
         {
+            stock[0] = 0;
+            for(auto record: records){
+                
+                if(record->product_id == 0){
+                    bool require_available = true;
+                    for(int i=0;i<elements_size;i++){
+                        if(stock[i] < record->consumption_units[i]){
+                            require_available = false;
+                            break;
+                        }
+                    } 
+                    if(require_available){
+                        stock[0] += record->unit_production;
+                    }
+                }
+            }
+
             for (auto record : records)
             {
                 bool require_available = true;
+                if(record->product_id == 0)
+                    continue;
                 for (int i = 0; i < elements_size; i++)
                 {
-                    if (stock[i] > record->consumption_units[i])
-                    {
-                        stock[i] -= record->consumption_units[i];
-                    }
-                    else
-                    {
+                    if (stock[i] < record->consumption_units[i]){
                         require_available = false;
                         break;
                     }
@@ -198,7 +221,6 @@ public:
                 {
                     for (int i = 0; i < elements_size; i++)                    
                         stock[i] -= record->consumption_units[i];
-                
                     stock[record->product_id] += record->unit_production;
                     cout << "Produced " << record->product_id << endl;
                 }

@@ -1,4 +1,4 @@
-    10
+    12
     energy
     hydrogen
     helium
@@ -10,3 +10,4 @@
     uranium
     plutonium
     research
+    oil
