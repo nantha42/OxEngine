@@ -183,6 +183,16 @@ class TextRenderer{
     }
 
 };
+class ResourceMeter{
+    public:
+    SDL_Renderer *gRender;
+    SDL_Texture *texture_meter;
+    TextRenderer* textRenderer;
+    int resources_level;
+    ResourceMeter(string imagepath);
+    void assignRenderer(SDL_Renderer* gRender);
+    void update();
+};
 
 class Text{
     SDL_Texture* texture=NULL;
