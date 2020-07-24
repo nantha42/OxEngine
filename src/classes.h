@@ -184,14 +184,22 @@ class TextRenderer{
 
 };
 class ResourceMeter{
+    string imagepath;
+    int width;
+    int height;
+    int icon_width;
+    int icon_height;
     public:
+
     SDL_Renderer *gRender;
+    SDL_Texture *resource_image;
     SDL_Texture *texture_meter;
     TextRenderer* textRenderer;
     int resources_level;
     ResourceMeter(string imagepath);
+    void setSize(int w,int h);
     void assignRenderer(SDL_Renderer* gRender);
-    void update();
+    void update(int value);
 };
 
 class Text{
@@ -540,14 +548,13 @@ class Game{
     vector<pair<int,int>> local_map_changed_pos;
     vector<Sprite> structural_sprites;
     vector<Button> buttons;
+    ResourceMeter* resourceMeter;
     Inventory* build_inventory;
     LevelStatusBar *level_status_bar;
     Game(bool isometric_game){
         this->isometric_game = isometric_game;
     }
-    void loadSprites(vector<string> sprite_files){
-        
-    }
+    
     virtual void update()=0;
     virtual void eventhandler(EventTriggered &et)=0;
     
