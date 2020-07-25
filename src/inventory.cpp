@@ -71,6 +71,7 @@ void Inventory::load_images(){
     }
 }
 void Inventory::assignRenderer(SDL_Renderer* gRender){
+    renderer = gRender;
     for(int i=0;i<buttons.size();i++){
         buttons[i].renderer = gRender;
         for(int j=0;j<sub_buttons[i].size();j++){

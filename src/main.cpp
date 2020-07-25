@@ -224,10 +224,10 @@ public:
                 }
             }
 
-            for (int i = 0; i < elements_size; i++)
-                cout << stock[i] << " ";
+            // for (int i = 0; i < elements_size; i++)
+            //     cout << stock[i] << " ";
 
-            cout << endl;
+            // cout << endl;
             prevtime = curtime;
         }
     }
@@ -299,8 +299,12 @@ public:
     MyGame(bool isometric) : Game(isometric)
     {
         string font;
-        manager = new RecordManager();
+        manager = new    RecordManager();
         manager->print_elements();
+        resourceMeter = new ResourceMeter("../Assets/Images/buttons/power0.png");
+        resourceMeter->setSize(100,80);
+        resourceMeter->setIconWidth(32,32);
+
         int size;
         cin >> font >> size;
         SDL_Color color = {0x00, 0x00, 0x00, 0xFF};
@@ -381,7 +385,7 @@ public:
         Uint32 curtime = SDL_GetTicks();
         //updating the local map changes into world map
         manager->update();
-
+        resourceMeter->update(100);
         if (local_map_changed)
         {
             local_map_changed = false;

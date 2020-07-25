@@ -200,6 +200,11 @@ class ResourceMeter{
     void setSize(int w,int h);
     void assignRenderer(SDL_Renderer* gRender);
     void update(int value);
+    void setIconWidth(int w,int h){
+        icon_width = w;
+        icon_height = h;
+    }
+    void draw(int x,int y);
 };
 
 class Text{

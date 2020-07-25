@@ -18,12 +18,13 @@ class ResourceMeter{
     void assignRenderer(SDL_Renderer* gRender);
     void update();
 };
-
 */
 
 ResourceMeter::ResourceMeter(string imagepath){
     this->imagepath = imagepath;
-    textRenderer = new TextRenderer("../Asssets/Fonts/Quicksand.ttf",12);
+    cout<<"Loading font for RM"<<endl;
+    textRenderer = new TextRenderer("../Assets/Fonts/Quicksand.ttf",12);
+    cout<<"Loading font for RM"<<endl;
 }
 void ResourceMeter::setSize(int w,int h){
     width = w;
@@ -42,8 +43,9 @@ void ResourceMeter::assignRenderer(SDL_Renderer* gRender){
     }
 }
 void ResourceMeter::update(int value){
-    resources_level = value;
+    
     if(resources_level != value){
+        cout<<"Drawing Rsesource meter";
         resources_level = value;
         SDL_SetRenderTarget(gRender,texture_meter);
         SDL_Rect fillRect = {0,0,width,height};
@@ -61,4 +63,8 @@ void ResourceMeter::update(int value){
         SDL_SetRenderTarget(gRender,NULL);
 
     }
+}
+void ResourceMeter::draw(int x,int y){
+    SDL_Rect rect = {x,y,width,height};
+    SDL_RenderCopy(gRender,texture_meter,NULL,&rect);
 }

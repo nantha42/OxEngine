@@ -96,8 +96,9 @@ bool Engine::loadMedia()
         }
         
         cout<<"Inventory Loading"<<endl;
-        game->build_inventory->renderer = gRender;
+        game->resourceMeter->assignRenderer(gRender);
         game->build_inventory->assignRenderer(gRender);
+        
         game->build_inventory->load_images();
         
         game->level_status_bar->setRenderer(gRender);
@@ -696,6 +697,7 @@ void Engine::drawTexts(){
 }
 void Engine::drawStatusBars(){
     game->level_status_bar->draw();
+    game->resourceMeter->draw(130,130);
 }
 void Engine::run(){
     while(!quit){
