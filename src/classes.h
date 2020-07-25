@@ -189,6 +189,8 @@ class ResourceMeter{
     int height;
     int icon_width;
     int icon_height;
+    int base=1000;
+    time_t prevtime = time(NULL);
     public:
 
     SDL_Renderer *gRender;
@@ -196,10 +198,15 @@ class ResourceMeter{
     SDL_Texture *texture_meter;
     TextRenderer* textRenderer;
     int resources_level;
+    int usage=-1;
+    int consumption=-1;
+    int current_usage = 0;
+    int current_consumption = 0;
+
     ResourceMeter(string imagepath);
     void setSize(int w,int h);
     void assignRenderer(SDL_Renderer* gRender);
-    void update(int value);
+    void update(int u,int c);
     void setIconWidth(int w,int h){
         icon_width = w;
         icon_height = h;

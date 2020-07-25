@@ -42,7 +42,8 @@ class RecordManager
 public:
     int stock[elements_size];
     int available[elements_size];
-
+    int stock_production[elements_size];
+    int stock_consumption[elements_size];
     vector<Record *> records;
 
     int last_id = 0;
@@ -54,7 +55,7 @@ public:
     {
         for (int i = 0; i < elements_size; i++)
         {
-            stock[i] = 100;
+            stock[i] = 10000;
         }
         ifstream file("../Assets/Data/elements_info.txt");
         int n = 0, i = 0;
@@ -76,20 +77,20 @@ public:
             string name, product;
             vector<string> consumables;
             file1 >> name;
-            cout<<name<<endl;
+            cout << name << endl;
             int n_consum;
             file1 >> n_consum;
-            cout<<n_consum;
+            cout << n_consum;
             for (int i = 0; i < n_consum; i++)
             {
                 string consumable;
                 file1 >> consumable;
                 consumables.push_back(consumable);
-                cout<<consumable<<endl;
+                cout << consumable << endl;
             }
             consumptions.insert(pair<string, vector<string>>(name, consumables));
             file1 >> product;
-            cout<<product<<endl;
+            cout << product << endl;
             production.insert(pair<string, string>(name, product));
         }
         file1.close();
@@ -177,27 +178,37 @@ public:
             cout << "Deleted No Record" << endl;
     }
     void update()
-    {   
+    {
         time_t curtime = time(NULL);
-        
+
         if ((int)(curtime - prevtime) >= 1)
         {
-            //energy should not keep increasing 
+            //energy should not keep increasing
             //but it should be equal to amount of production
             //so equalling it to 0 for each update
-            
+            for (int i = 0; i < elements_size; i++)
+            {
+                stock_production[i] = 0;
+                stock_consumption[i] = 0;
+            }
+
             stock[0] = 0;
-            for(auto record: records){
-                
-                if(record->product_id == 0){
+            for (auto record : records)
+            {
+
+                if (record->product_id == 0)
+                {
                     bool require_available = true;
-                    for(int i=0;i<elements_size;i++){
-                        if(stock[i] < record->consumption_units[i]){
+                    for (int i = 0; i < elements_size; i++)
+                    {
+                        if (stock[i] < record->consumption_units[i])
+                        {
                             require_available = false;
                             break;
                         }
-                    } 
-                    if(require_available){
+                    }
+                    if (require_available)
+                    {
                         stock[0] += record->unit_production;
                     }
                 }
@@ -206,27 +217,34 @@ public:
             for (auto record : records)
             {
                 bool require_available = true;
-                if(record->product_id == 0)
+                if (record->product_id == 0){
+                    stock_production[0] += record->unit_production;
                     continue;
+                }
                 for (int i = 0; i < elements_size; i++)
                 {
-                    if (stock[i] < record->consumption_units[i]){
+                    if (stock[i] < record->consumption_units[i])
+                    {
                         require_available = false;
                         break;
                     }
                 }
                 if (require_available)
                 {
-                    for (int i = 0; i < elements_size; i++)                    
+                    for (int i = 0; i < elements_size; i++)
+                    {
                         stock[i] -= record->consumption_units[i];
+                        stock_consumption[i] += record->consumption_units[i];
+                    }
                     stock[record->product_id] += record->unit_production;
-                 
+                    stock_production[record->product_id] += record->unit_production;
                 }
             }
 
-            // for (int i = 0; i < elements_size; i++)
-            //     cout << stock[i] << " ";
-
+            // for (int i = 0; i < 1; i++)
+            // {
+            //     cout << "Energy: " << stock_production[i] << " " << stock_consumption[i] << endl;
+            // }
             // cout << endl;
             prevtime = curtime;
         }
@@ -299,11 +317,11 @@ public:
     MyGame(bool isometric) : Game(isometric)
     {
         string font;
-        manager = new    RecordManager();
+        manager = new RecordManager();
         manager->print_elements();
         resourceMeter = new ResourceMeter("../Assets/Images/buttons/power0.png");
-        resourceMeter->setSize(100,80);
-        resourceMeter->setIconWidth(32,32);
+        resourceMeter->setSize(150, 42);
+        resourceMeter->setIconWidth(32, 32);
 
         int size;
         cin >> font >> size;
@@ -385,7 +403,7 @@ public:
         Uint32 curtime = SDL_GetTicks();
         //updating the local map changes into world map
         manager->update();
-        resourceMeter->update(100);
+        resourceMeter->update(manager->stock_production[energy], manager->stock_consumption[energy]);
         if (local_map_changed)
         {
             local_map_changed = false;
@@ -396,7 +414,6 @@ public:
                 int id_in_world = structures.world[(int)structures.curx + x][(int)structures.cury + y];
                 if (id_in_world == local_map[x][y])
                     continue;
-
                 if (id_in_world != 1 && id_in_world != 0)
                 {
                     // Modifying existing record
