@@ -217,7 +217,8 @@ public:
             for (auto record : records)
             {
                 bool require_available = true;
-                if (record->product_id == 0){
+                if (record->product_id == 0)
+                {
                     stock_production[0] += record->unit_production;
                     continue;
                 }

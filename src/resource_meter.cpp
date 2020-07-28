@@ -52,6 +52,14 @@ void ResourceMeter::assignRenderer(SDL_Renderer *gRender)
         texture_meter = SDL_CreateTexture(gRender, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_TARGET, width, height);
     }
 }
+void ResourceMeter::setIconWidth(int w, int h)
+{
+        icon_width = w;
+        icon_height = h;
+}
+void ResourceMeter::copyItemTexture(){
+    item_texture = texture_meter;
+}
 void ResourceMeter::update(int u, int c)
 {
 
@@ -140,10 +148,6 @@ void ResourceMeter::update(int u, int c)
         SDL_DestroyTexture(text);
 
         SDL_SetRenderTarget(gRender, NULL);
+        copyItemTexture();
     }
-}
-void ResourceMeter::draw(int x, int y)
-{
-    SDL_Rect rect = {x, y, width, height};
-    SDL_RenderCopy(gRender, texture_meter, NULL, &rect);
 }
